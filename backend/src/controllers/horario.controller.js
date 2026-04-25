@@ -1,7 +1,8 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import { createHorarioSer, getHorarioSer, getHorariosSer, updateHorarioSer, deleteHorario } from "../services/horario.service.js";
-
+import { HORARIO_NO_ENCONTRADO } from "../constants/horario.constants.js";
+import { assignationValidation, integrityValidation, updateValidation } from "../validations/horario.validation.js";
 export async function asignarHorario(req, res) {
     try {
         let newHorario = null;
@@ -9,9 +10,20 @@ export async function asignarHorario(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
-        const { hora_inicio, hora_fin } = req.body;
+        const { hora_inicio, hora_fin, dia } = req.body;
 
-        if(newHorario = await createHorarioSer(hora_inicio, hora_fin)){
+        const { error } = integrityValidation.validate(req.body);
+        if (error) {
+            return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
+        }
+
+        let result =assignationValidation.validate(req.body);
+        if(result.error){
+            return handleErrorClient(res, 400, "faltan parametros",error.message);
+        }
+
+
+        if(newHorario = await createHorarioSer(hora_inicio, hora_fin, dia)){
             return res.status(201).json({ message: "Horario registrado exitosamente",data:newHorario});
         }else{
             return res.status(500).json({message: "Error al registrar horario"})
@@ -40,13 +52,23 @@ export async function patchHorario(req, res) {
             return res.status(400).json({ message: "El ID del horario es obligatorio" });
         }
 
+        const { error } = integrityValidation.validate(req.body);
+        if (error) {
+            return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
+        }
+
+        let result =updateValidation.validate(req.body);
+        if(result.error){
+            return handleErrorClient(res, 400, "falto actualizar parametros",error.message);
+        }
+
         const horarioUpdate = await getHorarioSer(id);
 
         if(!horarioUpdate){
             return handleErrorClient(res, 404, "Horario no encontrado");
         }
 
-        const updatedHorario = await updateHorarioSer(updatedHorario);
+        const updatedHorario = await updateHorarioSer(horarioUpdate);
         if(!(updatedHorario.data)){
             if(!updatedHorario.error){
                 return handleErrorClient(res, 500, updatedHorario.message);
@@ -73,9 +95,9 @@ export async function deleteHorario(req, res) {
             return handleSuccess(res, 200, "Horario eliminado exitosamente")
         }
 
-        /*if (result.message === HORARIO_NO_ENCONTRADO) {
+        if (result.message === HORARIO_NO_ENCONTRADO) {
             return handleErrorClient(res, 404, result.message, result.result);
-        }*/
+        }
 
         return handleErrorClient(res, 400, result.message, result.result);
     } catch (error) {

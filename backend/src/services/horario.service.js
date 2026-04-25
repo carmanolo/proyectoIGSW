@@ -34,17 +34,18 @@ export async function getHorariosSer() {
     }
 }
 
-export async function createHorarioSer(id_horario, hora_inicio, hora_fin) {
+export async function createHorarioSer(id_horario, hora_inicio, hora_fin,dia) {
 
   const horarioRepository = AppDataSource.getRepository(Horario);
 
   try {
     if (!id_horario || !hora_inicio || !hora_fin) {
-      throw Error("Función mal llamada", {id_horario, hora_inicio, hora_fin})
+      throw Error("Función mal llamada", {id_horario, hora_inicio, hora_fin, dia})
     }
     const newHorario = horarioRepository.create({
       hora_inicio,
       hora_fin,
+      dia,
     });
     await horarioRepository.save(newHorario);
     return newHorario;

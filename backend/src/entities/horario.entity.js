@@ -19,5 +19,10 @@ export const Horario = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    dia: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
   },
 });
