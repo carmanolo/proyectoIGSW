@@ -46,14 +46,14 @@ export async function patchHorario(req, res) {
             return handleErrorClient(res, 404, "Horario no encontrado");
         }
 
-        const updatedHorario = await updateHorarioSer(horarioUpdate);
-        if(!(horarioUpdate.data)){
-            if(!horarioUpdate.error){
-                return handleErrorClient(res, 500, horarioUpdate.message);
+        const updatedHorario = await updateHorarioSer(updatedHorario);
+        if(!(updatedHorario.data)){
+            if(!updatedHorario.error){
+                return handleErrorClient(res, 500, updatedHorario.message);
             }
-            return handleErrorClient(res, 400, horarioUpdate.message);
+            return handleErrorClient(res, 400, updatedHorario.message);
         }
-        return handleSuccess(res, 200, "Horario actualizado con éxito", horarioUpdate.data);
+        return handleSuccess(res, 200, "Horario actualizado con éxito", updatedHorario.data);
 
     } catch (error) {
         return handleErrorServer(res, 500, "error interno del servidor")
