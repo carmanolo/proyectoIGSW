@@ -2,13 +2,6 @@
 import Joi from "joi";
 import { DIAS_SEMANA, HORARIO_PATTERN, MIN_STRING,MAX_STRING, DIA_OBLIGATORIO, CAMPOS_ADICIONALES, HORA_INICIO_OBLIGATORIA, HORA_TERMINO_OBLIGATORIA } from "../constants/horario.constants.js";
 
-/*export const validarDia = (helpers, value) =>{
-    if(!DIAS_SEMANA.includes(value.toLowerCase())){
-        return helpers.message("El día debe ser uno de los siguientes: "+ DIAS_SEMANA.join(", "))
-    }
-        
-    return true;
-}*/
 
 export const integrityValidation = Joi.object({
     hora_inicio: Joi.string().pattern(HORARIO_PATTERN).messages({
