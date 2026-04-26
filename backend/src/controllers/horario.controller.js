@@ -6,7 +6,8 @@ import { assignationValidation, integrityValidation, updateValidation } from "..
 export async function asignarHorario(req, res) {
     try {
         let newHorario = null;
-        if(!req.body || req.params){
+        if(!req.body || !req.params){
+            console.log(req.body);
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
@@ -24,7 +25,7 @@ export async function asignarHorario(req, res) {
         }
 
 
-        if(newHorario = await createHorarioSer(hora_inicio, hora_fin, dia)){
+        if(newHorario = await createHorarioSer( hora_inicio, hora_fin, dia)){
             return res.status(201).json({ message: "Horario registrado exitosamente",data:newHorario});
         }else{
             return res.status(500).json({message: "Error al registrar horario"})
@@ -37,9 +38,12 @@ export async function asignarHorario(req, res) {
 
 export async function getHorarios(req, res) {
     const horarioData = await getHorariosSer();
+    //console.log(horarioData);
     if(!horarioData){
         return handleErrorClient(res, 400, "Horarios no encontrados");
     }
+    //enviar informacion de horarios de hoarios encontrados
+    return handleSuccess(res, 200, "horarios obtenidos exitosamente", horarioData);
 }
 
 export async function patchHorario(req, res) {

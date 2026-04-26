@@ -7,7 +7,7 @@ export const Horario = new EntitySchema({
     id_horario: {
       primary: true,
       type: "int",
-      generated: "increment",
+      generated: true,
     },
     hora_inicio: {
       type: "varchar",

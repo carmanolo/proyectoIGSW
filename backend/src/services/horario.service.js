@@ -2,15 +2,12 @@ import { AppDataSource } from "../config/configDb.js";
 import { Horario } from "../entities/horario.entity.js";
 
 // SER=service
-export async function getHorarioSer({id_horario}) {
+export async function getHorarioSer(id_horario) {
     try{
         const horarioRepository = AppDataSource.getHorarioSer(Horario);
-
-        const horarioFound = await horarioRepository.findOne({
-            where: [{ id_horario: id_horario}]
+        return await horarioRepository.findOne({
+            where: { id_horario: id_horario}
         })
-
-        if(!horarioFound) return [null, "Horario no encontrado"]
 
     }catch(error){
         console.error("Error al obtener la reunion", error)
@@ -22,7 +19,7 @@ export async function getHorariosSer() {
     try {
         const horarioRepository = AppDataSource.getRepository(Horario);
 
-        const horarios = await horarioRepository.find();
+        const horarios = await horarioRepository.find(id_horario);
 
         if (!horarios || horarios.length === 0) return [null, "No hay horarios"];
 
@@ -34,13 +31,15 @@ export async function getHorariosSer() {
     }
 }
 
-export async function createHorarioSer(id_horario, hora_inicio, hora_fin,dia) {
+//enviar parametros que se ingresaran en el body
+export async function createHorarioSer( hora_inicio, hora_fin, dia) {
 
   const horarioRepository = AppDataSource.getRepository(Horario);
 
   try {
-    if (!id_horario || !hora_inicio || !hora_fin) {
-      throw Error("Función mal llamada", {id_horario, hora_inicio, hora_fin, dia})
+    if ( !hora_inicio || !hora_fin || !dia) {
+      console.log( hora_inicio,hora_fin, dia);
+      throw Error("Función mal llamada", { hora_inicio, hora_fin, dia})
     }
     const newHorario = horarioRepository.create({
       hora_inicio,
