@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
-import { Horario } from "../entities/horario.entity";
+import { Horario } from "../entities/horario.entity.js";
 
 // SER=service
 export async function getHorarioSer({id_horario}) {
@@ -70,7 +70,7 @@ export async function updateHorarioSer(horario) {
   
 }
 
-export async function deleteHorario(id_horario) {
+export async function deleteHorarioSer(id_horario) {
   try{
     const horarioRepository = AppDataSource.getRepository(Horario);
     const horario = await horarioRepository.findOne({where: { id_horario:id_horario}});

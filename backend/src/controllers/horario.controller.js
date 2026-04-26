@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { createHorarioSer, getHorarioSer, getHorariosSer, updateHorarioSer, deleteHorario } from "../services/horario.service.js";
+import { createHorarioSer, getHorarioSer, getHorariosSer, updateHorarioSer, deleteHorarioSer } from "../services/horario.service.js";
 import { HORARIO_NO_ENCONTRADO } from "../constants/horario.constants.js";
 import { assignationValidation, integrityValidation, updateValidation } from "../validations/horario.validation.js";
 export async function asignarHorario(req, res) {
@@ -11,6 +11,7 @@ export async function asignarHorario(req, res) {
         }
 
         const { hora_inicio, hora_fin, dia } = req.body;
+        console.log(hora_inicio);
 
         const { error } = integrityValidation.validate(req.body);
         if (error) {
@@ -90,7 +91,7 @@ export async function deleteHorario(req, res) {
             return res.status(400).json({message: "El ID del horario es obligatorio"});
         }
 
-        const result = await deleteHorario(id);
+        const result = await deleteHorarioSer(id);
         if(result && result.result && result.result.affected >=1){
             return handleSuccess(res, 200, "Horario eliminado exitosamente")
         }

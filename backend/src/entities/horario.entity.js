@@ -26,3 +26,5 @@ export const Horario = new EntitySchema({
     },
   },
 });
+
+export default Horario;
