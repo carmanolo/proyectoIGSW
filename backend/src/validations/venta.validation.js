@@ -9,6 +9,7 @@ import {
     ERROR_CANTIDAD_INVALIDA 
 } from "../constants/venta.constants.js";
 
+
 export const integrityValidation = Joi.object({
     userId: Joi.number().integer().positive().messages({
         "number.base": ERROR_ID_INVALIDO,
@@ -21,6 +22,7 @@ export const integrityValidation = Joi.object({
         "any.only": `La cantidad de clases debe ser una de las siguientes: ${PACKS_VALIDOS.join(", ")}`
     })
 });
+
 
 export const assignationValidation = Joi.object({
     userId: Joi.any().required().messages({
@@ -35,6 +37,7 @@ export const assignationValidation = Joi.object({
     .messages({
         "object.unknown": CAMPOS_ADICIONALES,
     });
+
 
 export const updateValidation = Joi.object({
     userId: Joi.any(),
