@@ -1,36 +1,41 @@
 import { EntitySchema } from "typeorm";
 
-export const User = new EntitySchema({
-  name: "User",
-  tableName: "users",
+export const vehiculo = new EntitySchema({
+  type: "car",
+  tableName: "cars",
   columns: {
     id: {
       primary: true,
       type: "int",
       generated: true,
     },
-    email: {
+    patente: {
       type: "varchar",
       length: 255,
       unique: true,
       nullable: false,
     },
-    password: {
+    typo: {
       type: "varchar",
       length: 255,
       nullable: false,
     },
-    rol: {
+    estado: {
       type: "varchar",
       length: 255,
       nullable: false,
     },
-    created_at: {
-      type: "timestamp",
+    p_asignado: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    garantia: {
+      type: "boolean",
       createDate: true,
-      default: () => "CURRENT_TIMESTAMP",
+      nullable: false
     },
-    updated_at: {
+    actualizado: {
       type: "timestamp",
       updateDate: true,
       default: () => "CURRENT_TIMESTAMP",
@@ -38,4 +43,4 @@ export const User = new EntitySchema({
   },
 });
 
-export default User;
+export default Car;

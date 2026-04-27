@@ -1,0 +1,10 @@
+export const HORARIO_PATTERN=/^([0-9]{2})\:([0-9]{2})$/;
+export const MIN_STRING=3;
+export const MAX_STRING=30;
+export const PATENTE_OBLIGATORIO="La patente es obligatoria.";
+export const TIPO_OBLIGATORIA="El tipo de vehiculo es obligatorio.";
+export const ESTADO_OBLIGATORIA="El estado del vehiculo es obligatorip.";
+export const PASIGNADO_OBLIGATORIO="El vehiculo debe tener un profesor asignado"
+export const CAMPOS_ADICIONALES="No se permiten campos adicionales.";
+export const ESTADOS=["lunes","martes","miercoles","jueves","viernes","sabado"];
+export const VEHICULO_NO_ENCONTRADO = "Horario no encontrado";
