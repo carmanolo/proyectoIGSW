@@ -42,6 +42,7 @@ async function setupAPI() {
 setupAPI()
   .then(() => console.log("=> API Iniciada exitosamente"))
   .catch((error) => console.log("Error en index.js -> setupAPI(): ", error));
+  
 /*const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
