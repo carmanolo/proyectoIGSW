@@ -57,6 +57,14 @@ export async function patchHorario(req, res) {
             return res.status(400).json({ message: "El ID del horario es obligatorio" });
         }
 
+        if(req.body.dia) {
+            req.body.dia = String(req.body.dia).toLowerCase().trim()
+        }
+
+        if (req.body.dia === "día" || req.body.dia === "dia") {
+            return res.status(400).json({ message: "Debe seleccionar un día de la semana"});
+        }
+
         const { error } = integrityValidation.validate(req.body);
         if (error) {
             return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
@@ -72,6 +80,8 @@ export async function patchHorario(req, res) {
         if(!horarioUpdate){
             return handleErrorClient(res, 404, "Horario no encontrado");
         }
+
+        Object.assign(horarioUpdate, req.body);
 
         const updatedHorario = await updateHorarioSer(horarioUpdate);
         if(!(updatedHorario.data)){
