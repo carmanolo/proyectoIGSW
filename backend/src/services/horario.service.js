@@ -1,7 +1,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Horario } from "../entities/horario.entity.js";
 
-// SER=service
+
 export async function getHorarioSer(id_horario) {
     try{
         const horarioRepository = AppDataSource.getRepository(Horario);
