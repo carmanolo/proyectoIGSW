@@ -4,6 +4,8 @@ import profileRoutes from "./profile.routes.js";
 import claseRoutes from "./clase.routes.js";
 import userRoutes from "./user.routes.js";
 
+import horarioRoutes from "./horario.routes.js";
+import deudasRoutes from "./deudas.routes.js";
 
 const router = new Router();
 
@@ -12,5 +14,7 @@ router.use("/profile", profileRoutes);
 router.use("/clases", claseRoutes);
 router.use("/users", userRoutes)
 
+// router.use("/horarios", horarioRoutes);
+router.use("/deudas", deudasRoutes);
 
 export default router;
