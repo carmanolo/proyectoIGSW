@@ -1,7 +1,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import { vehiculo } from "../entities/vehiculo.entity.js";
 
-// SER=service
 export async function V({id_vehiculo}) {
     try{
         const vehiculoRepository = AppDataSource.getVehiculoSer(vehiculo);
