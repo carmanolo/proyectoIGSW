@@ -1,9 +1,13 @@
 export const HORARIO_PATTERN=/^([0-9]{2})\:([0-9]{2})$/;
+export const DESCRIPCION_PATTERN = /^[A-Za-zÁÉÍÓÚáéíóúÑñ0-9\s.,;:()\-]{3,255}$/;
 export const MIN_STRING=3;
 export const MAX_STRING=30;
+export const TIPO_OBLIGATORIO="El tipo es obligatorio.";
+export const DESCRIPCION_OBLIGATORIA = "La descripcion es obligatoria"
 export const DIA_OBLIGATORIO="El día es obligatorio.";
 export const HORA_INICIO_OBLIGATORIA="La hora de inicio es obligatoria.";
 export const HORA_TERMINO_OBLIGATORIA="La hora de termino es obligatoria.";
 export const CAMPOS_ADICIONALES="No se permiten campos adicionales.";
 export const DIAS_SEMANA=["lunes","martes","miercoles","jueves","viernes","sabado"];
-export const HORARIO_NO_ENCONTRADO = "Horario no encontrado";
+export const CLASE_NO_ENCONTRADA = "Horario no encontrado";
+export const TIPO_CLASE=["teorica","practica"]

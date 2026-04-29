@@ -1,9 +1,26 @@
 "use strict";
 import Joi from "joi";
-import { DIAS_SEMANA, HORARIO_PATTERN, MIN_STRING,MAX_STRING, DIA_OBLIGATORIO, CAMPOS_ADICIONALES, HORA_INICIO_OBLIGATORIA, HORA_TERMINO_OBLIGATORIA } from "../constants/horario.constants.js";
+import { DIAS_SEMANA, HORARIO_PATTERN, MIN_STRING,MAX_STRING, DIA_OBLIGATORIO, CAMPOS_ADICIONALES, HORA_INICIO_OBLIGATORIA, HORA_TERMINO_OBLIGATORIA,TIPO_CLASE, TIPO_OBLIGATORIO, DESCRIPCION_OBLIGATORIA,DESCRIPCION_PATTERN } from "../constants/clase.constants.js";
 
 
 export const integrityValidation = Joi.object({
+    tipo:Joi.string()
+        .min(MIN_STRING)
+        .max(MAX_STRING)
+        .valid(...TIPO_CLASE)
+        .messages({
+            "String.pattern.base":
+                "el tipo solo puede contener letras números y guiones bajos",
+            "any.valid":`El tipo debe ser uno se los siguientes ${TIPO_CLASE.join(",")}`,
+            "string.valid": `El tipo debe der uno de los siguientes ${TIPO_CLASE.join(",")}`,
+            "any.only":`El tipo debe ser uno se los siguientes ${TIPO_CLASE.join(",")}`,
+            "string.only": `El tipo debe der uno de los siguientes ${TIPO_CLASE.join(",")}`
+
+        }),
+    descripcion:Joi.string().pattern(DESCRIPCION_PATTERN).messages({
+        "string.base": "La decripcion debe estar adentro de una cadena de caracteres",
+    }),
+
     hora_inicio: Joi.string().pattern(HORARIO_PATTERN).messages({
         "string.base": "La hora de inicio debe estar adentro de una cadena de caracteres",
         "string.pattern.base": "El formato de la hora es incorrecto"
@@ -29,6 +46,15 @@ export const integrityValidation = Joi.object({
 })
 
 export const assignationValidation = Joi.object({
+    tipo: Joi.any().required().messages({
+        "any.required": TIPO_OBLIGATORIO,
+        "any.valid": `El tipo debe ser uno de los siguientes: ${TIPO_CLASE.join(", ")}`,
+    }),
+
+    descripcion: Joi.any().required().messages({
+        "any.required": DESCRIPCION_OBLIGATORIA,
+    }),
+
   hora_inicio: Joi.any().required().messages({
         "any.required": HORA_INICIO_OBLIGATORIA,
     }),
@@ -48,6 +74,8 @@ export const assignationValidation = Joi.object({
   });
 
 export const updateValidation = Joi.object({
+    tipo:Joi.any(),
+    descripcion:Joi.any(),
   hora_inicio: Joi.any(),
   hora_fin: Joi.any(),
   dia: Joi.any(),
