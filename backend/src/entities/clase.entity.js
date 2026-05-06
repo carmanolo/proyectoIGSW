@@ -34,17 +34,12 @@ export const Clase = new EntitySchema({
       length: 255,
       nullable: false,
     },
-    user_id:{
-      primary: false,
-      type: "int",
-    }
   },
   relations:{
     user:{
       target:"User",
       type:"many-to-one",
-      joinColumn: { name: "user_id" },
-      nullable: false,
+      joinColumn: { name: "id" },
       onDelete: "CASCADE",
     }
     

@@ -6,7 +6,7 @@ export async function getClaseSer(id_clase) {
     try{
         const claseRepository = AppDataSource.getRepository(Clase);
         return await claseRepository.findOne({
-            where: {id_clase: id_clase}
+            where: {id_clase: id_clase}, relations: {user: true}
         });
 
     }catch(error){
@@ -21,7 +21,7 @@ export async function getClasesSer() {
 
         const clases = await claseRepository.find();
 
-        if (!clases || clases.length === 0) return [null, "No hay horarios"];
+        if (!clases || clases.length === 0) return [null, "No hay clases"];
 
         return [clases, null];
 
@@ -37,7 +37,7 @@ export async function createClaseSer( tipo, descripcion ,hora_inicio, hora_fin, 
   const claseRepository = AppDataSource.getRepository(Clase);
 
   try {
-    if ( !tipo||!descripcion||!hora_inicio || !hora_fin || !dia) {
+    if (!tipo||!descripcion||!hora_inicio || !hora_fin || !dia) {
       console.log( hora_inicio,hora_fin, dia);
       throw Error("Función mal llamada", { tipo, descripcion, hora_inicio, hora_fin, dia})
     }
@@ -47,6 +47,7 @@ export async function createClaseSer( tipo, descripcion ,hora_inicio, hora_fin, 
       hora_inicio,
       hora_fin,
       dia,
+      relations: {user:true}
     });
     await claseRepository.save(newClase);
     return newClase;
@@ -74,7 +75,7 @@ export async function updateClaseSer(clase) {
 export async function deleteClaseSer(id_clase) {
   try{
     const claseRepository = AppDataSource.getRepository(Clase);
-    const clase = await claseRepository.findOne({where: { id_clase:id_clase}});
+    const clase = await claseRepository.findOne({where: { id_clase:id_clase}, relations: {user:true}});
 
     if(!clase){
       return { result: null, message: "Clase no encontrado"}

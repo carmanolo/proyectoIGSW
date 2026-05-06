@@ -2,7 +2,24 @@
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import { createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
-import { assignationValidation, integrityValidation, updateValidation } from "../validations/clase.validation.js";
+import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
+
+const timeValidationHelper = (hora_inicio, hora_termino) => {
+  let result = validacionHoraIntegridad(hora_inicio);
+  if (result) {
+    return String(result);
+  }
+  result = validacionHoraIntegridad(hora_termino);
+  if (result) {
+    return String(result);
+  }
+  result = validateHoraNegocio(hora_inicio, hora_termino);
+  if (result) {
+    return String(result);
+  }
+  return null;
+} 
+
 export async function createClase(req, res) {
     try {
         let newClase = null;
@@ -10,7 +27,7 @@ export async function createClase(req, res) {
             console.log(req.body);
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
-
+        
         const { tipo, descripcion, hora_inicio, hora_fin, dia } = req.body;
         console.log(hora_inicio);
 
@@ -24,6 +41,10 @@ export async function createClase(req, res) {
             return handleErrorClient(res, 400, "faltan parametros",error.message);
         }
 
+        let validationTime = timeValidationHelper(req.body.hora_inicio, req.body.hora_fin);
+         if (validationTime) {
+            return res.status(400).json({ message: String(validationTime) });
+        } 
 
         if(newClase = await createClaseSer( tipo, descripcion, hora_inicio, hora_fin, dia)){
             return res.status(201).json({ message: "Clase registrado exitosamente",data:newClase});

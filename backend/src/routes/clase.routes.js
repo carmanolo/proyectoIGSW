@@ -14,3 +14,9 @@ router.patch("/:id", authorizeRoles("secretario"), patchClase);
 router.delete("/:id", authorizeRoles("secretario"), deleteClase);
 
 export default router;
+
+/*"tipo":"practica",
+    "descripcion":"Clase inical de manejo",
+    "hora_inicio":"16:15",
+    "hora_fin":"17:00",
+    "dia":"miercoles"*/

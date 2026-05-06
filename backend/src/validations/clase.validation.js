@@ -2,6 +2,40 @@
 import Joi from "joi";
 import { DIAS_SEMANA, HORARIO_PATTERN, MIN_STRING,MAX_STRING, DIA_OBLIGATORIO, CAMPOS_ADICIONALES, HORA_INICIO_OBLIGATORIA, HORA_TERMINO_OBLIGATORIA,TIPO_CLASE, TIPO_OBLIGATORIO, DESCRIPCION_OBLIGATORIA,DESCRIPCION_PATTERN } from "../constants/clase.constants.js";
 
+const enRango = (integer =0 , min=0, max=0) => {
+    const _integer =Math.trunc(Number(integer) || 0);
+    let temp = null;
+    let _min = Math.trunc(Number(min || 0));
+    let _max = Math.trunc(Number(max || 0));
+    if(_min > _max){
+        temp = _max;
+        _max = min;
+        _min = temp;
+    }
+
+    return (_integer >= _min && _integer <=max);
+}
+
+export const validacionHoraIntegridad = (hour) =>{
+    const parsedHour = String(hour)
+    const separatedHour = parsedHour.split(":");
+    if(!(enRango(separatedHour[0], 0, 24))){
+        return "las horas solo pueden ser de 0 a 23"
+    }
+
+    if(!(enRango(separatedHour[1], 0, 59))){
+        return "los minutos solo pueden ser de 0 a 59"
+    }
+}
+
+export const validateHoraNegocio = (hora_inicio, hora_fin) => {
+  const _hora_inicio = String(hora_inicio);
+  const _hora_fin = String(hora_fin);
+  if (_hora_inicio.localeCompare(_hora_fin) >= 0) {
+    return "La hora de término de la clase debe ser posterior a la hora de inicio";
+  }
+  return null;
+}
 
 export const integrityValidation = Joi.object({
     tipo:Joi.string()
