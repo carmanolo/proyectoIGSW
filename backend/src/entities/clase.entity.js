@@ -19,6 +19,10 @@ export const Clase = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    fecha_clase:{
+      type:"date",
+      nullable:false
+    },
     hora_inicio: {
       type: "varchar",
       length: 255,

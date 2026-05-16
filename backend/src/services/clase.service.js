@@ -32,18 +32,19 @@ export async function getClasesSer() {
 }
 
 //enviar parametros que se ingresaran en el body
-export async function createClaseSer( tipo, descripcion ,hora_inicio, hora_fin, dia) {
+export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inicio, hora_fin, dia) {
 
   const claseRepository = AppDataSource.getRepository(Clase);
 
   try {
-    if (!tipo||!descripcion||!hora_inicio || !hora_fin || !dia) {
-      console.log( hora_inicio,hora_fin, dia);
-      throw Error("Función mal llamada", { tipo, descripcion, hora_inicio, hora_fin, dia})
+    if (!tipo||!descripcion||!fecha_clase||!hora_inicio || !hora_fin || !dia) {
+      //console.log( hora_inicio,hora_fin, dia);
+      throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia})
     }
     const newClase = claseRepository.create({
       tipo, 
       descripcion,
+      fecha_clase,
       hora_inicio,
       hora_fin,
       dia,
