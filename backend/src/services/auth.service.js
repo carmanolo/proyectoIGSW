@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { findUserByEmail } from "./user.service.js";
+import { getServiceResult } from "./utils/utils.service.js";
+
+
+//logear usaurio
 
 export async function loginUser(email, password) {
   const user = await findUserByEmail(email);
@@ -18,4 +22,15 @@ export async function loginUser(email, password) {
 
   delete user.password;
   return { user, token };
+}
+
+//cerrar sesion
+export async function logoutUserFromService(clearCookieFunction) {
+  try {
+    clearCookieFunction("jwt", { httpOnly: true });
+    return getServiceResult(false, null, "Sesión cerrada exitosamente", 0);
+  } catch (error) {
+    // console.error("Error en auth.controller.js -> login(): ", error);
+    return getServiceResult(true, null, "Error al cerrar sesión", 0);
+  }
 }

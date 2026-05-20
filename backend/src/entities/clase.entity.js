@@ -45,6 +45,7 @@ export const Clase = new EntitySchema({
       type:"many-to-one",
       joinColumn: { name: "id" },
       onDelete: "CASCADE",
+      inverseSide: "clase"
     }
     
   }
