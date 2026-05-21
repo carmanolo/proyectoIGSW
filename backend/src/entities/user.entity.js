@@ -32,6 +32,16 @@ export const User = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    clases_disponibles: {
+      type: "int",
+      nullable: true,
+      default: 0,
+    },
+    clases_basicas_completadas: {
+      type: "boolean",
+      nullable: false,
+      default: false,
+    },
     created_at: {
       type: "timestamp",
       createDate: true,
