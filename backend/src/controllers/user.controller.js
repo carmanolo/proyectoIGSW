@@ -8,7 +8,7 @@ export async function getUsers(req, res) {
   const users = await getUsersService();
 
   if(users.error){
-    return handleErrorServer(res, 500, "error en el servidor");
+    return handleErrorServer(res, 500, "error en el servidor", users.details, JSON.stringify(users));
   }
 
   if(users.length <= 0){
@@ -34,11 +34,10 @@ export async function getUserById(req, res) {
   console.log(user);
 
   if (user.error) {
-    return handleErrorServer(res, 500, "Error interno de srvidor");
+    return handleErrorServer(res, 500, "Error interno de srvidor", user.details, JSON.stringify(user));
   }
 
   //verificar si el usuario fue encontrado
-
   if (!user) {
     user.error = true;
     return handleErrorClient(res, 404, "Usuarios no encontrados");
@@ -65,7 +64,7 @@ export async function createUser(req, res) {
   const user = await createUserService(req.body);
   console.log(user);
   if(user.error){
-    return handleErrorServer(res, 500, "Error interno del servidor")
+    return handleErrorServer(res, 500, "Error interno del servidor", user.error, JSON.stringify(user));
   }
 
   if (!user.data) {
@@ -110,8 +109,7 @@ export async function updateUser(req, res) {
 
     const editedUser = await updateUserService(id, newData);
     if(editedUser.error){
-      return handleErrorServer(res, 500, "Error interno del sevidor",editedUser);
-
+      return handleErrorServer(res, 500, "Error interno del sevidor", editedUser.details, JSON.stringify(editedUser));
     }
 
     if(editedUser.length <= 0){
@@ -139,7 +137,7 @@ export async function deleteUser(req, res) {
   const user = await deleteUserService(id);
 
   if (user.error) {
-    return handleErrorServer(res, 500, "Error interno del servidor", user);
+    return handleErrorServer(res, 500, "Error interno del servidor", user.details, JSON.stringify(user));
   }
   if (user.length <= 0) {
     user.error = true;

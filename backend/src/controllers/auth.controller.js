@@ -33,7 +33,7 @@ export async function register(req, res) {
     if (error.code === '23505') { // Código de error de PostgreSQL para violación de unique constraint
       handleErrorClient(res, 409, "El email ya está registrado");
     } else {
-      handleErrorServer(res, 500, "Error interno del servidor", error.message);
+      handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
     }
   }
 }
@@ -44,6 +44,6 @@ export async function logout(req, res) {
   if (!result.error) {
     return handleSuccess(res, 200, "sesión cerrada exitosamente", result);
   } else {
-    return handleErrorServer(res, 500, "Error al cerrar sesión", result);
+    return handleErrorServer(res, 500, "Error al cerrar sesión", result, result);
   }
 }

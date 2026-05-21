@@ -3,6 +3,8 @@ import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers
 import { createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
+import { idValidation } from "../validations/modules/id.validation.js";
+import { SHOW_ERRORS } from "../constants/settings.constants.js";
 
 const timeValidationHelper = (hora_inicio, hora_termino) => {
   let result = validacionHoraIntegridad(hora_inicio);
@@ -78,6 +80,14 @@ export async function patchClase(req, res) {
             return res.status(400).json({ message: "El ID de la clase es obligatorio" });
         }
 
+        let validatedId = idValidation.validate({id: id});
+        if (validatedId.error) {
+            if (SHOW_ERRORS) {
+                console.error(validatedId?.error?.cause || JSON.stringify(validatedId?.error));
+            }
+            return res.status(400).json({ message: validatedId.error.message });
+        }
+
         if(req.body.tipo) {
             req.body.tipo = String(req.body.tipo).toLowerCase().trim()
         }
@@ -100,8 +110,9 @@ export async function patchClase(req, res) {
         }
 
         let result =updateValidation.validate(req.body);
+
         if(result.error){
-            return handleErrorClient(res, 400, "falto actualizar parametros",error.message);
+            return handleErrorClient(res, 400, "falto actualizar parametros", result.error.message);
         }
 
         const claseUpdate = await getClaseSer(id);
@@ -122,7 +133,7 @@ export async function patchClase(req, res) {
         return handleSuccess(res, 200, "Clase actualizada con éxito", updatedClase.data);
 
     } catch (error) {
-        return handleErrorServer(res, 500, "error interno del servidor")
+        return handleErrorServer(res, 500, "error interno del servidor", error.message, error)
     }
     
 }
@@ -145,7 +156,7 @@ export async function deleteClase(req, res) {
 
         return handleErrorClient(res, 400, result.message, result.result);
     } catch (error) {
-        return handleErrorServer(res, 500, "Error al eliminar la clase", error.message);
+        return handleErrorServer(res, 500, "Error al eliminar la clase", error.message, error);
     }
 }
 
