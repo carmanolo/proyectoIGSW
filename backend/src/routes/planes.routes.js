@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { crearDeuda,obtenerDeudas,eliminarDeuda,cambiarEstado,pagarDeuda } from "../controllers/deuda.controller.js";
+import { crearDeuda,obtenerDeudas,eliminarDeuda,cambiarEstado,pagarDeuda } from "../controllers/plan.controller.js";
 
 const router = Router();
 

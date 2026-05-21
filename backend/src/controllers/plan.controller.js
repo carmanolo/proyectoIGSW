@@ -1,8 +1,8 @@
-import { DeudaService } from "../services/deuda.service.js";
+import { DeudaService } from "../services/Plan.service.js";
 
 const deudaService = new DeudaService();
 
-export const crearDeuda = async (req, res) => {
+export const crearPlan = async (req, res) => {
   try {
     const resultado = await deudaService.crearDeuda(req.body);
     res.status(201).json(resultado);
@@ -11,7 +11,7 @@ export const crearDeuda = async (req, res) => {
   }
 };
 
-export const obtenerDeudas = async (req, res) => {
+export const obtenerPlanes = async (req, res) => {
   try {
     const deudas = await deudaService.obtenerTodasLasDeudas();
     res.status(200).json(deudas);
@@ -20,7 +20,7 @@ export const obtenerDeudas = async (req, res) => {
   }
 };
 
-export const obtenerDeudaPorId = async (req, res) => {
+export const obtenerPlanPorId = async (req, res) => {
   try {
     const deuda = await deudaService.obtenerDeudaPorId(req.params.id);
     res.status(200).json(deuda);
@@ -29,7 +29,7 @@ export const obtenerDeudaPorId = async (req, res) => {
   }
 };
 
-export const eliminarDeuda = async (req, res) => {
+export const eliminarPlan = async (req, res) => {
   try {
     const resultado = await deudaService.eliminarDeuda(req.params.id);
     res.status(200).json(resultado);
@@ -49,11 +49,11 @@ export const cambiarEstado = async (req, res) => {
   }
 };
 
-export const pagarDeuda = async (req, res) => {
+export const pagarPlan = async (req, res) => {
   try {
     const { id } = req.params;
     const { monto_pago } = req.body;
-    const resultado = await deudaService.pagarDeuda(id, monto_pago);
+    const resultado = await deudaService.pagarPlan(id, monto_pago);
     res.status(200).json(resultado);
   } catch (error) {
     res.status(400).json({ error: error.message });
