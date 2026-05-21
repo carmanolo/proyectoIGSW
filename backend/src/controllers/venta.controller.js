@@ -8,17 +8,14 @@ import { Venta } from "../entities/venta.entity.js";
 
 export async function registrarVenta(req, res) {
     try {
-        let updatedUser = null;
-        
         if(!req.body){
             console.log(req.body);
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
-        const { userId, cantidad } = req.body;
-        console.log(userId, cantidad); 
+        const { userId, cantidad, comprobante_url } = req.body;
+        console.log(userId, cantidad, comprobante_url); 
 
-        
         const { error } = integrityValidation.validate(req.body);
         if (error) {
             return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
@@ -29,22 +26,52 @@ export async function registrarVenta(req, res) {
             return handleErrorClient(res, 400, "Faltan parámetros", result.error.message);
         }
 
-        const [resultUser, errorServicio] = await venderPackSer(userId, cantidad);
+        const userRepository = AppDataSource.getRepository(User);
+        const targetUser = await userRepository.findOneBy({ id: Number(userId) });
+        if (!targetUser) {
+            return handleErrorClient(res, 404, "Usuario no encontrado");
+        }
+        if (targetUser.rol !== "alumnos") {
+            return handleErrorClient(res, 403, "Solo los usuarios con rol 'alumnos' pueden recibir packs");
+        }
+
+        const [resultVenta, errorServicio] = await venderPackSer(userId, cantidad, comprobante_url);
 
         if (errorServicio) {
             return handleErrorClient(res, 400, errorServicio);
         }
 
-        if(updatedUser = resultUser){
-            const { password, clases_disponibles, ...usuarioSeguro } = updatedUser;
-            return res.status(201).json({ message: "Venta de pack registrada exitosamente", data: usuarioSeguro});
+        if(resultVenta){
+            return res.status(201).json({ message: "Solicitud de compra de pack registrada exitosamente. Pendiente de aprobación.", data: resultVenta});
         }else{
-            return res.status(500).json({message: "Error al registrar la venta"})
+            return res.status(500).json({message: "Error al registrar la solicitud de venta"})
         }
 
     } catch (error) {
         console.error("error en registro de venta", error);
-        return res.status(500).json({ message: "Error al registrar la venta"});
+        return res.status(500).json({ message: "Error al registrar la solicitud de venta"});
+    }
+}
+
+import { aprobarVentaSer } from "../services/venta.service.js";
+
+export async function aprobarVenta(req, res) {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: "El ID de la venta es obligatorio" });
+        }
+
+        const [resultVenta, errorServicio] = await aprobarVentaSer(id);
+
+        if (errorServicio) {
+            return handleErrorClient(res, 400, errorServicio);
+        }
+
+        return res.status(200).json({ message: "Venta aprobada exitosamente", data: resultVenta });
+    } catch (error) {
+        console.error("error al aprobar la venta", error);
+        return res.status(500).json({ message: "Error interno al aprobar la venta" });
     }
 }
 
@@ -100,6 +127,7 @@ export async function eliminarVenta(req, res) {
             user.clases_disponibles = Math.max(0, (user.clases_disponibles || 0) - Number(venta.cantidad));
             await userRepository.save(user);
         }
+
         await ventaRepository.remove(venta);
 
         return handleSuccess(res, 200, "Venta eliminada correctamente", { id: venta.id });

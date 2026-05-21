@@ -19,6 +19,16 @@ columns: {
     createDate: true,
     default: () => "CURRENT_TIMESTAMP",
     },
+    estado: {
+    type: "varchar",
+    length: 50,
+    default: "pendiente",
+    },
+    comprobante_url: {
+    type: "varchar",
+    length: 255,
+    nullable: true,
+    },
 },
 relations: {
 
