@@ -15,7 +15,7 @@ export const vehiculo = new EntitySchema({
       unique: true,
       nullable: false,
     },
-    typo: {
+    typo: { 
       type: "varchar",
       length: 255,
       nullable: false,
