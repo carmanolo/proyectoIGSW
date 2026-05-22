@@ -95,3 +95,4 @@ export const updateValidation = Joi.object({
     "any.unknown":"No se permiten campos adicionales",
     "object.unknown":"No se permiten campos adicionales",    
 });
+
