@@ -6,6 +6,8 @@ import userRoutes from "./user.routes.js";
 
 import horarioRoutes from "./horario.routes.js";
 import deudasRoutes from "./deudas.routes.js";
+import planRoutes from "./Plan.routes.js";
+import inscripcionRoutes from "./Inscripcion.routes.js";
 
 const router = new Router();
 
@@ -16,5 +18,7 @@ router.use("/users", userRoutes)
 
 router.use("/horarios", horarioRoutes);
 router.use("/deudas", deudasRoutes);
+router.use("/planes", planRoutes);
+router.use("/inscripciones", inscripcionRoutes);
 
 export default router;
