@@ -8,17 +8,19 @@ import userRoutes from "./user.routes.js";
 // import deudasRoutes from "./deudas.routes.js";
 import planRoutes from "./Plan.routes.js";
 import inscripcionRoutes from "./Inscripcion.routes.js";
+import ventaRoutes from "./venta.routes.js";
 
 const router = new Router();
 
 router.use("/auth", authRoutes);
 router.use("/profile", profileRoutes);
 router.use("/clases", claseRoutes);
-router.use("/users", userRoutes)
+router.use("/users", userRoutes);
 
 // router.use("/horarios", horarioRoutes);
 // router.use("/deudas", deudasRoutes);
 router.use("/planes", planRoutes);
 router.use("/inscripciones", inscripcionRoutes);
+router.use("/ventas", ventaRoutes);
 
 export default router;
