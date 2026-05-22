@@ -62,3 +62,4 @@ export const Inscripcion = new EntitySchema({
     },
   },
 });
+export default Inscripcion;

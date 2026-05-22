@@ -1,30 +1,20 @@
-import express from "express";
+import { Router } from "express";
 import {
   contratarPlan,
   pagarDeuda,
   obtenerDeudasPendientes,
-  obtenerTodasLasDeudas,
-  obtenerHistorialPagos,
-  obtenerPagosPorInscripcion,
-  obtenerResumenFinanciero,
+  obtenerInscripcionesPorAlumno,
+  obtenerInscripcionPorId,
   cancelarInscripcion,
 } from "../controllers/Inscripcion.controller.js";
 
-const router = express.Router();
+const router = Router();
 
 router.post("/contratar", contratarPlan);
-
 router.post("/:id/pagar", pagarDeuda);
-
-
-router.get("/alumno/:alumnoId/deudas/pendientes", obtenerDeudasPendientes);
-router.get("/alumno/:alumnoId/deudas/todas", obtenerTodasLasDeudas);
-
-
-router.get("/alumno/:alumnoId/pagos", obtenerHistorialPagos);
-router.get("/inscripcion/:inscripcionId/pagos", obtenerPagosPorInscripcion);
-router.get("/alumno/:alumnoId/resumen", obtenerResumenFinanciero);
-
-router.patch("/:id/cancelar", cancelarInscripcion);
+router.get("/alumno/:alumnoId/deudas", obtenerDeudasPendientes);
+router.get("/alumno/:alumnoId", obtenerInscripcionesPorAlumno);
+router.get("/:id", obtenerInscripcionPorId);
+router.put("/:id/cancelar", cancelarInscripcion);
 
 export default router;

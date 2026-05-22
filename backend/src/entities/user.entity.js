@@ -1,4 +1,5 @@
-import { EntitySchema } from "typeorm";
+import { EntitySchema} from "typeorm";
+//import Clase from "./clase.entity.js";
 
 export const User = new EntitySchema({
   name: "User",
@@ -9,6 +10,12 @@ export const User = new EntitySchema({
       type: "int",
       generated: "increment",
     },
+    nombre: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
+
     email: {
       type: "varchar",
       length: 255,
@@ -23,7 +30,7 @@ export const User = new EntitySchema({
     rol: {
       type: "varchar",
       length: 255,
-      nullable: true,
+      nullable: false,
     },
     created_at: {
       type: "timestamp",
@@ -36,6 +43,13 @@ export const User = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
     },
   },
+  relations:{
+    clase:{
+      type: "one-to-many",
+      target: "Clase",
+      inverseSide: "user",
+    }
+  }
 });
 
 export default User;

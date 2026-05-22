@@ -54,3 +54,4 @@ export const Plan = new EntitySchema({
     },
   },
 });
+export default Plan;
