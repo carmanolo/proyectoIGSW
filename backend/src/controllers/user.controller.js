@@ -147,7 +147,7 @@ export async function deleteUser(req, res) {
   return handleSuccess(res, 200, "Usuario eliinado exitosamente", user);
 }
 
-export async function getUserById(req, res) {
+/* export async function getUserById(req, res) {
   const { id } = req.params;
 
   if (!id) {
@@ -402,3 +402,4 @@ export async function deleteUser(req, res) {
 
   return handleSuccess(res, 200, "Usuario eliinado exitosamente", user);
 }
+*/

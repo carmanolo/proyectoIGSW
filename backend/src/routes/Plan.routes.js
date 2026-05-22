@@ -10,7 +10,7 @@ import {
   obtenerPlanesPorTipo,
 } from "../controllers/plan.controller.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/activos", obtenerPlanesActivos);
 router.get("/tipo/:tipo", obtenerPlanesPorTipo);
