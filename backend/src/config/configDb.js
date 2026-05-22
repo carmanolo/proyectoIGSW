@@ -9,6 +9,8 @@ import Clase from "../entities/clase.entity.js";
 import Plan from "../entities/Plan.entity.js";
 // import Horario from "../entities/clase.entity.js";
 // import Deuda from "../entities/Plan.entity.js";
+import Horario from "../entities/clase.entity.js";
+// import Deuda from "../entities/Plan.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -20,6 +22,7 @@ export const AppDataSource = new DataSource({
   // entities: [User, Clase],
   entities: [User, Clase, Plan],
   // entities: [User, Clase, Deuda, Plan],
+  // entities: [User, Horario, Deuda],
   synchronize: true, 
   logging: false,
 });
