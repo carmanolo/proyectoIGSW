@@ -7,6 +7,8 @@ import Clase from "../entities/clase.entity.js";
 // import Deuda from "../entities/Deuda.entity.js";
 // import Horario from "../entities/horario.entity.js";
 import Plan from "../entities/Plan.entity.js";
+// import Horario from "../entities/clase.entity.js";
+// import Deuda from "../entities/Plan.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",

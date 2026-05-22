@@ -30,7 +30,7 @@ export const User = new EntitySchema({
     rol: {
       type: "varchar",
       length: 255,
-      nullable: true,
+      nullable: false,
     },
     clases_disponibles: {
       type: "int",

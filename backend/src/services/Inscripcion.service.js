@@ -1,138 +1,131 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Inscripcion } from "../entities/Inscripcion.entity.js";
-import { PlanService } from "./Plan.service.js";
+import * as planService from "./Plan.service.js";
 
-export class InscripcionService {
-  constructor() {
-    this.inscripcionRepository = AppDataSource.getRepository(Inscripcion);
-    this.planService = new PlanService();
+const inscripcionRepository = AppDataSource.getRepository(Inscripcion);
+
+// Funciones auxiliares
+const calcularFechaFin = (fechaInicio, duracionSemanas) => {
+  const fecha = new Date(fechaInicio);
+  fecha.setDate(fecha.getDate() + duracionSemanas * 7);
+  return fecha;
+};
+
+const calcularFechaVencimiento = () => {
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate() + 15);
+  return fecha;
+};
+
+// ✅ Funciones exportadas (sin usar this)
+export async function contratarPlan(data) {
+  const { alumno_id, plan_id, fecha_inicio, fecha_vencimiento_pago } = data;
+
+  const plan = await planService.obtenerPlanPorId(plan_id);
+  if (plan.estado !== "activo") {
+    throw new Error("El plan no está disponible actualmente");
   }
 
+  const tieneDeudaPendiente = await alumnoTieneDeudaPendiente(alumno_id);
+  if (tieneDeudaPendiente) {
+    throw new Error("No puede contratar un nuevo plan porque tiene una deuda pendiente");
+  }
 
-  async contratarPlan(data) {
-    const { alumno_id, plan_id, fecha_inicio, fecha_vencimiento_pago } = data;
+  const fechaFin = calcularFechaFin(fecha_inicio, plan.duracion_semanas);
 
-    const plan = await this.planService.obtenerPlanPorId(plan_id);
-    if (plan.estado !== "activo") {
-      throw new Error("El plan no está disponible actualmente");
-    }
+  const nuevaInscripcion = inscripcionRepository.create({
+    alumno_id,
+    plan_id,
+    fecha_inicio: new Date(fecha_inicio),
+    fecha_fin: fechaFin,
+    estado_pago: "pendiente",
+    monto_total: plan.costo,
+    monto_pagado: 0,
+    fecha_vencimiento_pago: fecha_vencimiento_pago || calcularFechaVencimiento(),
+    estado_inscripcion: "activa",
+  });
 
-    const tieneDeudaPendiente = await this.alumnoTieneDeudaPendiente(alumno_id);
-    if (tieneDeudaPendiente) {
-      throw new Error("No puede contratar un nuevo plan porque tiene una deuda pendiente");
-    }
+  return await inscripcionRepository.save(nuevaInscripcion);
+}
 
-
-    const fechaFin = this.calcularFechaFin(fecha_inicio, plan.duracion_semanas);
-
-
-    const nuevaInscripcion = this.inscripcionRepository.create({
-      alumno_id,
-      plan_id,
-      fecha_inicio: new Date(fecha_inicio),
-      fecha_fin: fechaFin,
+export async function alumnoTieneDeudaPendiente(alumno_id) {
+  const deudasPendientes = await inscripcionRepository.find({
+    where: {
+      alumno_id: alumno_id,
       estado_pago: "pendiente",
-      monto_total: plan.costo,
-      monto_pagado: 0,
-      fecha_vencimiento_pago: fecha_vencimiento_pago || this.calcularFechaVencimiento(),
-      estado_inscripcion: "activa",
-    });
+    },
+  });
+  return deudasPendientes.length > 0;
+}
 
-    return await this.inscripcionRepository.save(nuevaInscripcion);
+export async function obtenerDeudasPendientes(alumno_id) {
+  return await inscripcionRepository.find({
+    where: {
+      alumno_id: alumno_id,
+      estado_pago: "pendiente",
+    },
+  });
+}
+
+export async function pagarDeuda(id_inscripcion, montoPago) {
+  if (!montoPago || montoPago <= 0) {
+    throw new Error("El monto del pago debe ser mayor a 0");
   }
 
+  const inscripcion = await obtenerInscripcionPorId(id_inscripcion);
 
-  async alumnoTieneDeudaPendiente(alumno_id) {
-    const deudasPendientes = await this.inscripcionRepository.find({
-      where: {
-        alumno_id: alumno_id,
-        estado_pago: "pendiente",
-      },
-    });
-    return deudasPendientes.length > 0;
+  if (inscripcion.estado_pago === "pagado") {
+    throw new Error("Esta deuda ya está completamente pagada");
   }
 
-  async obtenerDeudasPendientes(alumno_id) {
-    return await this.inscripcionRepository.find({
-      where: {
-        alumno_id: alumno_id,
-        estado_pago: "pendiente",
-      },
-      relations: ["plan_id"],
-    });
+  const nuevoMontoPagado = parseFloat(inscripcion.monto_pagado) + parseFloat(montoPago);
+
+  if (nuevoMontoPagado > inscripcion.monto_total) {
+    const restante = inscripcion.monto_total - inscripcion.monto_pagado;
+    throw new Error(`El pago excede el monto total. Restante: ${restante}`);
   }
 
-  async pagarDeuda(id_inscripcion, montoPago) {
-    if (!montoPago || montoPago <= 0) {
-      throw new Error("El monto del pago debe ser mayor a 0");
-    }
+  inscripcion.monto_pagado = nuevoMontoPagado;
 
-    const inscripcion = await this.obtenerInscripcionPorId(id_inscripcion);
-
-    if (inscripcion.estado_pago === "pagado") {
-      throw new Error("Esta deuda ya está completamente pagada");
-    }
-
-    const nuevoMontoPagado = parseFloat(inscripcion.monto_pagado) + parseFloat(montoPago);
-
-    if (nuevoMontoPagado > inscripcion.monto_total) {
-      const restante = inscripcion.monto_total - inscripcion.monto_pagado;
-      throw new Error(`El pago excede el monto total. Restante: ${restante}`);
-    }
-
-    inscripcion.monto_pagado = nuevoMontoPagado;
-
-    if (inscripcion.monto_pagado >= inscripcion.monto_total) {
-      inscripcion.estado_pago = "pagado";
-      inscripcion.fecha_pago_completo = new Date();
-    }
-
-    const resultado = await this.inscripcionRepository.save(inscripcion);
-
-    return {
-      message: "Pago realizado exitosamente",
-      inscripcion: resultado,
-    };
+  if (inscripcion.monto_pagado >= inscripcion.monto_total) {
+    inscripcion.estado_pago = "pagado";
+    inscripcion.fecha_pago_completo = new Date();
+  } else if (inscripcion.monto_pagado > 0) {
+    inscripcion.estado_pago = "parcial";
   }
 
+  const resultado = await inscripcionRepository.save(inscripcion);
 
-  async obtenerInscripcionPorId(id) {
-    const inscripcion = await this.inscripcionRepository.findOne({
-      where: { id_inscripcion: id },
-    });
-    if (!inscripcion) {
-      throw new Error("Inscripción no encontrada");
-    }
-    return inscripcion;
+  return {
+    message: "Pago realizado exitosamente",
+    inscripcion: resultado,
+    deuda_restante: inscripcion.monto_total - inscripcion.monto_pagado,
+  };
+}
+
+export async function obtenerInscripcionPorId(id) {
+  const inscripcion = await inscripcionRepository.findOne({
+    where: { id_inscripcion: id },
+  });
+  if (!inscripcion) {
+    throw new Error("Inscripción no encontrada");
+  }
+  return inscripcion;
+}
+
+export async function obtenerInscripcionesPorAlumno(alumno_id) {
+  return await inscripcionRepository.find({
+    where: { alumno_id: alumno_id },
+  });
+}
+
+export async function cancelarInscripcion(id_inscripcion) {
+  const inscripcion = await obtenerInscripcionPorId(id_inscripcion);
+
+  if (inscripcion.estado_pago === "pendiente") {
+    throw new Error("No se puede cancelar la inscripción porque tiene una deuda pendiente");
   }
 
-  async obtenerInscripcionesPorAlumno(alumno_id) {
-    return await this.inscripcionRepository.find({
-      where: { alumno_id: alumno_id },
-    });
-  }
-
-
-  async cancelarInscripcion(id_inscripcion) {
-    const inscripcion = await this.obtenerInscripcionPorId(id_inscripcion);
-    
-    if (inscripcion.estado_pago === "pendiente") {
-      throw new Error("No se puede cancelar la inscripción porque tiene una deuda pendiente");
-    }
-    
-    inscripcion.estado_inscripcion = "cancelada";
-    return await this.inscripcionRepository.save(inscripcion);
-  }
-
-  calcularFechaFin(fechaInicio, duracionSemanas) {
-    const fecha = new Date(fechaInicio);
-    fecha.setDate(fecha.getDate() + (duracionSemanas * 7));
-    return fecha;
-  }
-
-  calcularFechaVencimiento() {
-    const fecha = new Date();
-    fecha.setDate(fecha.getDate() + 15); 
-    return fecha;
-  }
+  inscripcion.estado_inscripcion = "cancelada";
+  return await inscripcionRepository.save(inscripcion);
 }

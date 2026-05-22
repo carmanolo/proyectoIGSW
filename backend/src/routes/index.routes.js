@@ -14,7 +14,7 @@ router.use("/profile", profileRoutes);
 router.use("/clases", claseRoutes);
 router.use("/users", userRoutes)
 
-// router.use("/horarios", horarioRoutes);
+router.use("/horarios", horarioRoutes);
 router.use("/deudas", deudasRoutes);
 
 export default router;
