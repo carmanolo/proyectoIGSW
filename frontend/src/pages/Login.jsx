@@ -27,7 +27,7 @@ const Login = () => {
                         Iniciar sesión
                     </h1>
                     
-                    <DULabelInput label="Prueba" defaultText="hola miguel" />
+                    <DULabelInput id="prueba" label="Prueba" defaultText="hola miguel" />
 
                     <div className="space-y-2">
                         <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
