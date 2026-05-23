@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DULabelInput } from '../components/daisyui/DULabelInput';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -26,6 +27,8 @@ const Login = () => {
                         Iniciar sesión
                     </h1>
                     
+                    <DULabelInput label="Prueba" defaultText="hola miguel" />
+
                     <div className="space-y-2">
                         <label htmlFor="email" className="block text-sm font-semibold text-gray-700">
                             Email
