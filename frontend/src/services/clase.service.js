@@ -14,24 +14,22 @@ export async function getClasesService(){
 
 //crear clases
 
-export async function createClaseService() {
+//debo pasar una class data??????
+export async function createClaseService(claseData) {
     try {
-        const response = await axios.post('/clases/crear');
-        return response.data.data;
+        const response = await axios.post('/clases/crear',claseData);
+        return Object.assign(response.data, {status: response.status});
     } catch (error) {
         throw error.response?.data || error
     }
 }
 
-export async function patchClaseService(id_clase, classData) {
+export async function patchClaseService(id_clase, claseData) {
     try {
-        const fullData = {...classData, id_clase };
-        const response = await axios.patch(`clases/`, fullData, {
-            params: {id_clase},
-        });
-        return response.data.data;
+        const response = await axios.patch(`/clases/${id_clase}`,claseData);
+        return Object.assign(response.data, {status: response.status});
     } catch (error) {
-        throw error.response?.data || error;
+        throw error.response || error;
     }
 };
 
@@ -39,11 +37,8 @@ export async function patchClaseService(id_clase, classData) {
 
 export async function deleteClaseService(id_clase) {
     try {
-        const response = await axios.delete(`/clases/`,{
-            params: { id_clase },
-        });
-
-        return response.data.data;
+        const response = await axios.delete(`/clases/${id_clase}`);
+        return response.data;
     } catch (error) {
         throw error.response?.data || error;
     }

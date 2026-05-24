@@ -14,6 +14,9 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const token = cookies.get('jwt-auth', { path: '/' });
+    /* if (!token) {
+      console.warn("ADVERTENCIA: NO HAY TOKEN");
+    }*/
     if(token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

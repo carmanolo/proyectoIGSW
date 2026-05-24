@@ -5,11 +5,19 @@ import connectDB from "../src/config/configDb.js";
 import routerApi from "../src/routes/index.routes.js";
 import { PORT,HOST } from "./config/configEnv.js";
 import { iniciarUsuarios } from "./config/initialSetup.js";
+import cors from "cors";
 
 async function setupServer() {
   //Crea la instancia de express
   const app = express();
   app.disable("x-powered-by");
+
+  app.use(
+    cors({
+      credentials: true,
+      origin: true,
+    })
+  );
 
   //Avisa a express que use JSON
   app.use(express.json());

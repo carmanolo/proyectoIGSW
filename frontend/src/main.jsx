@@ -4,6 +4,7 @@ import Login from '@pages/Login';
 import Home from '@pages/Home';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
+import Clase from '@pages/Clase';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -14,16 +15,16 @@ const router = createBrowserRouter([
     errorElement: <Error404 />,
     children: [
       {
-        path: '/',
-        element: <Login />
-      },
-      {
         path: '/auth',
         element: <Login />
       },
       {
         path: '/home',
         element: <Home />
+      },
+      {
+        path: '/clase',
+        element: <Clase/>
       }
     ]
   }
