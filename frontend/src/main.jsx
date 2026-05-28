@@ -15,10 +15,6 @@ const router = createBrowserRouter([
     errorElement: <Error404 />,
     children: [
       {
-        path: '/auth',
-        element: <Login />
-      },
-      {
         path: '/home',
         element: <Home />
       },
@@ -27,7 +23,11 @@ const router = createBrowserRouter([
         element: <Clase/>
       }
     ]
-  }
+  },
+  {
+    path: '/auth',
+    element: <Login />
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
