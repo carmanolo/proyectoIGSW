@@ -8,9 +8,9 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.get("/",getVehiculo);
-router.post("/crear",authorizeRoles("secretario") ,asignarVehiculo);
-router.patch("/:id", authorizeRoles("secretario"), patchVehiculo);
-router.delete("/:id", authorizeRoles("secretario"), deleteVehiculo);
+router.get("/",getEvaluacion);
+router.post("/crear",authorizeRoles("secretario") ,crearEvaluacion);
+router.patch("/:id", authorizeRoles("secretario"), patchEvaluacion);
+router.delete("/:id", authorizeRoles("secretario"), deleteEvaluacion);
 
 export default router;
