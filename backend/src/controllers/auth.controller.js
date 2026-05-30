@@ -1,5 +1,5 @@
 import { loginUser, logoutUserFromService } from "../services/auth.service.js";
-import { createUser } from "../services/user.service.js";
+import { createUserService } from "../services/user.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
 export async function login(req, res) {
