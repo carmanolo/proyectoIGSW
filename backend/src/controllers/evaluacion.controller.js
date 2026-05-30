@@ -2,7 +2,7 @@
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import { createEvaluacionSer, getEvaluacionSer, getEvaluacionesSer, updateEvaluacionSer, deleteEvaluacion } from "../services/evaluacion.service.js";
 
-export async function asignarEvaluacion(req, res) {
+export async function createEvaluacion(req, res) {
     try {
         let newEvaluacion = null;
         if(!req.body || req.params){

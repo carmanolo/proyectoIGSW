@@ -7,8 +7,14 @@ export const User = new EntitySchema({
     id: {
       primary: true,
       type: "int",
-      generated: true,
+      generated: "increment",
     },
+    nombre: {
+      type: "varchar",
+      length: 255,
+      nullable: true,
+    },
+
     email: {
       type: "varchar",
       length: 255,
@@ -25,6 +31,16 @@ export const User = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    clases_disponibles: {
+      type: "int",
+      nullable: true,
+      default: 0,
+    },
+    clases_basicas_completadas: {
+      type: "boolean",
+      nullable: false,
+      default: false,
+    },
     created_at: {
       type: "timestamp",
       createDate: true,
@@ -36,6 +52,12 @@ export const User = new EntitySchema({
       default: () => "CURRENT_TIMESTAMP",
     },
   },
+  relations:{
+    clase:{
+      type: "one-to-many",
+      target: "Clase",
+      inverseSide: "user",
+    }
+  }
 });
-
 export default User;

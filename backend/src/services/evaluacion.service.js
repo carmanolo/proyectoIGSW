@@ -1,97 +1,92 @@
 import { AppDataSource } from "../config/configDb.js";
-import { vehiculo } from "../entities/vehiculo.entity.js";
+import { Evaluacion } from "../entities/evaluacion.entity.js";
 
-export async function V({id_vehiculo}) {
+/*export async function createEvaluacion({id_evaluacion}) {
     try{
-        const vehiculoRepository = AppDataSource.getVehiculoSer(vehiculo);
+        const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
 
-        const vehiculoFound = await vehiculoRepository.findOne({
-            where: [{ id_vehiculo: id_vehiculo}]
+        const evaluacionFound = await evaluacionRepository.findOne({
+            where: [{ id_evaluacion: id_evaluacion}]
         })
 
-        if(!vehiculoFound) return [null, "vehiculo no encontrado"]
+        if(!evaluacionFound) return [null, "evaluacion no encontrado"]
 
     }catch(error){
-        console.error("Error al obtener el vehiculo", error)
+        console.error("Error al obtener el evaluacion", error)
         return [null, "Error interno del servidor"]
     }
 }
-
-export async function getVehiculoSer() {
+*/
+export async function getEvaluacionSer() {
     try {
-        const vehiculoRepository = AppDataSource.getRepository(vehiculo);
+        const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
 
-        const vehiculo = await vehiculoRepository.find();
+        const evaluacion = await evaluacionRepository.find();
 
-        if (!vehiculo || vehiculo.length === 0) return [null, "No hay vehiculos"];
+        if (!evaluacion || evaluacion.length === 0) return [null, "No hay evaluacions"];
 
-        return [vehiculo, null];
+        return [evaluacion, null];
 
     } catch (error) {
-        console.error("Error al obtener los vehiculos", error);
+        console.error("Error al obtener los evaluacions", error);
         return [null, "Error interno del servidor"];
     }
 }
 
-export async function createVehiculoSer(id_vehiculo,patente,tipo,estado,p_asignado_garantia,actualizado) {
+export async function createEvaluacionSer(id_evaluacion, tipo, alumno, calificacionfinal, resultadomanejo, Resultado, comentario) {
 
-  const vehiculoRepository = AppDataSource.getRepository(vehiculo);
+  const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
 
   try {
-    if (!id_vehiculo || !patente || !tipo || !estado || !p_asignado || !garantia || !actualizado) {
-      throw Error("Función mal llamada", {id_vehiculo, patente, tipo, estado, p_asignado, garantia, actualizado})
+    if (!id_evaluacion || !tipo || !alumno || !Resultado || !comentario) {
+      throw Error("Función mal llamada", {id_evaluacion, tipo, alumno, Resultado, comentario});
     }
-    const newVehiculo = vehiculoRepository.create({
-      id_vehiculo,
-      patente,
+    const newevaluacion = evaluacionRepository.create({
+      id_evaluacion,
       tipo,
-      estado,
-      p_asignado,
-      garantia,
-      actualizado,
+      alumno,
+      calificacionfinal,
+      resultadomanejo,
+      Resultado ,
+      comentario
     });
-    await vehiculoRepository.save(newVehiculo);
-    return newVehiculo;
+    await evaluacionRepository.save(newevaluacion);
+    return newevaluacion;
   } catch (error) {
     console.error(error);
     return null;
   }
 }
 
-export async function updateVehiculoSer(vehiculo) {
+export async function updateEvaluacionSer(evaluacion) {
   try{
-    if(!vehiculo){
+    if(!evaluacion){
       throw new Error("Funcion mal llamada");
     }
 
-    return {data: await vehiculoRepository.save(vehiculo), message: "vehiculo actualizado con éxito", error: null}
+    return {data: await evaluacionRepository.save(evaluacion), message: "evaluacion actualizado con éxito", error: null}
     
   }catch(error){
-    console.error("Error al actualizar el vehiculo:", error);
+    console.error("Error al actualizar el evaluacion:", error);
     return [null, "Error interno del servidor"];
   }
-  
 }
 
-export async function deleteVehiculo(id_vehiculo) {
+export async function deleteEvaluacion(id_evaluacion) {
   try{
-    const vehiculoRepository = AppDataSource.getRepository(vehiculo);
-    const vehiculo = await vehiculoRepository.findOne({where: { id_vehiculo:id_vehiculo}});
+    const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
+    const evaluacion = await evaluacionRepository.findOne({where: { id_evaluacion:id_evaluacion}});
 
-    if(!vehiculo){
-      return { result: null, message: "Vehiculo no encontrado"}
+    if(!evaluacion){
+      return { result: null, message: "evaluacion no encontrado"}
     }
 
     return{
-      result: (await vehiculoRepository.delete({id_vehiculo: vehiculo.id_vehiculo})),
-      message: "vehiculo eliminado exitosamente"
+      result: (await evaluacionRepository.delete({id_evaluacion: evaluacion.id_evaluacion})),
+      message: "evaluacion eliminado exitosamente"
     };
   } catch (error){
     console.error(error);
-    return { result: null, message: "Error al eliminar el vehiculo" };
+    return { result: null, message: "Error al eliminar el evaluacion" };
   }
 }
-
-
-
-

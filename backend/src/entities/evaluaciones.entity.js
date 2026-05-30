@@ -7,49 +7,49 @@ export const Evaluacion = new EntitySchema({
     id_evaluacion: {
         primary: true,
         type: "int",
-        generated: true,
+        generated: "increment",
     },
     alumno:{
         type: "varchar",
         length: 255,
         nullable: false,
     },
-    calificacion_1 : {
+    calificacion_teorica : {
         type: "varchar",
         length: 255,
+        nullable: true,
+    },
+    resultado_manejo :{
+        type: "enum",
+        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        nullable: true,
+    },
+    resultado_manejo :{
+        type: "enum",
+        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        nullable: true,
+    },
+    resultado_manejo :{
+        type: "enum",
+        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        nullable: true,
+    },
+    resultado_manejo :{
+        type: "enum",
+        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        nullable: true,
+    },
+    resultado_manejo :{
+        type: "enum",
+        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        nullable: true,
+    },
+    Resultado : {
+        type: "enum",
+        enum: ["evaluando", "aprobado", "reprobado"],
         nullable: false,
     },
-    calificacion_2 : {
-        type: "varchar",
-        length: 255,
-        nullable: false,
-    },
-    calificacion_3 : {
-        type: "varchar",
-        length: 255,
-        nullable: false,
-    },
-    calificacion_4 : {
-        type: "varchar",
-        length: 255,
-        nullable: false,
-    },
-    calificacion_5 : {
-        type: "varchar",
-        length: 255,
-        nullable: false,
-    },
-    calificacion_6 : {
-        type: "varchar",
-        length: 255,
-        nullable: false,
-    },
-    profesor: {
-        type: "varchar",
-        length: 255,
-        nullable: false,
-    },
-    opinion: {
+    comentario : {
         type: "varchar",
         length: 255,
         nullable: false,

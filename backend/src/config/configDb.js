@@ -2,7 +2,10 @@
 import { DataSource } from "typeorm";
 import { DATABASE, DB_USERNAME, HOST, DB_PASSWORD, DB_PORT, DB_HOST, PORT } from "./configEnv.js";
 import User from "../entities/user.entity.js";
-import Horario from "../entities/horario.entity.js";
+import Evaluacion from "../entities/evaluacion.entity.js";
+
+
+
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -11,7 +14,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${DB_PASSWORD}`,
   database: `${DATABASE}`,
-  entities: [User, Horario],
+  entities: [User, Evaluacion],
   synchronize: true, 
   logging: false,
 });
@@ -19,7 +22,7 @@ export const AppDataSource = new DataSource({
  async function connectDB() {
   try {
     await AppDataSource.initialize();
-    console.log("=> Conexi�n exitosa a la base de datos PostgreSQL!");
+    console.log("=> Conexión exitosa a la base de datos PostgreSQL!");
   } catch (error) {
     console.error("Error al conectar con la base de datos:", error);
     process.exit(1);

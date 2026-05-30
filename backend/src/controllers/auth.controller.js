@@ -1,4 +1,4 @@
-import { loginUser } from "../services/auth.service.js";
+import { loginUser, logoutUserFromService } from "../services/auth.service.js";
 import { createUser } from "../services/user.service.js";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 
@@ -34,5 +34,15 @@ export async function register(req, res) {
     } else {
       handleErrorServer(res, 500, "Error interno del servidor", error.message);
     }
+  }
+}
+
+export async function logout(req, res) {
+  // Eliminar la cookie de sesión del cliente
+  const result = logoutUserFromService(res.clearCookie);
+  if (!result.error) {
+    return handleSuccess(res, 200, "sesión cerrada exitosamente", result);
+  } else {
+    return handleErrorServer(res, 500, "Error al cerrar sesión", result, result);
   }
 }
