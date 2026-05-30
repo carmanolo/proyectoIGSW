@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import VentasView from './Ventas'
 import './Dashboard.css'
 
 // ── Iconos SVG inline ──────────────────────────────────────────────────────
@@ -105,6 +106,7 @@ const Icon = ({ name, size = 18 }) => {
 // ── Datos de ejemplo ───────────────────────────────────────────────────────
 const NAV_ITEMS = [
   { id: 'home',      label: 'Inicio',        icon: 'home',      section: 'Principal' },
+  { id: 'ventas',    label: 'Clases Extras', icon: 'file',      section: null },
   { id: 'analytics', label: 'Analíticas',    icon: 'analytics', section: null },
   { id: 'projects',  label: 'Proyectos',     icon: 'projects',  badge: 4, section: null },
   { id: 'messages',  label: 'Mensajes',      icon: 'messages',  badge: 2, section: null },
@@ -206,7 +208,8 @@ function Dashboard({ user, onLogout }) {
         {/* Content */}
         <div className="dash-content">
           {activePage === 'home' && <HomeView user={user} />}
-          {activePage !== 'home' && (
+          {activePage === 'ventas' && <VentasView user={user} />}
+          {activePage !== 'home' && activePage !== 'ventas' && (
             <PlaceholderView label={currentLabel} />
           )}
         </div>

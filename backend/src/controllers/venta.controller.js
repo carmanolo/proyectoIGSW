@@ -136,3 +136,19 @@ export async function eliminarVenta(req, res) {
         return handleErrorServer(res, 500, "Error al eliminar la venta", error.message);
     }
 }
+
+export async function listarTodasVentas(req, res) {
+    try {
+        const ventaRepository = AppDataSource.getRepository(Venta);
+
+        const ventas = await ventaRepository.find({
+            relations: ["user"],
+            order: { fecha_venta: "DESC" }
+        });
+
+        return handleSuccess(res, 200, "Todas las ventas obtenidas", ventas);
+    } catch (error) {
+        console.error("Error al listar todas las ventas", error);
+        return handleErrorServer(res, 500, "Error al obtener todas las ventas", error.message);
+    }
+}

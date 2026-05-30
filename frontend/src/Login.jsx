@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 import './Login.css'
 
 function Login({ onLogin }) {
@@ -18,20 +19,36 @@ function Login({ onLogin }) {
 
     setLoading(true)
 
-    // Simula una llamada a API (reemplaza con Firebase/Supabase)
-    setTimeout(() => {
-      if (email === 'ignacio.@gmail.com' && password === 'secre2026') {
+    try {
+      const response = await axios.post('/api/auth/login', {
+        email,
+        password
+      })
+
+      if (response.data.status === 'Success') {
+        const { user, token } = response.data.data
+        
+        // Guardar token por si se requiere enviar en los headers después
+        localStorage.setItem('token', token)
+        
+        const nombre = user.nombre || 'Usuario';
         onLogin({
-          name: 'Ignacio Ramirez',
-          email: email,
-          role: 'secretario',
-          initials: 'IR',
+          id: user.id,
+          name: nombre,
+          email: user.email,
+          role: user.rol,
+          initials: nombre.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U',
         })
-      } else {
-        setError('Correo o contraseña incorrectos.')
-        setLoading(false)
       }
-    }, 800)
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message)
+      } else {
+        setError('Error de conexión o correo/contraseña incorrectos.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
