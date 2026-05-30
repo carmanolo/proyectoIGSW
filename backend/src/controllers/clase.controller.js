@@ -40,7 +40,7 @@ export async function createClase(req, res) {
 
         let result =assignationValidation.validate(req.body);
         if(result.error){
-            return handleErrorClient(res, 400, "faltan parametros",error.message);
+            return handleErrorClient(res, 400, "faltan parametros", result.error.message);
         }
 
         let validationTime = timeValidationHelper(req.body.hora_inicio, req.body.hora_fin);
