@@ -22,6 +22,9 @@ async function setupServer() {
   //Avisa a express que use JSON
   app.use(express.json());
 
+  // Servir archivos estáticos de la carpeta uploads
+  app.use("/uploads", express.static("uploads"));
+
   // Configura el middleware de morgan para registrar las peticiones HTTP
   app.use(morgan("dev"));
 

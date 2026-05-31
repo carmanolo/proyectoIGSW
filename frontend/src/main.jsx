@@ -5,6 +5,8 @@ import Home from '@pages/Home';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Clase from '@pages/Clase';
+import ComprarClases from '@pages/ComprarClases';
+import GestionarVentas from '@pages/GestionarVentas';
 import ProtectedRoute from '@components/ProtectedRoute';
 import '@styles/styles.css';
 
@@ -21,6 +23,14 @@ const router = createBrowserRouter([
       {
         path: '/clase',
         element: <Clase/>
+      },
+      {
+        path: '/comprar-clases',
+        element: <ComprarClases />
+      },
+      {
+        path: '/gestionar-ventas',
+        element: <GestionarVentas />
       }
     ]
   },

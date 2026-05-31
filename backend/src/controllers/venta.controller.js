@@ -13,7 +13,15 @@ export async function registrarVenta(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
-        const { userId, cantidad, comprobante_url } = req.body;
+        const { userId, cantidad } = req.body;
+        
+        if (!req.file) {
+            return res.status(400).json({ message: "El comprobante es obligatorio" });
+        }
+        
+        const comprobante_url = `/uploads/${req.file.filename}`;
+        req.body.comprobante_url = comprobante_url; // para que pase la validacion
+
         console.log(userId, cantidad, comprobante_url); 
 
         const { error } = integrityValidation.validate(req.body);
@@ -108,6 +116,22 @@ export async function listarVentasUsuario(req, res) {
     } catch (error) {
         console.error("Error al listar ventas del usuario", error);
         return handleErrorServer(res, 500, "Error al obtener ventas del usuario", error.message);
+    }
+}
+
+export async function listarVentas(req, res) {
+    try {
+        const ventaRepository = AppDataSource.getRepository(Venta);
+
+        const ventas = await ventaRepository.find({
+            relations: ["user"],
+            order: { fecha_venta: "DESC" }
+        });
+
+        return handleSuccess(res, 200, "Ventas obtenidas", ventas);
+    } catch (error) {
+        console.error("Error al listar ventas", error);
+        return handleErrorServer(res, 500, "Error al obtener ventas", error.message);
     }
 }
 

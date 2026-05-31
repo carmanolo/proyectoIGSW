@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { createEvaluacionSer, getEvaluacionSer, getEvaluacionesSer, updateEvaluacionSer, deleteEvaluacion } from "../services/evaluacion.service.js";
+import { createEvaluacionSer, getEvaluacionSer, updateEvaluacionSer, deleteEvaluacion as deleteEvaluacionSer } from "../services/evaluacion.service.js";
 
 export async function createEvaluacion(req, res) {
     try {
@@ -23,7 +23,7 @@ export async function createEvaluacion(req, res) {
 }
 
 export async function getEvaluacion(req, res) {
-    const evaluacionData = await getEvaluacionesSer();
+    const evaluacionData = await getEvaluacionSer();
     if(!evaluacionData){
         return handleErrorClient(res, 400, "Evaluaciones no encontradas");
     }
@@ -68,7 +68,7 @@ export async function deleteEvaluacion(req, res) {
             return res.status(400).json({message: "El ID de la evaluacion es obligatorio"});
         }
 
-        const result = await deleteEvaluacion(id);
+        const result = await deleteEvaluacionSer(id);
         if(result && result.result && result.result.affected >=1){
             return handleSuccess(res, 200, "Evaluacion eliminada exitosamente")
         }
