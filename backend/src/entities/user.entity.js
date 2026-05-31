@@ -1,4 +1,5 @@
-import { EntitySchema } from "typeorm";
+import { EntitySchema} from "typeorm";
+//import Clase from "./clase.entity.js";
 
 export const User = new EntitySchema({
   name: "User",
@@ -60,4 +61,5 @@ export const User = new EntitySchema({
     }
   }
 });
+
 export default User;

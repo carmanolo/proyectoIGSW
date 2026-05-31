@@ -82,7 +82,7 @@ export const integrityValidation = Joi.object({
             "string.only": `El día debe der uno de los siguientes ${DIAS_SEMANA.join(",")}`
         })
 })
- 
+
 export const assignationValidation = Joi.object({
     tipo: Joi.any().required().messages({
         "any.required": TIPO_OBLIGATORIO,

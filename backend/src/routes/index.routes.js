@@ -16,4 +16,9 @@ router.use("/inscripciones", inscripcionRoutes);
 router.use("/clases", claseRoutes);
 router.use("/usuarios", userRoutes);
 router.use("/planes", planRoutes);
+router.use("/clases", claseRoutes);
+router.use("/users", userRoutes)
+router.use("/planes", planRoutes);
+router.use("/inscripciones", inscripcionRoutes);
+
 export default router;
