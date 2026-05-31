@@ -9,7 +9,7 @@ export default function ComprarClases() {
   const [clasesDisponibles, setClasesDisponibles] = useState(0);
   const [historial, setHistorial] = useState([]);
   const [cantidad, setCantidad] = useState(1);
-  const [comprobanteUrl, setComprobanteUrl] = useState('');
+  const [comprobanteFile, setComprobanteFile] = useState(null);
   const [mensaje, setMensaje] = useState(null);
 
   useEffect(() => {
@@ -33,20 +33,24 @@ export default function ComprarClases() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje(null);
-    if (!cantidad || !comprobanteUrl) {
+    if (!cantidad || !comprobanteFile) {
       setMensaje({ type: 'error', text: 'Por favor completa todos los campos.' });
       return;
     }
 
     try {
-      await comprarPack({
-        userId: user.id,
-        cantidad: Number(cantidad),
-        comprobante_url: comprobanteUrl
-      });
+      const formData = new FormData();
+      formData.append('userId', user.id);
+      formData.append('cantidad', Number(cantidad));
+      formData.append('comprobante', comprobanteFile);
+
+      await comprarPack(formData);
+      
       setMensaje({ type: 'success', text: 'Solicitud enviada correctamente. Pendiente de aprobación.' });
       setCantidad(1);
-      setComprobanteUrl('');
+      setComprobanteFile(null);
+      // Resetear el input de archivo
+      document.getElementById('comprobante-input').value = '';
       cargarDatos(); // Refresh history
     } catch (err) {
       setMensaje({ type: 'error', text: err.message || 'Error al enviar la solicitud.' });
@@ -104,14 +108,19 @@ export default function ComprarClases() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL del Comprobante de Pago
+                  Subir Comprobante (Imagen o PDF)
                 </label>
                 <input
-                  type="url"
-                  value={comprobanteUrl}
-                  onChange={(e) => setComprobanteUrl(e.target.value)}
-                  placeholder="https://ejemplo.com/comprobante.pdf"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  id="comprobante-input"
+                  type="file"
+                  accept="image/jpeg,image/png,image/jpg,application/pdf"
+                  onChange={(e) => setComprobanteFile(e.target.files[0])}
+                  className="w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-green-50 file:text-green-700
+                    hover:file:bg-green-100 border border-gray-300 p-1 rounded-lg"
                   required
                 />
               </div>
@@ -154,7 +163,7 @@ export default function ComprarClases() {
                         <td className="px-4 py-3 text-sm text-gray-700">{venta.cantidad}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">
                           <a 
-                            href={venta.comprobante_url} 
+                            href={`http://localhost:3000${venta.comprobante_url}`} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"

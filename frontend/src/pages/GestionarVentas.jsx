@@ -111,7 +111,7 @@ export default function GestionarVentas() {
                     <td className="px-4 py-3 text-sm font-semibold text-gray-700">{venta.cantidad}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">
                       <a 
-                        href={venta.comprobante_url} 
+                        href={`http://localhost:3000${venta.comprobante_url}`} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline inline-flex items-center"

@@ -13,7 +13,15 @@ export async function registrarVenta(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
-        const { userId, cantidad, comprobante_url } = req.body;
+        const { userId, cantidad } = req.body;
+        
+        if (!req.file) {
+            return res.status(400).json({ message: "El comprobante es obligatorio" });
+        }
+        
+        const comprobante_url = `/uploads/${req.file.filename}`;
+        req.body.comprobante_url = comprobante_url; // para que pase la validacion
+
         console.log(userId, cantidad, comprobante_url); 
 
         const { error } = integrityValidation.validate(req.body);
