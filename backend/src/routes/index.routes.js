@@ -6,6 +6,7 @@ import userRoutes from "./user.routes.js";
 import planRoutes from "./Plan.routes.js";
 import evaluacionRoutes from "./evaluacion.routes.js";
 import inscripcionRoutes from "./Inscripcion.routes.js";
+import ventaRoutes from "./venta.routes.js";
 
 const router = new Router();
 
@@ -20,5 +21,6 @@ router.use("/clases", claseRoutes);
 router.use("/users", userRoutes)
 router.use("/planes", planRoutes);
 router.use("/inscripciones", inscripcionRoutes);
+router.use("/ventas", ventaRoutes);
 
 export default router;

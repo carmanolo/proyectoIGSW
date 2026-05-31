@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { registrarVenta, obtenerClasesUsuario, listarVentasUsuario, eliminarVenta, aprobarVenta } from "../controllers/venta.controller.js";
+import { registrarVenta, obtenerClasesUsuario, listarVentasUsuario, eliminarVenta, aprobarVenta, listarVentas } from "../controllers/venta.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/authorization.middleware.js";
 
 const router = Router();
 
 router.post("/pack", registrarVenta);
+router.get("/", authMiddleware, authorizeRoles("secretario"), listarVentas);
 router.patch("/:id/aprobar", authMiddleware, authorizeRoles("secretario"), aprobarVenta);
 
 router.get("/user/:id", obtenerClasesUsuario);

@@ -1,9 +1,10 @@
 import { SidebarItem } from "./SidebarItem.jsx";
-import { MdHouse } from "react-icons/md";
-import { MdSchool } from "react-icons/md";
-import { MdAttachMoney } from "react-icons/md";
+import { MdHouse, MdSchool, MdAttachMoney, MdShoppingCart, MdAdminPanelSettings } from "react-icons/md";
+import { useAuth } from "../../../context/AuthContext";
 
 export const SidebarBase = ({pageContent}) => {
+    const { user } = useAuth();
+    
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -30,7 +31,12 @@ export const SidebarBase = ({pageContent}) => {
             <ul className="menu w-full grow">
                 <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />
                 <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
+                {user?.rol === 'alumnos' && (
+                    <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                )}
+                {user?.rol === 'secretario' && (
+                    <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAdminPanelSettings} />
+                )}
             </ul>
             </div>
         </div>

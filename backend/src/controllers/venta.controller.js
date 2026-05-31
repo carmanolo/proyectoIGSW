@@ -111,6 +111,22 @@ export async function listarVentasUsuario(req, res) {
     }
 }
 
+export async function listarVentas(req, res) {
+    try {
+        const ventaRepository = AppDataSource.getRepository(Venta);
+
+        const ventas = await ventaRepository.find({
+            relations: ["user"],
+            order: { fecha_venta: "DESC" }
+        });
+
+        return handleSuccess(res, 200, "Ventas obtenidas", ventas);
+    } catch (error) {
+        console.error("Error al listar ventas", error);
+        return handleErrorServer(res, 500, "Error al obtener ventas", error.message);
+    }
+}
+
 export async function eliminarVenta(req, res) {
     try {
         const { id } = req.params;
