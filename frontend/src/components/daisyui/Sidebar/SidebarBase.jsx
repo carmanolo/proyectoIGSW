@@ -4,12 +4,11 @@ import {
   MdSchool, 
   MdAttachMoney, 
   MdShoppingCart, 
-  MdAdminPanelSettings 
+  MdAdminPanelSettings,
 } from "react-icons/md";
-import { useAuth } from "../../../context/AuthContext";
 
 export const SidebarBase = ({pageContent}) => {
-    const { user } = useAuth();
+  //  const { user } = useAuth();
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -34,8 +33,12 @@ export const SidebarBase = ({pageContent}) => {
             <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
             {/* Sidebar content here */}
             <ul className="menu w-full grow">
-                <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />
+                <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
                 <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
+                <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
                 {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
             </ul>
             </div>

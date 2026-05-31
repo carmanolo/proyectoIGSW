@@ -8,6 +8,9 @@ import Clase from '@pages/Clase';
 import ComprarClases from '@pages/ComprarClases';
 import GestionarVentas from '@pages/GestionarVentas';
 import ProtectedRoute from '@components/ProtectedRoute';
+import Plan from '@pages/Plan';
+import Evaluacion from '@pages/Evaluacion';
+import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -24,14 +27,26 @@ const router = createBrowserRouter([
         path: '/clase',
         element: <Clase/>
       },
+       {
+        path: '/planes',
+        element: <Plan/>
+      },
       {
         path: '/comprar-clases',
         element: <ComprarClases />
       },
       {
-        path: '/gestionar-ventas',
+        path: '/evaluaciones',
+        element: <Evaluacion />
+      },
+      {
+        path: '/mis-clases',
+        element: <MisClases />
+      },
+      {
+         path: '/gestionar-ventas',
         element: <GestionarVentas />
-      }
+      },
     ]
   },
   {
