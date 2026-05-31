@@ -9,7 +9,7 @@ export const useGetPlanes = (planesData, setPlanesData) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await getAllPlanesService();
+            const response = await getPlanesService();
             console.log("Respuesta de getAllPlanesService:", response);
             
             if (response.status === 200 && response.data?.success) {

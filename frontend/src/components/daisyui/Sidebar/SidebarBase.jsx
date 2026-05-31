@@ -36,6 +36,9 @@ export const SidebarBase = ({pageContent}) => {
             <ul className="menu w-full grow">
                 <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />
                 <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
+                <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
                 {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
             </ul>
             </div>

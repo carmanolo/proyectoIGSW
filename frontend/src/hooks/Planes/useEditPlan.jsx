@@ -2,7 +2,7 @@ import Swal from "sweetalert2";
 import { updatePlanService } from "../../services/plan.service.js";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { gebi } from "../utils/getElementById.jsx";
-import { createSwalField, createTextareaField } from "../utils/swalField.jsx";
+import { createSwalField, createSwalTextarea } from "../utils/swalField.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { TIPO_PLAN } from "../../constants/plan.constants.jsx";
 
@@ -15,7 +15,7 @@ async function EditPlanModal(plan) {
       ${createSwalField(3, "Duración (semanas)", plan.duracion_semanas, "number")}
       ${createSwalField(4, "Total de Clases", plan.clases_totales, "number")}
       ${StaticDropdownList(TIPO_PLAN, "Tipo de Plan", "swal2-input5", "m-1", true)}
-      ${createTextareaField(6, "Descripción", plan.descripcion || "")}
+      ${createSwalTextarea(6, "Descripción", plan.descripcion || "")}
     `,
     focusConfirm: false,
     showCancelButton: true,
