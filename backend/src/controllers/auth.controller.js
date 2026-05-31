@@ -11,7 +11,6 @@ export async function login(req, res) {
     }
     
     const data = await loginUser(email, password);
-    console.log(data);
     handleSuccess(res, 200, "Login exitoso", data);
   } catch (error) {
     handleErrorClient(res, 401, error.message);

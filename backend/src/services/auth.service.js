@@ -12,12 +12,12 @@ export async function loginUser(email, password) {
     throw new Error("Credenciales incorrectas");
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error("Credenciales incorrectas");
   }
 
-  const payload = { sub: user.id, email: user.email };
+  const payload = { sub: user.id, email: user.email, rol: user.rol };
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "5h" });
 
   delete user.password;

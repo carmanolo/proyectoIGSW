@@ -9,10 +9,6 @@ export const Inscripcion = new EntitySchema({
       type: "int",
       generated: true,
     },
-    alumno_id: {
-      type: "int",
-      nullable: false,
-    },
     plan_id: {
       type: "int",
       nullable: false,
@@ -60,6 +56,18 @@ export const Inscripcion = new EntitySchema({
       enum: ["activa", "completada", "cancelada"],
       default: "activa",
     },
+  relations: {
+    alumno: {
+      type: "many-to-one",
+      target: "User",
+      joinColumn: {
+        name: "alumno_id",       
+        referencedColumnName: "id",  
+      },
+      onDelete: "CASCADE",
+      nullable: false,
+    },
+  },
   },
 });
 export default Inscripcion;

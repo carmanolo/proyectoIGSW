@@ -1,0 +1,1 @@
+export const ACCESO_CLASES=['secretario'];
