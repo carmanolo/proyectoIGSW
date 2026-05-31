@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
-import { Evaluacion } from "../entities/evaluacion.entity.js";
+import { Evaluacion } from "../entities/evaluaciones.entity.js";
 
 /*export async function createEvaluacion({id_evaluacion}) {
     try{
