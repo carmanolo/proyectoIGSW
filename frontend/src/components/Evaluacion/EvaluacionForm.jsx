@@ -5,7 +5,7 @@ import {
     RESULTADOS_EVALUACION,
     MAX_CALIFICACION_TEORICA,
     MIN_CALIFICACION_TEORICA,
-} from "@constants/evaluacion.constants.jsx";
+} from "../../constants/evaluacion.constants.jsx";
 
 export const EvaluacionForm = ({ evaluacion, onSubmit, onCancel, isLoading = false }) => {
     const [formData, setFormData] = useState(

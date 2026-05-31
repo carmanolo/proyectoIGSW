@@ -1,5 +1,5 @@
-import { createEvaluacionService } from "@services/evaluacion.service.js";
-import { alertSuccess, alertError } from "@helpers/sweetAlert.js";
+import { createEvaluacionService } from "../../services/evaluacion.service.js";
+import { alertSuccess, alertError } from "../../helpers/sweetAlert.js";
 
 const useCreateEvaluacion = (fetchEvaluacion) => {
     const handleCreateEvaluacion = async (evaluacionData) => {

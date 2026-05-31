@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getEvaluacionesService } from "@services/evaluacion.service.js";
+import { getEvaluacionesService } from "../../services/evaluacion.service.js";
 
 export const useGetEvaluacion = (evaluacionData, setEvaluacionData) => {
     const fetchEvaluacion = async () => {

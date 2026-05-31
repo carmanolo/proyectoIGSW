@@ -36,17 +36,17 @@ const router = createBrowserRouter([
         element: <ComprarClases />
       },
       {
-       ,
-      {
         path: '/evaluaciones',
         element: <Evaluacion />
       },
       {
         path: '/mis-clases',
         element: <MisClases />
-      } path: '/gestionar-ventas',
+      },
+      {
+         path: '/gestionar-ventas',
         element: <GestionarVentas />
-      }
+      },
     ]
   },
   {

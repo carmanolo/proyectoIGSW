@@ -1,4 +1,4 @@
-import { RESULTADOS_MANEJO, RESULTADOS_EVALUACION } from "@constants/evaluacion.constants.jsx";
+import { RESULTADOS_MANEJO, RESULTADOS_EVALUACION } from "../../constants/evaluacion.constants.jsx";
 
 export const EvaluacionTable = ({
     data,

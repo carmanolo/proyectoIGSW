@@ -1,5 +1,5 @@
-import { deleteEvaluacionService } from "@services/evaluacion.service.js";
-import { alertSuccess, alertError, confirmDelete } from "@helpers/sweetAlert.js";
+import { deleteEvaluacionService } from "../../services/evaluacion.service.js";
+import { alertSuccess, alertError, confirmDelete } from "../../helpers/sweetAlert.js";
 
 const useDeleteEvaluacion = (fetchEvaluacion) => {
     const handleDeleteEvaluacion = async (id_evaluacion) => {

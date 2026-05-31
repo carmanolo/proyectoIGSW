@@ -8,8 +8,7 @@ import {
 } from "react-icons/md";
 
 export const SidebarBase = ({pageContent}) => {
-    const { user } = useAuth();
-
+  //  const { user } = useAuth();
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -39,7 +38,7 @@ export const SidebarBase = ({pageContent}) => {
                 <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                 <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
                 <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
-                
+                <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
                 {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
             </ul>
             </div>
