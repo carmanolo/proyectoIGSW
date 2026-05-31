@@ -56,7 +56,6 @@ export const Inscripcion = new EntitySchema({
       enum: ["activa", "completada", "cancelada"],
       default: "activa",
     },
-  },
   relations: {
     alumno: {
       type: "many-to-one",
@@ -68,6 +67,7 @@ export const Inscripcion = new EntitySchema({
       onDelete: "CASCADE",
       nullable: false,
     },
+  },
   },
 });
 export default Inscripcion;
