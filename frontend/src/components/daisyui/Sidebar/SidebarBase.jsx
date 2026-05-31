@@ -4,12 +4,20 @@ import {
   MdSchool, 
   MdAttachMoney, 
   MdShoppingCart, 
-  MdAdminPanelSettings 
+  MdAdminPanelSettings,
+  MdAssignment,
+  MdCheckCircle
 } from "react-icons/md";
 import { useAuth } from "../../../context/AuthContext";
+import { getUserRole } from "../../../services/profile.service.js";
 
 export const SidebarBase = ({pageContent}) => {
     const { user } = useAuth();
+    const userRole = getUserRole();
+    const isTeacher = userRole === 'profesor';
+    const isAdmin = userRole === 'ADMINISTRADOR' || userRole === 'SECREATRIA';
+    const isStudent = userRole === 'estudiante' || userRole === 'ESTUDIANTE';
+
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -35,10 +43,32 @@ export const SidebarBase = ({pageContent}) => {
             {/* Sidebar content here */}
             <ul className="menu w-full grow">
                 <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />
-                <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
-                <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                
+                {/* Elementos para Profesor */}
+                {isTeacher && (
+                  <>
+                    <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
+                    <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdAssignment} />
+                  </>
+                )}
+
+                {/* Elementos para Estudiante */}
+                {isStudent && (
+                  <>
+                    <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
+                    <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                  </>
+                )}
+
+                {/* Elementos para Admin/Secretario */}
+                {isAdmin && (
+                  <>
+                    <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                    <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
+                    <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                    <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                  </>
+                )}
                 {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
             </ul>
             </div>

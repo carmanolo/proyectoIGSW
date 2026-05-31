@@ -1,113 +1,62 @@
 "use strict";
 import Joi from "joi";
-import {  } from "../constants/evaluaciones.constants.js";
+import {
+  RESULTADOS_EVALUACION,
+  RESULTADO_MANEJO,
+  ALUMNO_OBLIGATORIO,
+  COMENTARIO_OBLIGATORIO,
+  CALIFICACION_TEORICA_INVALIDA,
+  CAMPOS_ADICIONALES,
+} from "../constants/evaluacion.costants.js";
 
-const enRango = (integer =0 , min=0, max=0) => {
-    const _integer =Math.trunc(Number(integer) || 0);
-    let temp = null;
-    let _min = Math.trunc(Number(min || 0));
-    let _max = Math.trunc(Number(max || 0));
-    if(_min > _max){
-        temp = _max;
-        _max = min;
-        _min = temp;
-    }
-
-    return (_integer >= _min && _integer <=max);
-}
-
-export const validacionHoraIntegridad = (hour) =>{
-    const parsedHour = String(hour)
-    const separatedHour = parsedHour.split(":");
-    if(!(enRango(separatedHour[0], 0, 24))){
-        return "las horas solo pueden ser de 0 a 23"
-    }
-
-    if(!(enRango(separatedHour[1], 0, 59))){
-        return "los minutos solo pueden ser de 0 a 59"
-    }
-}
-
-export const validateHoraNegocio = (hora_inicio, hora_fin) => {
-  const _hora_inicio = String(hora_inicio);
-  const _hora_fin = String(hora_fin);
-  if (_hora_inicio.localeCompare(_hora_fin) >= 0) {
-    return "La hora de término de la clase debe ser posterior a la hora de inicio";
-  }
-  return null;
-}
+const resultadoManejoNumber = Joi.number().integer().valid(...RESULTADO_MANEJO).allow(null).messages({
+  "number.base": "El resultado de manejo debe ser 0, 1 o 2",
+  "number.integer": "El resultado de manejo debe ser un número entero",
+  "any.only": `El resultado de manejo debe ser uno de: ${RESULTADO_MANEJO.join(", ")}`,
+});
 
 export const integrityValidation = Joi.object({
-    tipo:Joi.string()
-        .min(MIN_STRING)
-        .max(MAX_STRING)
-        .valid(...TIPO_CLASE)
-        .messages({
-            "String.pattern.base":
-                "el tipo solo puede contener letras números y guiones bajos",
-            "any.valid":`El tipo debe ser uno se los siguientes ${TIPO_CLASE.join(",")}`,
-            "string.valid": `El tipo debe der uno de los siguientes ${TIPO_CLASE.join(",")}`,
-            "any.only":`El tipo debe ser uno se los siguientes ${TIPO_CLASE.join(",")}`,
-            "string.only": `El tipo debe der uno de los siguientes ${TIPO_CLASE.join(",")}`
-
-        }),
-    descripcion:Joi.string().pattern(DESCRIPCION_PATTERN).messages({
-        "string.base": "La decripcion debe estar adentro de una cadena de caracteres",
-    }),
-
-    fecha_clase:Joi.string().pattern(FECHA_PATTERN).messages({
-            "string.pattern.base": "La fecha debe tener formato YYYY-MM-DD"
-        }),
-
-    hora_inicio: Joi.string().pattern(HORARIO_PATTERN).messages({
-        "string.base": "La hora de inicio debe estar adentro de una cadena de caracteres",
-        "string.pattern.base": "El formato de la hora es incorrecto"
-    }),
-
-    hora_fin: Joi.string().pattern(HORARIO_PATTERN).messages({
-        "string.base": "La hora de inicio debe estar adentro de una cadena de caracteres",
-        "string.pattern.base": "El formato de la hora es incorrecto"
-    }),
-
-    dia: Joi.string()
-        .min(MIN_STRING)
-        .max(MAX_STRING)
-        .valid(...DIAS_SEMANA)
-        .messages({
-            "String.pattern.base":
-                "el día solo puede contener letras números y guiones bajos",
-            "any.valid":`El día debe ser uno se los siguientes ${DIAS_SEMANA.join(",")}`,
-            "string.valid": `El día debe der uno de los siguientes ${DIAS_SEMANA.join(",")}`,
-            "any.only":`El día debe ser uno se los siguientes ${DIAS_SEMANA.join(",")}`,
-            "string.only": `El día debe der uno de los siguientes ${DIAS_SEMANA.join(",")}`
-        })
-})
+  alumno: Joi.string().trim().max(255).messages({
+    "string.base": "El alumno debe ser un texto",
+    "string.max": "El alumno no puede superar los 255 caracteres",
+  }),
+  calificacion_teorica: Joi.number().integer().min(0).max(38).allow(null).messages({
+    "number.base": CALIFICACION_TEORICA_INVALIDA,
+    "number.integer": CALIFICACION_TEORICA_INVALIDA,
+    "number.min": CALIFICACION_TEORICA_INVALIDA,
+    "number.max": CALIFICACION_TEORICA_INVALIDA,
+  }),
+  resultado_manejo_1: resultadoManejoNumber,
+  resultado_manejo_2: resultadoManejoNumber,
+  resultado_manejo_3: resultadoManejoNumber,
+  resultado_manejo_4: resultadoManejoNumber,
+  resultado_manejo_5: resultadoManejoNumber,
+  Resultado: Joi.string().trim().valid(...RESULTADOS_EVALUACION).insensitive().messages({
+    "string.base": "El resultado debe ser un texto",
+    "any.only": `El resultado debe ser uno de: ${RESULTADOS_EVALUACION.join(", ")}`,
+  }),
+  comentario: Joi.string().trim().max(255).messages({
+    "string.base": "El comentario debe ser un texto",
+    "string.max": "El comentario no puede superar los 255 caracteres",
+  }),
+});
 
 export const assignationValidation = Joi.object({
-    tipo: Joi.any().required().messages({
-        "any.required": TIPO_OBLIGATORIO,
-        "any.valid": `El tipo debe ser uno de los siguientes: ${TIPO_CLASE.join(", ")}`,
-    }),
-
-    descripcion: Joi.any().required().messages({
-        "any.required": DESCRIPCION_OBLIGATORIA,
-    }),
-    fecha_clase: Joi.any().required().messages({
-        "any.required": FECHA_OBLIGATORIA
-    }),
-
-  hora_inicio: Joi.any().required().messages({
-        "any.required": HORA_INICIO_OBLIGATORIA,
-    }),
-
-  hora_fin: Joi.any().required().messages({
-        "any.required": HORA_TERMINO_OBLIGATORIA, 
-    }),
-
-  dia: Joi.any().required().messages({
-      "any.required": DIA_OBLIGATORIO,
-      "any.valid": `El día debe ser uno de los siguientes: ${DIAS_SEMANA.join(", ")}`,
-    }),
+  alumno: Joi.any().required().messages({
+    "any.required": ALUMNO_OBLIGATORIO,
+  }),
+  calificacion_teorica: Joi.any(),
+  resultado_manejo_1: Joi.any(),
+  resultado_manejo_2: Joi.any(),
+  resultado_manejo_3: Joi.any(),
+  resultado_manejo_4: Joi.any(),
+  resultado_manejo_5: Joi.any(),
+  Resultado: Joi.any().required().messages({
+    "any.required": "El resultado es obligatorio.",
+  }),
+  comentario: Joi.any().required().messages({
+    "any.required": COMENTARIO_OBLIGATORIO,
+  }),
 })
   .unknown(false)
   .messages({
@@ -115,13 +64,19 @@ export const assignationValidation = Joi.object({
   });
 
 export const updateValidation = Joi.object({
-    tipo:Joi.any(),
-    descripcion:Joi.any(),
-    fecha_clase:Joi.any(),
-    hora_inicio: Joi.any(),
-    hora_fin: Joi.any(),
-    dia: Joi.any(),
-}).min(1).unknown(false).messages({
+  alumno: Joi.any(),
+  calificacion_teorica: Joi.any(),
+  resultado_manejo_1: Joi.any(),
+  resultado_manejo_2: Joi.any(),
+  resultado_manejo_3: Joi.any(),
+  resultado_manejo_4: Joi.any(),
+  resultado_manejo_5: Joi.any(),
+  Resultado: Joi.any(),
+  comentario: Joi.any(),
+})
+  .min(1)
+  .unknown(false)
+  .messages({
     "object.min": "Se requiere al menos un campo para actualizar",
     "object.unknown": CAMPOS_ADICIONALES,
-});
+  });

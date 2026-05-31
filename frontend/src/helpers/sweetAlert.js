@@ -37,3 +37,25 @@ export function deleteDataAlert(onConfirm) {
     }
   });
 }
+
+// Alias para funciones de uso común
+export const alertSuccess = (message, title = "¡Éxito!") => {
+  showSuccessAlert(title, message);
+};
+
+export const alertError = (message, title = "Error") => {
+  showErrorAlert(title, message);
+};
+
+export const confirmDelete = (message = "¿Está seguro que desea eliminar este elemento?") => {
+  return Swal.fire({
+    title: '¿Estás seguro?',
+    text: message,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => result.isConfirmed);
+};
