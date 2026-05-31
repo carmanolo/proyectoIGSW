@@ -9,8 +9,8 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/",getEvaluacion);
-router.post("/crear",authorizeRoles("secretario") ,createEvaluacion);
-router.patch("/:id", authorizeRoles("secretario"), patchEvaluacion);
-router.delete("/:id", authorizeRoles("secretario"), deleteEvaluacion);
+router.post("/crear",authorizeRoles("profesor") ,createEvaluacion);
+router.patch("/:id", authorizeRoles("profesor"), patchEvaluacion);
+router.delete("/:id", authorizeRoles("profesor"), deleteEvaluacion);
 
 export default router;

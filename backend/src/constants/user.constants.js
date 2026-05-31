@@ -3,7 +3,7 @@ export const MAX_FULLNAME = 500;
 export const FULLNAME_REGEX = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]*$/;
 
 
-export const TEACHER_ROLE = 'PROFESOR';
+export const TEACHER_ROLE = 'profesor';
 export const STUDENT_ROLE = ['estudiante'];
 export const ADMIN_ROLE = 'ADMINISTRADOR';
 export const SECRETARIA_ROLE = 'SECREATRIA';
