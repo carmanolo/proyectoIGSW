@@ -7,6 +7,8 @@ import planRoutes from "./Plan.routes.js";
 import evaluacionRoutes from "./evaluacion.routes.js";
 import inscripcionRoutes from "./Inscripcion.routes.js";
 import ventaRoutes from "./venta.routes.js";
+import reservaRoutes from "./reserva.routes.js";
+import vehiculoRoutes from "./vehiculo.routes.js";
 
 const router = new Router();
 
@@ -17,10 +19,9 @@ router.use("/inscripciones", inscripcionRoutes);
 router.use("/clases", claseRoutes);
 router.use("/usuarios", userRoutes);
 router.use("/planes", planRoutes);
-router.use("/clases", claseRoutes);
 router.use("/users", userRoutes)
-router.use("/planes", planRoutes);
-router.use("/inscripciones", inscripcionRoutes);
 router.use("/ventas", ventaRoutes);
+router.use("/reservas", reservaRoutes);
+router.use("/vehiculos", vehiculoRoutes);
 
 export default router;

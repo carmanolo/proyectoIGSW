@@ -1,6 +1,7 @@
 import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
 import { Venta } from "../entities/venta.entity.js";
+import { Reserva } from "../entities/reserva.entity.js";
 
 // SER=service
 export async function venderPackSer(userId, cantidad, comprobante_url) {
@@ -24,8 +25,17 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
       return [null, "Solo los usuarios con rol 'alumnos' pueden recibir packs"];
     }
 
-    if (!user.clases_basicas_completadas) {
-      return [null, "El alumno no ha completado sus clases prácticas básicas"];
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const clasesPracticasCompletadas = await reservaRepository.count({
+      where: {
+        user: { id: userId },
+        estado: "completada",
+        clase: { tipo: "practica" }
+      }
+    });
+
+    if (clasesPracticasCompletadas < 6) {
+      return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
     }
     
     const packsValidos = [2, 4, 6, 8];
