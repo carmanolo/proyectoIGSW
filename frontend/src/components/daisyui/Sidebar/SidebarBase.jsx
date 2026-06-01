@@ -5,10 +5,13 @@ import {
   MdAttachMoney, 
   MdShoppingCart, 
   MdAdminPanelSettings,
+  MdDirectionsCar
 } from "react-icons/md";
 
+import { useAuth } from '@context/AuthContext';
+
 export const SidebarBase = ({pageContent}) => {
-  //  const { user } = useAuth();
+    const { user } = useAuth();
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -35,9 +38,23 @@ export const SidebarBase = ({pageContent}) => {
             <ul className="menu w-full grow">
                 <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
                 <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                {user?.rol === 'profesor' && (
+                    <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
+                )}
                 <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                 <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                {user?.rol === 'alumnos' && (
+                    <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
+                )}
+                {user?.rol === 'secretario' && (
+                    <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
+                )}
+                {user?.rol === 'secretario' && (
+                    <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
+                )}
+                {user?.rol === 'secretario' && (
+                    <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                )}
                 <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
                 {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
             </ul>
