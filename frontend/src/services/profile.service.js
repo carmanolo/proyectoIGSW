@@ -11,6 +11,14 @@ export async function getProfile() {
     }
 }
 
+export async function getUser(id) {
+    try {
+        const response = await axios.get(`/users/${id}`);
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { message: 'Error al obtener usuario' };
+    }
+}
 export const getUserRole = () => {
    try {
         const user = JSON.parse(sessionStorage.getItem('usuario'));

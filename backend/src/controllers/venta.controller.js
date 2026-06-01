@@ -108,7 +108,7 @@ export async function listarVentasUsuario(req, res) {
 
         const ventas = await ventaRepository.find({
             where: { user: { id: Number(id) } },
-            relations: ["user"],
+            relations: { user: true },
             order: { fecha_venta: "DESC" }
         });
 
@@ -124,7 +124,7 @@ export async function listarVentas(req, res) {
         const ventaRepository = AppDataSource.getRepository(Venta);
 
         const ventas = await ventaRepository.find({
-            relations: ["user"],
+            relations: { user: true },
             order: { fecha_venta: "DESC" }
         });
 
@@ -140,7 +140,7 @@ export async function eliminarVenta(req, res) {
         const { id } = req.params;
         const ventaRepository = AppDataSource.getRepository(Venta);
 
-        const venta = await ventaRepository.findOne({ where: { id: Number(id) }, relations: ["user"] });
+        const venta = await ventaRepository.findOne({ where: { id: Number(id) }, relations: { user: true } });
         if (!venta) {
             return handleErrorClient(res, 404, "Venta no encontrada");
         }

@@ -13,6 +13,9 @@ import Evaluacion from '@pages/Evaluacion';
 import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
 
+import HistorialClasesAlumno from '@pages/HistorialClasesAlumno';
+import GestionClasesSecretaria from '@pages/GestionClasesSecretaria';
+import GestionVehiculosSecretaria from '@pages/GestionVehiculosSecretaria';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -46,6 +49,18 @@ const router = createBrowserRouter([
       {
          path: '/gestionar-ventas',
         element: <GestionarVentas />
+      },
+      {
+        path: '/historial-clases',
+        element: <HistorialClasesAlumno />
+      },
+      {
+        path: '/gestion-clases-alumnos',
+        element: <GestionClasesSecretaria />
+      },
+      {
+        path: '/gestion-vehiculos',
+        element: <GestionVehiculosSecretaria />
       },
     ]
   },

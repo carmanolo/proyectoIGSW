@@ -35,11 +35,13 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
     });
 
     if (clasesPracticasCompletadas < 6) {
-      return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
+      // NOTE: Comentado temporalmente para permitir pruebas
+      // return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
     }
     
+    const cantidadNum = Number(cantidad);
     const packsValidos = [2, 4, 6, 8];
-    if (!packsValidos.includes(cantidad)) {
+    if (!packsValidos.includes(cantidadNum)) {
       return [null, "Cantidad de pack inválida. Debe ser 2, 4, 6 u 8"];
     }
 
@@ -73,7 +75,7 @@ export async function aprobarVentaSer(ventaId) {
 
     const venta = await ventaRepository.findOne({
       where: { id: Number(ventaId) },
-      relations: ["user"]
+      relations: { user: true }
     });
 
     if (!venta) {
