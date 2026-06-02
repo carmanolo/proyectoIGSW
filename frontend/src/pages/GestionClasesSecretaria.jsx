@@ -10,7 +10,7 @@ export default function GestionClasesSecretaria() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Modal states
+
   const [showModal, setShowModal] = useState(false);
   const [usuarios, setUsuarios] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
@@ -57,7 +57,7 @@ export default function GestionClasesSecretaria() {
       if (Array.isArray(resClases) && Array.isArray(resClases[0])) {
         clasesArr = resClases[0];
       } else if (Array.isArray(resClases)) {
-        clasesArr = resClases; // fallback
+        clasesArr = resClases;
       }
       setClases(clasesArr);
       

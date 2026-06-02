@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { venderPackSer } from "../services/venta.service.js";
+import { venderPackSer, aprobarVentaSer } from "../services/venta.service.js";
 import { integrityValidation, assignationValidation } from "../validations/venta.validation.js";
 import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
@@ -61,7 +61,7 @@ export async function registrarVenta(req, res) {
     }
 }
 
-import { aprobarVentaSer } from "../services/venta.service.js";
+
 
 export async function aprobarVenta(req, res) {
     try {

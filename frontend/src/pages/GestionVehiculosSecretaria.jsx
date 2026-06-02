@@ -8,7 +8,7 @@ export default function GestionVehiculosSecretaria() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal states
+
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     patente: '',

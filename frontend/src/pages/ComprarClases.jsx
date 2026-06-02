@@ -51,7 +51,7 @@ export default function ComprarClases() {
       setComprobanteFile(null);
       // Resetear el input de archivo
       document.getElementById('comprobante-input').value = '';
-      cargarDatos(); // Refresh history
+      cargarDatos();
     } catch (err) {
       setMensaje({ type: 'error', text: err.message || 'Error al enviar la solicitud.' });
     }
