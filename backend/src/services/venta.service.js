@@ -35,8 +35,7 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
     });
 
     if (clasesPracticasCompletadas < 6) {
-      // NOTE: Comentado temporalmente para permitir pruebas
-      // return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
+      return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
     }
     
     const cantidadNum = Number(cantidad);
