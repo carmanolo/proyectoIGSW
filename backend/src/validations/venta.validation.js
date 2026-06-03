@@ -20,6 +20,10 @@ export const integrityValidation = Joi.object({
     cantidad: Joi.number().integer().valid(...PACKS_VALIDOS).messages({
         "number.base": ERROR_CANTIDAD_INVALIDA,
         "any.only": `La cantidad de clases debe ser una de las siguientes: ${PACKS_VALIDOS.join(", ")}`
+    }),
+    
+    comprobante_url: Joi.string().messages({
+        "string.base": "El comprobante debe ser un texto"
     })
 });
 
@@ -32,6 +36,10 @@ export const assignationValidation = Joi.object({
     cantidad: Joi.any().required().messages({
         "any.required": CANTIDAD_OBLIGATORIA,
     }),
+    
+    comprobante_url: Joi.any().required().messages({
+        "any.required": "La URL del comprobante es obligatoria"
+    })
 })
     .unknown(false)
     .messages({

@@ -17,7 +17,7 @@ export const Reserva = new EntitySchema({
     estado: {
       type: "varchar",
       length: 50,
-      default: "activa", // activa, completada, cancelada
+      default: "pendiente", // pendiente, completada, no_realizada, cancelada
     },
     fecha: {
       type: "date",

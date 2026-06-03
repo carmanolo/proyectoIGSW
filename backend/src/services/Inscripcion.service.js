@@ -1,10 +1,11 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Inscripcion } from "../entities/Inscripcion.entity.js";
+import { User } from "../entities/user.entity.js";
 import * as planService from "./Plan.service.js";
 
 const inscripcionRepository = AppDataSource.getRepository(Inscripcion);
+const userRepository = AppDataSource.getRepository(User);
 
-// Funciones auxiliares
 const calcularFechaFin = (fechaInicio, duracionSemanas) => {
   const fecha = new Date(fechaInicio);
   fecha.setDate(fecha.getDate() + duracionSemanas * 7);
@@ -17,9 +18,16 @@ const calcularFechaVencimiento = () => {
   return fecha;
 };
 
-// ✅ Funciones exportadas (sin usar this)
 export async function contratarPlan(data) {
   const { alumno_id, plan_id, fecha_inicio, fecha_vencimiento_pago } = data;
+
+
+  const user = await userRepository.findOne({
+    where: { id: alumno_id }
+  });
+  if (!user) {
+    throw new Error("Alumno no encontrado");
+  }
 
   const plan = await planService.obtenerPlanPorId(plan_id);
   if (plan.estado !== "activo") {
@@ -34,8 +42,8 @@ export async function contratarPlan(data) {
   const fechaFin = calcularFechaFin(fecha_inicio, plan.duracion_semanas);
 
   const nuevaInscripcion = inscripcionRepository.create({
-    alumno_id,
-    plan_id,
+    alumno: user, 
+    plan_id: plan_id,
     fecha_inicio: new Date(fecha_inicio),
     fecha_fin: fechaFin,
     estado_pago: "pendiente",
@@ -51,7 +59,7 @@ export async function contratarPlan(data) {
 export async function alumnoTieneDeudaPendiente(alumno_id) {
   const deudasPendientes = await inscripcionRepository.find({
     where: {
-      alumno_id: alumno_id,
+      alumno: { id: alumno_id }, 
       estado_pago: "pendiente",
     },
   });
@@ -61,9 +69,10 @@ export async function alumnoTieneDeudaPendiente(alumno_id) {
 export async function obtenerDeudasPendientes(alumno_id) {
   return await inscripcionRepository.find({
     where: {
-      alumno_id: alumno_id,
+      alumno: { id: alumno_id }, 
       estado_pago: "pendiente",
     },
+    relations: ["alumno"],  
   });
 }
 
@@ -106,6 +115,7 @@ export async function pagarDeuda(id_inscripcion, montoPago) {
 export async function obtenerInscripcionPorId(id) {
   const inscripcion = await inscripcionRepository.findOne({
     where: { id_inscripcion: id },
+    relations: ["alumno"],  
   });
   if (!inscripcion) {
     throw new Error("Inscripción no encontrada");
@@ -115,7 +125,8 @@ export async function obtenerInscripcionPorId(id) {
 
 export async function obtenerInscripcionesPorAlumno(alumno_id) {
   return await inscripcionRepository.find({
-    where: { alumno_id: alumno_id },
+    where: { alumno: { id: alumno_id } },  
+    relations: ["alumno"],
   });
 }
 
