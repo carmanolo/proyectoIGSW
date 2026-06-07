@@ -9,6 +9,7 @@ export default function GestionClasesSecretaria() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filtroTipo, setFiltroTipo] = useState('todos');
 
 
   const [showModal, setShowModal] = useState(false);
@@ -111,7 +112,14 @@ export default function GestionClasesSecretaria() {
     const searchLower = searchTerm.toLowerCase();
     const studentName = reserva.user?.nombre?.toLowerCase() || '';
     const studentEmail = reserva.user?.email?.toLowerCase() || '';
-    return studentName.includes(searchLower) || studentEmail.includes(searchLower);
+    const matchesSearch = studentName.includes(searchLower) || studentEmail.includes(searchLower);
+    
+    const tipoReserva = (reserva.tipo || '').toLowerCase();
+    const matchesFiltro = filtroTipo === 'todos' || 
+                          (filtroTipo === 'clase_extra' && tipoReserva === 'clase_extra') ||
+                          (filtroTipo === 'regular' && tipoReserva !== 'clase_extra');
+                          
+    return matchesSearch && matchesFiltro;
   });
 
   return (
@@ -131,6 +139,15 @@ export default function GestionClasesSecretaria() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <select 
+          className="select select-bordered" 
+          value={filtroTipo} 
+          onChange={(e) => setFiltroTipo(e.target.value)}
+        >
+          <option value="todos">Todos los tipos</option>
+          <option value="regular">Clases Regulares</option>
+          <option value="clase_extra">Clases Extras</option>
+        </select>
       </div>
 
       {loading ? (
@@ -161,8 +178,15 @@ export default function GestionClasesSecretaria() {
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {new Date(reserva.fecha).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-700 uppercase">
-                      {reserva.clase ? reserva.clase.tipo : reserva.tipo}
+                    <td className="px-4 py-3 text-sm font-medium">
+                      {reserva.tipo === 'clase_extra' ? (
+                        <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-bold border border-purple-300 shadow-sm flex items-center gap-1 w-fit">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clipRule="evenodd" /></svg>
+                          CLASE EXTRA
+                        </span>
+                      ) : (
+                        <span className="text-gray-700 uppercase">{reserva.clase ? reserva.clase.tipo : reserva.tipo}</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {reserva.vehiculo ? `${reserva.vehiculo.patente} - ${reserva.vehiculo.transmision}` : 'N/A'}
@@ -252,6 +276,7 @@ export default function GestionClasesSecretaria() {
                 <select className="select select-bordered w-full mt-1" value={formData.tipo} onChange={e => setFormData({...formData, tipo: e.target.value})}>
                   <option value="clase_regular">Clase Regular</option>
                   <option value="pre_evaluacion">Pre-Evaluación</option>
+                  <option value="clase_extra">Clase Extra (Usa saldo del alumno)</option>
                 </select>
               </div>
 
