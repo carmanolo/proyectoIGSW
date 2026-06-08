@@ -1,8 +1,9 @@
 import { IoMdSettings } from 'react-icons/io';
 import { MdDelete } from "react-icons/md";
+import DUCalendar from '../DUCalendar.jsx';
+
 /*import { NamePlusIcon } from './utils/NamePlusIcon.jsx';
 import { GiGraduateCap } from 'react-icons/gi';*/
-
 const formatDate = (date) => {
   if (!date) return '';
   return new Date(date).toLocaleDateString('es-AR'); 

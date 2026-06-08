@@ -1,11 +1,12 @@
+
 import { createClaseService } from "@services/clase.service.js";
 import Swal from "sweetalert2";
-
 import { createSwalField } from "../utils/swalField.jsx";
 import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE } from "../../constants/clase.constants.jsx";
+
 
 async function CreateClase() {
   const { value: formValues } = await Swal.fire({

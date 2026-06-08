@@ -6,6 +6,7 @@ import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Clase from '@pages/Clase';
 import ProtectedRoute from '@components/ProtectedRoute';
+import "cally";
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
