@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authorizeRoles } from "../middleware/authorization.middleware.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
-import { getClases, createClase, patchClase, deleteClase } from "../controllers/clase.controller.js";
+import { getClases, createClase, patchClase, deleteClase, asignarPorLote } from "../controllers/clase.controller.js";
 
 const router = Router();
 
@@ -12,6 +12,7 @@ router.get("/",getClases);
 router.post("/crear",authorizeRoles("secretario") ,createClase);
 router.patch("/:id", authorizeRoles("secretario"), patchClase);
 router.delete("/:id", authorizeRoles("secretario"), deleteClase);
+router.post("/asignar",authorizeRoles("secretario"), asignarPorLote)
 
 export default router;
 

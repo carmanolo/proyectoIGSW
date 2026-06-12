@@ -1,0 +1,14 @@
+[
+  {
+    "id": 4,
+    "nombre": "felipe ramirez",
+    "email": "felip@gmail.com",
+    "rol": "estudiante"
+  },
+  {
+    "id": 5,
+    "nombre": "Juan Perez",
+    "email": "juan@gmail.com",
+    "rol": "estudiante"
+  }
+]
