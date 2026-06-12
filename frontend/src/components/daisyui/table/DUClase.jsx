@@ -1,13 +1,14 @@
+
 import { IoMdSettings } from 'react-icons/io';
 import { MdDelete } from "react-icons/md";
-import DUCalendar from '../DUCalendar.jsx';
 
 /*import { NamePlusIcon } from './utils/NamePlusIcon.jsx';
 import { GiGraduateCap } from 'react-icons/gi';*/
 const formatDate = (date) => {
   if (!date) return '';
-  return new Date(date).toLocaleDateString('es-AR'); 
+  return new Date(date).toLocaleDateString('es-CL'); 
 };
+
 
 
 const mostrarClases = (data, handleEditClase, handleDeleteClase, canCrudClases) => {
@@ -56,7 +57,7 @@ export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, canCrudC
         <table className="table">
             <thead>
             <tr>
-                {/*<th></th> */}
+                {/*<th></th> */} 
                 <th>Tipo</th>
                 <th>Descripcion</th>
                 <th>fecha</th>
