@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService } from "../services/clase.service.js";
+import { createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
@@ -172,5 +172,19 @@ export async function asignarPorLote(req, res){
     } catch (error) {
         return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
     }
+}
+
+export async function getClasesConUsuarios(req, res) {
+  try {
+    const result = await getClasesConUsuarioSer();
+
+    if (result.error) {
+      return handleErrorClient(res, 404, "error de cliente");
+    }
+
+    return handleSuccess(res, 200, "usuarios obtenidos con éxito", result.data);
+  } catch (error) {
+    return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
+  }
 }
 

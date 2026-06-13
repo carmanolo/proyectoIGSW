@@ -1,4 +1,4 @@
-import { EntitySchema } from "typeorm";
+import { EntitySchema, JoinColumn } from "typeorm";
 
 export const Clase = new EntitySchema({
   name: "Clase",
@@ -40,11 +40,14 @@ export const Clase = new EntitySchema({
     },
   },
   relations:{
-    user:{
+    users:{
       target:"User",
-      type:"many-to-one",
-      joinColumn: { name: "id" },
-      onDelete: "CASCADE",
+      type:"many-to-many",
+      joinTable: {
+        name: "clase_users",
+        JoinColumn: {name: "id_clase"},
+        inverseSide: {name : "id"}
+      },
       inverseSide: "clase"
     }
     

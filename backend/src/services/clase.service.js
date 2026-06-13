@@ -11,7 +11,7 @@ export async function getClaseSer(id_clase) {
     try{
         const claseRepository = AppDataSource.getRepository(Clase);
         return await claseRepository.findOne({
-            where: {id_clase: id_clase}, relations: {user: true}
+            where: {id_clase: id_clase}, relations: {users: true}
         });
 
     }catch(error){
@@ -31,7 +31,7 @@ export async function asignarPorLoteService() {
     const claseRepository = AppDataSource.getRepository(Clase);
     const clasesTeoricas = await claseRepository.find({
       where: { tipo: "teorica" },
-      relations: { user: true},
+      relations: { users: true},
     });
 
     if(!clasesTeoricas || clasesTeoricas.length === 0){
@@ -51,21 +51,23 @@ export async function asignarPorLoteService() {
 
     //aSIGNAr USuarios
 
-    for(let i =0; i < usuarios.length; i++){
+    for(const clase of clasesTeoricas){
       //se usa math floor para rendondear resultado y obtener una distribución eficiente
-      const grupoIndex = Math.floor(i / GRUPOS);
-      const clase = clasesTeoricas[grupoIndex % clasesTeoricas.length];
-      clase.user= usuarios[i];
+      const idsExistentes = new Set(clase.users.map((u) => u.id));
+      const nuevos = usuarios.filter((u)=> !idsExistentes.has(u.id));
+      
+      clase.users = [...clase.users, ...nuevos];
       const saved = await claseRepository.save(clase);
+
       asignaciones.push({
         id_clase: saved.id_clase,
         tipo: saved.tipo,
-        grupo: grupoIndex + 1,
-        usuario_asignado: {
-          id: usuarios[i].id,
-          nombre: usuarios[i].nombre,
-          email: usuarios[i].email
-        },
+        descripcion: saved.descripcion,
+        usuario_asignado: saved.users.map((u) => ({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email
+        })),
       });
     }
 
@@ -79,6 +81,36 @@ export async function asignarPorLoteService() {
   } catch (error) {
     console.error("Error en asignar por Lote", error);
     return [null, "Error interno del servidor"];
+  }
+}
+
+export async function getClasesConUsuarioSer(){
+  try {
+    const claseRepository = AppDataSource.getRepository(Clase);
+    const clases = await claseRepository.find({ where: {tipo: "teorica"}, relations: {users:true} });
+
+    if(!clases || clases.length === 0){
+      return { data: null, message: "No hay clases con usuarios asignados", error:true };
+    }
+
+    const resultado = clases.map((clase) =>({
+      id_clase: clase.id_clase,
+      tipo: clase.tipo,
+      descripcion: clase.descripcion,
+      dia: clase.dia,
+      hora_inicio: clase.hora_inicio,
+      hora_fin: clase.hora_fin,
+      usuario_asignados: clase.users?.map((u) => ({
+        id: u.id,
+        nombre: u.nombre,
+        email: u.email
+      })) ?? [],
+    }));
+
+    return { data: resultado, message: "clases con usuarios obtenidas", error:false }
+  } catch (error) {
+    console.error("Error al obtener clases con usuarios", error);
+    return { data: null, message:"Error interno del servidor", error:true }
   }
 }
 
@@ -115,7 +147,7 @@ export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inici
       hora_inicio,
       hora_fin,
       dia,
-      relations: {user:true}
+      relations: {users:true}
     });
     await claseRepository.save(newClase);
     return newClase;
@@ -143,7 +175,7 @@ export async function updateClaseSer(clase) {
 export async function deleteClaseSer(id_clase) {
   try{
     const claseRepository = AppDataSource.getRepository(Clase);
-    const clase = await claseRepository.findOne({where: { id_clase:id_clase}, relations: {user:true}});
+    const clase = await claseRepository.findOne({where: { id_clase:id_clase}, relations: {users:true}});
 
     if(!clase){
       return { result: null, message: "Clase no encontrado"}
