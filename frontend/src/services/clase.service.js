@@ -7,7 +7,7 @@ export async function getClasesService(){
         const response = await axios.get('/clases');
         return response.data.data;
     } catch (error) {
-        console.error('Error al obtener reuniones', error);
+        console.error('Error al obtener clases', error);
         return [];
     }
 }
@@ -41,5 +41,26 @@ export async function deleteClaseService(id_clase) {
         return response.data;
     } catch (error) {
         throw error.response?.data || error;
+    }
+}
+
+export async function getUsersClase() {
+    try {
+        const response = await axios.get(`clases/asignar`);
+        return response.data.data;
+    } catch (error) {
+        console.error('Error al obtener usuarios asignados', error);
+        return [];
+    }
+    
+}
+
+export async function assignsClaseService(claseData) {
+    try {
+        const response = await axios.post(`/clases/asignar`, claseData);
+        return Object.assign(response.data, {status: response.status});
+    } catch (error) {
+        throw error.response || error;
+        
     }
 }

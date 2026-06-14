@@ -3,6 +3,8 @@ import { useGetClase } from "@hooks/Clase/useGetClase.jsx";
 import useCreateClase from "@hooks/Clase/useCreateClase.jsx";
 import editClase from "@hooks/Clase/usePatchClase.jsx"; 
 import DeleteClase from "@hooks/Clase/useDeleteClase.jsx";
+import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
+import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
@@ -22,6 +24,9 @@ const Clase = () => {
     const { handleCreateClase } = useCreateClase(fetchClase);
     const { handleEditClase } = editClase(fetchClase);
     const { handleDeleteClase } = DeleteClase(fetchClase);
+
+    const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
+    const { loading: loadingLote, asignarPorLote} =useAsignarPorLote();
     const [buscar, setBuscar] = useState("");
 
     useEffect(() => {
@@ -46,14 +51,34 @@ const Clase = () => {
 
     return (
         <div className="Clase-page">
-            {canCrudClases && (<button className="create btn btn-primary ml-3 mt-3 mb-0" onClick={() => handleCreateClase(fetchClase)}>Crear Clase</button>)}
-             {(buscar ) && (
-          <button className="solicitud-limpiar-btn btn ml-5" onClick={limpiarFiltros}>
-            Limpiar
-          </button>
-        )}
+            <div>
+                {canCrudClases && (<button className="btn btn-primary" onClick={() => handleCreateClase(fetchClase)}>Crear Clase</button>)}
+                {canCrudClases && (
+                    <button
+                        className="btn btn-secondary"
+                        onClick={asignarPorLote}
+                        disabled={loadingLote}
+                    >
+                        {loadingLote ? 'Asignando...' : 'Asignar por lote'}
+                    </button>
+                )}
+                {canCrudClases && (
+                    <button
+                        className="btn btn-accent"
+                        onClick={fetchClasesConUsuarios}
+                        disabled={loadingUsuarios}
+                    >
+                        {loadingUsuarios ? 'Cargando...' : 'Ver usuarios asignados'}
+                    </button>
+                )}
+                {(buscar ) && (
+                    <button className="solicitud-limpiar-btn btn ml-5" onClick={limpiarFiltros}>
+                        Limpiar
+                    </button>
+                )}
+            </div>
             <div className="Clase2-page">
-              <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} canCrudClases={canCrudClases}/>
+                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} canCrudClases={canCrudClases}/>
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>
