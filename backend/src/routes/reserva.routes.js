@@ -7,8 +7,8 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// Las reservas las puede hacer la secretaria, o el alumno (depende de la logica de negocio, lo dejamos en secretaria por ahora)
-router.post("/", authorizeRoles("secretario"), createReserva);
+// Las reservas las puede hacer la secretaria, o el alumno
+router.post("/", authorizeRoles("secretario", "alumnos"), createReserva);
 router.get("/", authorizeRoles("secretario"), getReservas);
 
 // Nuevas rutas

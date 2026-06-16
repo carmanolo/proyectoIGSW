@@ -44,7 +44,10 @@ export const SidebarBase = ({pageContent}) => {
                 <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                 <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
                 {user?.rol === 'alumnos' && (
-                    <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
+                    <>
+                        <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
+                        <SidebarItem label="Agendar Clase" destination="/agendar-clase" icon={MdSchool} />
+                    </>
                 )}
                 {user?.rol === 'secretario' && (
                     <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />

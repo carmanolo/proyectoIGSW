@@ -14,6 +14,7 @@ import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
 
 import HistorialClasesAlumno from '@pages/HistorialClasesAlumno';
+import AgendarClaseAlumno from '@pages/AgendarClaseAlumno';
 import GestionClasesSecretaria from '@pages/GestionClasesSecretaria';
 import GestionVehiculosSecretaria from '@pages/GestionVehiculosSecretaria';
 const router = createBrowserRouter([
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: '/historial-clases',
         element: <HistorialClasesAlumno />
+      },
+      {
+        path: '/agendar-clase',
+        element: <AgendarClaseAlumno />
       },
       {
         path: '/gestion-clases-alumnos',
