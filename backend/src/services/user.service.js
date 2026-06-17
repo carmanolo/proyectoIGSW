@@ -3,40 +3,6 @@ import { User } from "../entities/user.entity.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
 import { getErrorMessage, getResultLength, getServiceResult } from "./utils/utils.service.js";
 import bcrypt from "bcrypt";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const ESTUDIANTES_JSON = path.join(__dirname, "../data/students.json")
-
-async function guardarEstudiante(estudiante){
-  try {
-    const dir = path.dirname(ESTUDIANTES_JSON);
-
-    if(!fs.existsSync(dir)){
-        fs.mkdirSync( dir, {recursive:true} )
-    }
-
-    let estudiantes = []
-    if(fs.existsSync(ESTUDIANTES_JSON)){
-      const raw = fs.readFileSync(ESTUDIANTES_JSON, "utf-8");
-      estudiantes = JSON.parse(raw);
-    }
-
-    estudiantes.push({
-      id: estudiante.id,
-      nombre: estudiante.nombre,
-      email: estudiante.email,
-      rol: estudiante.rol,
-    });
-
-    fs.writeFileSync(ESTUDIANTES_JSON, JSON.stringify(estudiantes, null, 2), "utf-8");
-  } catch (error) {
-    console.error("Error al guardar estudiante en un JSON: ", error);
-  }
-}
 
 export async function getUserByIdFromService(id) {
   try {
@@ -148,6 +114,7 @@ export async function deleteUserService(id) {
 export async function checkUserExists(userRepository, newData) {
     try {
         const existingEmailUser = await userRepository.findOne({where: { email: newData.email },relations: {clase: true}});
+        console.log("EXISTING EMAIL USER: ", existingEmailUser);
         if (existingEmailUser) {
             return getServiceResult(false, null, "Correo ya registrado", 0);
         }
@@ -165,7 +132,8 @@ export async function createUserService(newData) {
   try {
       const userRepository = AppDataSource.getRepository(User);
       const result = await checkUserExists(userRepository, newData);
-      if(result !==null){
+      console.log("RESULT: ", result);
+      if(result !== null){
         return result;
       }
 
@@ -175,9 +143,6 @@ export async function createUserService(newData) {
       await userRepository.save(newUser);
       newUser.password = undefined;
 
-      if(newUser.rol === "estudiante"){
-        await guardarEstudiante(newUser);
-      }
 
       return getServiceResult(false, newUser, "Usuario registrado exitosamente",1);
 

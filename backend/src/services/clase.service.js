@@ -1,4 +1,3 @@
-import { error } from "console";
 import { AppDataSource } from "../config/configDb.js";
 import { Clase } from "../entities/clase.entity.js";
 import { User } from "../entities/user.entity.js";
@@ -22,7 +21,11 @@ export async function getClaseSer(id_clase) {
 
 export async function asignarPorLoteService() {
   try {
-    const estudiantes = require("../data/students.json");
+    const useRepository = AppDataSource.getRepository(User);
+    const estudiantes = await useRepository.find({
+      where: {rol: "estudiante"},
+      relations: {clase: true}
+    })
 
     if(!estudiantes || estudiantes.length === 0){
       return {data: null, message: "No hay estudiantes en el archivo JSON", error: true}
@@ -35,18 +38,10 @@ export async function asignarPorLoteService() {
     });
 
     if(!clasesTeoricas || clasesTeoricas.length === 0){
-      [null, "No hay clases teoricas"];
+      return {data: null, message:"no existen clases teoricas"}
     }
 
-    const userRepository = AppDataSource.getRepository(User);
-    const ids = estudiantes.map((s) => s.id);
-    const usuarios = await userRepository.findBy({ id: In(ids)});
 
-    if(!usuarios || usuarios.length === 0){
-      return [null, "No hay usuarios en el JSON"];
-    }
-
-    const GRUPOS = 5;
     const asignaciones = [];
 
     //aSIGNAr USuarios
@@ -54,7 +49,7 @@ export async function asignarPorLoteService() {
     for(const clase of clasesTeoricas){
       //se usa math floor para rendondear resultado y obtener una distribución eficiente
       const idsExistentes = new Set(clase.users.map((u) => u.id));
-      const nuevos = usuarios.filter((u)=> !idsExistentes.has(u.id));
+      const nuevos = estudiantes.filter((u)=> !idsExistentes.has(u.id));
       
       clase.users = [...clase.users, ...nuevos];
       const saved = await claseRepository.save(clase);
