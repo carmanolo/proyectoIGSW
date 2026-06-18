@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
 import { getVehiculos, createVehiculo, deleteVehiculo } from '@services/vehiculo.service';
+import { getReservas } from '@services/reserva.service';
 
 export default function GestionVehiculosSecretaria() {
   const { user } = useAuth();
   const [vehiculos, setVehiculos] = useState([]);
+  const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,11 +26,20 @@ export default function GestionVehiculosSecretaria() {
   const cargarVehiculos = async () => {
     try {
       setLoading(true);
-      const res = await getVehiculos();
-      if (res?.data) {
-        setVehiculos(res.data);
+      const [resVehiculos, resReservas] = await Promise.all([
+        getVehiculos(),
+        getReservas()
+      ]);
+      
+      if (resVehiculos?.data) {
+        setVehiculos(resVehiculos.data);
       } else {
         setVehiculos([]);
+      }
+
+      if (resReservas?.data) {
+        // Filtrar solo las reservas activas/pendientes
+        setReservas(resReservas.data.filter(r => r.estado === 'pendiente' || r.estado === 'completada'));
       }
     } catch (err) {
       setError("Error al cargar vehículos");
@@ -131,6 +142,54 @@ export default function GestionVehiculosSecretaria() {
             </table>
             {vehiculos.length === 0 && (
               <div className="text-center py-6 text-gray-500">No hay vehículos registrados en la flota.</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Agenda de Vehículos */}
+      {!loading && !error && (
+        <div className="bg-white rounded-2xl shadow-lg p-6 mt-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Agenda de Ocupación</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-blue-50 border-b border-blue-200">
+                  <th className="px-4 py-3 text-sm font-medium text-blue-800">Fecha</th>
+                  <th className="px-4 py-3 text-sm font-medium text-blue-800">Horario</th>
+                  <th className="px-4 py-3 text-sm font-medium text-blue-800">Vehículo</th>
+                  <th className="px-4 py-3 text-sm font-medium text-blue-800">Alumno</th>
+                  <th className="px-4 py-3 text-sm font-medium text-blue-800">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reservas.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map((reserva) => (
+                  <tr key={reserva.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm text-gray-700 font-medium">
+                      {new Date(reserva.fecha).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {reserva.clase ? reserva.clase.hora_inicio : 'N/A'}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-bold text-gray-800">
+                      {reserva.vehiculo ? `${reserva.vehiculo.patente} (${reserva.vehiculo.transmision})` : 'N/A'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-700">
+                      {reserva.user?.nombre}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        reserva.estado === 'completada' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {reserva.estado.toUpperCase()}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {reservas.length === 0 && (
+              <div className="text-center py-6 text-gray-500">No hay clases agendadas próximamente.</div>
             )}
           </div>
         </div>

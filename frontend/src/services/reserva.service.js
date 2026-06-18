@@ -53,3 +53,12 @@ export async function getVehiculos() {
         return error.response?.data || { message: 'Error al obtener vehiculos' };
     }
 }
+
+export async function getOcupacionVehiculos() {
+    try {
+        const response = await axios.get('/reservas/ocupacion');
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { message: 'Error al obtener ocupacion' };
+    }
+}

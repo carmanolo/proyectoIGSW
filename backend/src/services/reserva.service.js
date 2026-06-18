@@ -118,3 +118,26 @@ export async function updateReservaEstadoSer(id, estado) {
     return [null, "Error interno del servidor al actualizar estado"];
   }
 }
+
+export async function getOcupacionVehiculosSer() {
+  try {
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reservas = await reservaRepository.find({
+        where: [
+            { estado: "pendiente" },
+            { estado: "completada" }
+        ],
+        relations: { vehiculo: true, clase: true },
+        select: {
+            id: true,
+            fecha: true,
+            vehiculo: { id: true },
+            clase: { id_clase: true }
+        }
+    });
+    return [reservas, null];
+  } catch (error) {
+    console.error("Error al obtener ocupación de vehículos:", error);
+    return [null, "Error interno del servidor al obtener ocupación"];
+  }
+}

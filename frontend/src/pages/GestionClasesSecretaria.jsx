@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
-import { getReservas, updateReservaEstado, createReserva, getUsuarios, getVehiculos } from '@services/reserva.service';
+import { getReservas, updateReservaEstado, createReserva, getUsuarios, getVehiculos, getOcupacionVehiculos } from '@services/reserva.service';
 import { getClasesService } from '@services/clase.service';
 
 export default function GestionClasesSecretaria() {
@@ -16,6 +16,7 @@ export default function GestionClasesSecretaria() {
   const [usuarios, setUsuarios] = useState([]);
   const [vehiculos, setVehiculos] = useState([]);
   const [clases, setClases] = useState([]);
+  const [ocupacion, setOcupacion] = useState([]);
   const [formData, setFormData] = useState({
     userId: '',
     vehiculoId: '',
@@ -33,14 +34,16 @@ export default function GestionClasesSecretaria() {
   const cargarDatosIniciales = async () => {
     try {
       setLoading(true);
-      const [resReservas, resUsuarios, resVehiculos, resClases] = await Promise.all([
+      const [resReservas, resUsuarios, resVehiculos, resClases, resOcupacion] = await Promise.all([
         getReservas(),
         getUsuarios(),
         getVehiculos(),
-        getClasesService()
+        getClasesService(),
+        getOcupacionVehiculos()
       ]);
 
       if (resReservas?.data) setReservas(resReservas.data);
+      if (resOcupacion?.data) setOcupacion(resOcupacion.data);
 
       // Los usuarios vienen anidados en data.data o data dependiendo del servicio
       let usuariosArr = [];
@@ -267,7 +270,16 @@ export default function GestionClasesSecretaria() {
                 <label className="block text-sm font-medium text-gray-700">Vehículo</label>
                 <select required className="select select-bordered w-full mt-1" value={formData.vehiculoId} onChange={e => setFormData({...formData, vehiculoId: e.target.value})}>
                   <option value="" disabled>Seleccione un vehículo</option>
-                  {vehiculos.map(v => <option key={v.id} value={v.id}>{v.patente} - {v.transmision}</option>)}
+                  {vehiculos.map(v => {
+                    const isOccupied = formData.claseId && ocupacion.some(o => 
+                      o.vehiculo?.id === v.id && o.clase?.id_clase === Number(formData.claseId)
+                    );
+                    return (
+                      <option key={v.id} value={v.id} disabled={isOccupied}>
+                        {v.patente} - {v.transmision} {isOccupied ? '(Ocupado)' : ''}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 

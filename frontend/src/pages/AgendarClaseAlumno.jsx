@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
-import { createReserva, getVehiculos } from '@services/reserva.service';
+import { createReserva, getVehiculos, getOcupacionVehiculos } from '@services/reserva.service';
 import { getClasesService } from '@services/clase.service';
 import { getUser } from '@services/profile.service';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ export default function AgendarClaseAlumno() {
   const [vehiculos, setVehiculos] = useState([]);
   const [clases, setClases] = useState([]);
   const [clasesDisponibles, setClasesDisponibles] = useState(0);
+  const [ocupacion, setOcupacion] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -30,13 +31,15 @@ export default function AgendarClaseAlumno() {
   const cargarDatosIniciales = async () => {
     try {
       setLoading(true);
-      const [resVehiculos, resClases, resUser] = await Promise.all([
+      const [resVehiculos, resClases, resUser, resOcupacion] = await Promise.all([
         getVehiculos(),
         getClasesService(),
-        getUser(user.id)
+        getUser(user.id),
+        getOcupacionVehiculos()
       ]);
 
       if (resVehiculos?.data) setVehiculos(resVehiculos.data);
+      if (resOcupacion?.data) setOcupacion(resOcupacion.data);
 
       let clasesArr = [];
       if (Array.isArray(resClases) && Array.isArray(resClases[0])) {
@@ -135,7 +138,16 @@ export default function AgendarClaseAlumno() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Vehículo Preferido</label>
               <select required className="select select-bordered w-full" value={formData.vehiculoId} onChange={e => setFormData({...formData, vehiculoId: e.target.value})}>
                 <option value="" disabled>Seleccione un vehículo</option>
-                {vehiculos.map(v => <option key={v.id} value={v.id}>{v.patente} - {v.transmision}</option>)}
+                {vehiculos.map(v => {
+                  const isOccupied = formData.claseId && ocupacion.some(o => 
+                    o.vehiculo?.id === v.id && o.clase?.id_clase === Number(formData.claseId)
+                  );
+                  return (
+                    <option key={v.id} value={v.id} disabled={isOccupied}>
+                      {v.patente} - {v.transmision} {isOccupied ? '(Ocupado)' : ''}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
