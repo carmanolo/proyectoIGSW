@@ -5,7 +5,7 @@ import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE } from "../../constants/clase.constants.jsx";
-//import { initPikadayInSwal } from "../utils/pikadayInSwal.jsx";
+import { createSwalCallyField } from "../utils/swalField.jsx";
 
 
 async function CreateClase() {
@@ -13,13 +13,14 @@ async function CreateClase() {
   const { value: formValues } = await Swal.fire({
     title: "Crear Nueva Clase",
     html: `
+        <script>import "cally";</script>
+
         ${StaticDropdownList(TIPO_CLASE, "Tipo", "swal2-input1", "m-1", true)}
         ${createSwalField(2, "Descripción", "")}
-        ${createSwalField(3, "fecha", "", "date")} 
+        ${createSwalCallyField(3, "fecha", "")} 
         ${createSwalField(4, "Hora de Inicio", "")}
         ${createSwalField(5, "Hora de Término", "")}
         ${StaticDropdownList(DIAS_SEMANA, "Día", "swal2-input6", "m-1", true)}
-
     `,
     focusConfirm: false,
     showCancelButton: true,

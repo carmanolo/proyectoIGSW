@@ -1,10 +1,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Clase } from "../entities/clase.entity.js";
 import { User } from "../entities/user.entity.js";
-import { createRequire } from "module";
-import { In } from "typeorm";
-
-const require = createRequire(import.meta.url);
 // SER=service
 export async function getClaseSer(id_clase) {
     try{
@@ -184,6 +180,62 @@ export async function deleteClaseSer(id_clase) {
     console.error(error);
     return { result: null, message: "Error al eliminar la clase" };
   }
+}
+
+export async function editarAsignacionLoteSer(id_clase){
+  try{
+    if(!id_clase){
+      return {data: null, message: "id_clase es requerido", error: true};
+    }
+
+    const userRepository = AppDataSource.getRepository(User);
+    const claseRepository = AppDataSource.getRepository(Clase);
+
+    //obtener clases
+
+    const clase = await getClaseSer(id_clase);
+    if(!clase){
+      return {data: null, message:"clase no encontrada", error: true};
+    }
+
+    //obtener estudiantes
+    const estudiantes = await userRepository.find({
+      where: {rol: "estudiante"},
+      relations: {clase: true}
+    });
+
+    if(!estudiantes || estudiantes.length === 0){
+      return {data: null, message: "No hay estudiantes registrados", error: true}
+    }
+
+    //agregar solo los que aún no están en clase
+    const idsExistentes = new Set(clase.users.map((u) => u.id));
+    const nuevos = estudiantes.filter((u) => !idsExistentes.has(u.id));
+    clase.users = [...clase.users, ...nuevos];
+
+    //guardar y retornar
+    const guardar = await claseRepository.save(clase);
+
+    return {
+      data: {
+        id_clase: guardar.id_clase,
+        tipo: guardar.tipo,
+        descripcion:guardar.descripcion,
+        usuario_asignados: guardar.users.map((u)=>({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email,
+        })),
+      },
+      message:"Asignacion actualiazada exitosamente",
+      error: false,
+    }
+
+
+  }catch(error){
+    console.error("Error al editar asignación por lote:", error);
+    return { data: null, message: "Error interno del servidor", error: true };
+  };
 }
 
 
