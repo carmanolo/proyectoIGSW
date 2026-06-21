@@ -21,27 +21,27 @@ export const Evaluacion = new EntitySchema({
     },
     resultado_manejo :{
         type: "enum",
-        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
     resultado_manejo :{
         type: "enum",
-        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
     resultado_manejo :{
         type: "enum",
-        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
     resultado_manejo :{
         type: "enum",
-        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
     resultado_manejo :{
         type: "enum",
-        enum: [0, 1, 2], // 0: Mal, 1: Bien, 2: MuyBien
+        enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
     Resultado : {
