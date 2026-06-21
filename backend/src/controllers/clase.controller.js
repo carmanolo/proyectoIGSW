@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer } from "../services/clase.service.js";
+import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer, eliminarAsignacionUsuarioSer } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
@@ -123,7 +123,7 @@ export async function patchClase(req, res) {
 
         Object.assign(claseUpdate, req.body);
 
-        const updatedClase = await updateClaseSer(claseUpdate)
+        const updatedClase = await updateClaseSer(claseUpdate);
         if(!(updatedClase.data)){
             if(!updatedClase.error){
                 return handleErrorClient(res, 500, updatedClase.message);
@@ -207,5 +207,31 @@ export async function getClasesConUsuarios(req, res) {
   } catch (error) {
     return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
   }
+}
+
+export async function eliminarAsignacionUsuario(req, res) {
+    try {
+        const id_usuario = req?.params?.id || null;
+
+        console.log(id_usuario);
+
+        const validateId = idValidation.validate({ id: id_usuario });
+        if (validateId.error){
+            return handleErrorClient(res, 400, validateId?.error?.message || "Error desconocido");
+
+        }
+
+        const result = await eliminarAsignacionUsuarioSer(id_usuario);
+
+        if(result.error){
+            return handleErrorClient(res, 404, result.message)
+        }
+
+        return handleSuccess(res, 200, "Asignación de la clase eliminada exitosamente", result.data);
+
+    } catch (error) {
+        console.error(error);
+        return handleErrorServer(res, 500, "Error interno del servidor")
+    }
 }
 

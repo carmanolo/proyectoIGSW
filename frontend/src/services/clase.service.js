@@ -26,7 +26,7 @@ export async function createClaseService(claseData) {
 
 export async function patchClaseService(id_clase, claseData) {
     try {
-        const response = await axios.patch(`/clases/${id_clase}`,claseData);
+        const response = await axios.patch(`/clases/editar/${id_clase}`,claseData);
         return Object.assign(response.data, {status: response.status});
     } catch (error) {
         throw error.response || error;
@@ -62,5 +62,22 @@ export async function assignsClaseService(claseData) {
     } catch (error) {
         throw error.response || error;
         
+    }
+}
+
+export async function editAssignsClase(id_clase, claseData){
+    try {
+        const response = await axios.patch(`clases/asignar/${id_clase}`,claseData);
+        return Object.assign(response.data, {status: response.status})
+    } catch (error) {
+        throw error.response || error;
+    }
+}
+
+export async function deleteAssignsClase(id_usuario, claseData){
+    try {
+        const response = await axios.delete(`clases/asignar/${id_usuario}`, claseData);
+    } catch (error) {
+        throw error.response || error;
     }
 }

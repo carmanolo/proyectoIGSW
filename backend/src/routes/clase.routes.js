@@ -8,17 +8,19 @@ import { getClases,
         deleteClase, 
         asignarPorLote, 
         getClasesConUsuarios, 
-        editarAsignacionPorLote } from "../controllers/clase.controller.js";
+        editarAsignacionPorLote,
+        eliminarAsignacionUsuario } from "../controllers/clase.controller.js";
 
 const router = Router();
 
 router.use(authMiddleware);
-router.get("/asignar", authorizeRoles("secretario"), getClasesConUsuarios);
+router.get("/asignar", getClasesConUsuarios);
 router.get("/",getClases);
 router.post("/crear",authorizeRoles("secretario") ,createClase);
 router.post("/asignar",authorizeRoles("secretario"), asignarPorLote);
 router.patch("/asignar/:id",authorizeRoles("secretario"), editarAsignacionPorLote);
 router.patch("/editar/:id", authorizeRoles("secretario","profesor"), patchClase);
+router.delete("/asignar/:id", authorizeRoles("secretario"), eliminarAsignacionUsuario);
 router.delete("/:id", authorizeRoles("secretario"), deleteClase);
 
 

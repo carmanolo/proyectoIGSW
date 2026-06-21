@@ -154,7 +154,10 @@ export async function updateClaseSer(clase) {
     if(!clase){
       throw new Error("Funcion mal llamada");
     }
-    return {data: await claseRepository.save(clase), message: "CLASE actualizada con éxito", error: null}
+    console.log(clase);
+    const savedClase = await claseRepository.save(clase);
+    console.log(savedClase);
+    return {data: await savedClase, message: "CLASE actualizada con éxito", error: null}
     
   }catch(error){
     console.error("Error al actualizar el horario:", error);
@@ -236,6 +239,66 @@ export async function editarAsignacionLoteSer(id_clase){
     console.error("Error al editar asignación por lote:", error);
     return { data: null, message: "Error interno del servidor", error: true };
   };
+}
+
+export async function eliminarAsignacionUsuarioSer(id_usuario) {
+  try {
+    if(!id_usuario){
+      return {data: null, message: "id_usuario es requerido", error: true};
+    }
+
+    const usuarioId = Number(id_usuario);
+    const claseRepository = AppDataSource.getRepository(Clase);
+
+    const clases = await claseRepository.find({
+      where: {users: {id: usuarioId}},
+      relations: {users: true},
+    });
+
+    // console.log(JSON.stringify(clases));
+
+    if(!clases || clases.length === 0){
+      return {data: null, message:"El usuario no esta asignado a ninguna clase ", error:true }
+
+    }
+
+    const desasignaciones = [];
+
+    /*
+    for(const clase of clases){
+      clase.users = clase.users.filter((u) => u.id !== usuarioId);
+      const guardar = await claseRepository.save(clase);
+
+      desasignaciones.push({
+        id_clase: guardar.id_clase,
+        tipo: guardar.tipo,
+        descripcion: guardar.descripcion,
+        usuario_asignados: guardar.users.map((u) =>({
+        id: u.id,
+        nombre: u.nombre,
+        email: u.email,
+        })),
+      });
+    }
+    */
+    for (const clase of clases) {
+      const claseCompleta = await claseRepository.findOne({where: { id_clase: clase.id_clase }, relations: {users: true}});
+      claseCompleta.users = claseCompleta.users.filter((u) => Number(u?.id || 0) !== usuarioId);
+      try {
+        const nuevaClaseCompleta = await claseRepository.save(claseCompleta);
+        desasignaciones.push(nuevaClaseCompleta);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+
+    return { data:desasignaciones, message: `Usuario desasignado de ${desasignaciones.length} clase(s) exitosamente`, error: false };
+
+  } catch (error) {
+    console.error("Error al desasignar usuario: ", error);
+    return { data: null, message: "Error interno del servidor", error:true}
+  }
 }
 
 

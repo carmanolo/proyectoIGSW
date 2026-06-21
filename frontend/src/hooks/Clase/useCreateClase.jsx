@@ -1,11 +1,10 @@
 import { createClaseService } from "@services/clase.service.js";
 import Swal from "sweetalert2";
-import { createSwalField } from "../utils/swalField.jsx";
+import { createSwalField, createSwalDateField } from "../utils/swalField.jsx";
 import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE } from "../../constants/clase.constants.jsx";
-import { createSwalCallyField } from "../utils/swalField.jsx";
 
 
 async function CreateClase() {
@@ -13,11 +12,9 @@ async function CreateClase() {
   const { value: formValues } = await Swal.fire({
     title: "Crear Nueva Clase",
     html: `
-        <script>import "cally";</script>
-
         ${StaticDropdownList(TIPO_CLASE, "Tipo", "swal2-input1", "m-1", true)}
         ${createSwalField(2, "Descripción", "")}
-        ${createSwalCallyField(3, "fecha", "")} 
+        ${createSwalDateField(3, "fecha", "")} 
         ${createSwalField(4, "Hora de Inicio", "")}
         ${createSwalField(5, "Hora de Término", "")}
         ${StaticDropdownList(DIAS_SEMANA, "Día", "swal2-input6", "m-1", true)}

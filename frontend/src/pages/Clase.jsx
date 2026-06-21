@@ -5,6 +5,7 @@ import editClase from "@hooks/Clase/usePatchClase.jsx";
 import DeleteClase from "@hooks/Clase/useDeleteClase.jsx";
 import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
 import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
+import { useEditAsignacion } from "@hooks/Clase/useEditAssignClase.jsx";
 import { useEffect } from "react";
 import { useState } from "react";
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
@@ -27,6 +28,7 @@ const Clase = () => {
 
     const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
     const { loading: loadingLote, asignarPorLote} =useAsignarPorLote();
+    const {loading: loadingEditarAsignacion, editarAsignacion} = useEditAsignacion();
     const [buscar, setBuscar] = useState("");
 
     useEffect(() => {
@@ -62,7 +64,7 @@ const Clase = () => {
                         {loadingLote ? 'Asignando...' : 'Asignar por lote'}
                     </button>
                 )}
-                {canCrudClases && (
+                {(
                     <button
                         className="btn btn-accent"
                         onClick={fetchClasesConUsuarios}
@@ -78,7 +80,7 @@ const Clase = () => {
                 )}
             </div>
             <div className="Clase2-page">
-                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} canCrudClases={canCrudClases}/>
+                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases}/>
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>
