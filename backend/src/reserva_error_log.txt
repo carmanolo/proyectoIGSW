@@ -1,0 +1,33 @@
+QueryFailedError: la sintaxis de entrada no es válida para tipo integer: «NaN»
+{
+  "query": "SELECT \"Reserva\".\"id\" AS \"Reserva_id\", \"Reserva\".\"tipo\" AS \"Reserva_tipo\", \"Reserva\".\"estado\" AS \"Reserva_estado\", \"Reserva\".\"fecha\" AS \"Reserva_fecha\", \"Reserva\".\"created_at\" AS \"Reserva_created_at\", \"Reserva\".\"userId\" AS \"Reserva_userId\", \"Reserva\".\"vehiculoId\" AS \"Reserva_vehiculoId\", \"Reserva\".\"claseId\" AS \"Reserva_claseId\", \"Reserva__Reserva_user\".\"id\" AS \"Reserva__Reserva_user_id\", \"Reserva__Reserva_user\".\"nombre\" AS \"Reserva__Reserva_user_nombre\", \"Reserva__Reserva_user\".\"email\" AS \"Reserva__Reserva_user_email\", \"Reserva__Reserva_user\".\"password\" AS \"Reserva__Reserva_user_password\", \"Reserva__Reserva_user\".\"rol\" AS \"Reserva__Reserva_user_rol\", \"Reserva__Reserva_user\".\"clases_disponibles\" AS \"Reserva__Reserva_user_clases_disponibles\", \"Reserva__Reserva_user\".\"clases_basicas_completadas\" AS \"Reserva__Reserva_user_clases_basicas_completadas\", \"Reserva__Reserva_user\".\"created_at\" AS \"Reserva__Reserva_user_created_at\", \"Reserva__Reserva_user\".\"updated_at\" AS \"Reserva__Reserva_user_updated_at\", \"Reserva__Reserva_vehiculo\".\"id\" AS \"Reserva__Reserva_vehiculo_id\", \"Reserva__Reserva_vehiculo\".\"patente\" AS \"Reserva__Reserva_vehiculo_patente\", \"Reserva__Reserva_vehiculo\".\"transmision\" AS \"Reserva__Reserva_vehiculo_transmision\", \"Reserva__Reserva_vehiculo\".\"estado\" AS \"Reserva__Reserva_vehiculo_estado\", \"Reserva__Reserva_clase\".\"id_clase\" AS \"Reserva__Reserva_clase_id_clase\", \"Reserva__Reserva_clase\".\"tipo\" AS \"Reserva__Reserva_clase_tipo\", \"Reserva__Reserva_clase\".\"descripcion\" AS \"Reserva__Reserva_clase_descripcion\", \"Reserva__Reserva_clase\".\"fecha_clase\" AS \"Reserva__Reserva_clase_fecha_clase\", \"Reserva__Reserva_clase\".\"hora_inicio\" AS \"Reserva__Reserva_clase_hora_inicio\", \"Reserva__Reserva_clase\".\"hora_fin\" AS \"Reserva__Reserva_clase_hora_fin\", \"Reserva__Reserva_clase\".\"dia\" AS \"Reserva__Reserva_clase_dia\", \"Reserva__Reserva_clase\".\"id\" AS \"Reserva__Reserva_clase_id\" FROM \"reservas\" \"Reserva\" INNER JOIN \"users\" \"Reserva__Reserva_user\" ON \"Reserva__Reserva_user\".\"id\"=\"Reserva\".\"userId\"  INNER JOIN \"vehiculos\" \"Reserva__Reserva_vehiculo\" ON \"Reserva__Reserva_vehiculo\".\"id\"=\"Reserva\".\"vehiculoId\"  INNER JOIN \"clases\" \"Reserva__Reserva_clase\" ON \"Reserva__Reserva_clase\".\"id_clase\"=\"Reserva\".\"claseId\" WHERE ((((\"Reserva__Reserva_user\".\"id\" = $1)))) ORDER BY \"Reserva\".\"fecha\" DESC",
+  "parameters": [
+    null
+  ],
+  "driverError": {
+    "length": 169,
+    "name": "error",
+    "severity": "ERROR",
+    "code": "22P02",
+    "where": "portal sin nombre, parámetro 1 = '...'",
+    "file": "numutils.c",
+    "line": "619",
+    "routine": "pg_strtoint32_safe"
+  },
+  "length": 169,
+  "severity": "ERROR",
+  "code": "22P02",
+  "where": "portal sin nombre, parámetro 1 = '...'",
+  "file": "numutils.c",
+  "line": "619",
+  "routine": "pg_strtoint32_safe"
+}
+QueryFailedError: la sintaxis de entrada no es válida para tipo integer: «NaN»
+    at PostgresQueryRunner.query (C:\Users\Mauri\Downloads\tarea\EvaluacionesDerecho2025\proyectoIGSW\backend\node_modules\typeorm\driver\postgres\PostgresQueryRunner.js:231:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async SelectQueryBuilder.loadRawResults (C:\Users\Mauri\Downloads\tarea\EvaluacionesDerecho2025\proyectoIGSW\backend\node_modules\typeorm\query-builder\SelectQueryBuilder.js:2301:25)
+    at async SelectQueryBuilder.executeEntitiesAndRawResults (C:\Users\Mauri\Downloads\tarea\EvaluacionesDerecho2025\proyectoIGSW\backend\node_modules\typeorm\query-builder\SelectQueryBuilder.js:2126:26)
+    at async SelectQueryBuilder.getRawAndEntities (C:\Users\Mauri\Downloads\tarea\EvaluacionesDerecho2025\proyectoIGSW\backend\node_modules\typeorm\query-builder\SelectQueryBuilder.js:766:29)
+    at async SelectQueryBuilder.getMany (C:\Users\Mauri\Downloads\tarea\EvaluacionesDerecho2025\proyectoIGSW\backend\node_modules\typeorm\query-builder\SelectQueryBuilder.js:832:25)
+    at async getReservasUsuarioSer (file:///C:/Users/Mauri/Downloads/tarea/EvaluacionesDerecho2025/proyectoIGSW/backend/src/services/reserva.service.js:85:22)
+    at async test (file:///C:/Users/Mauri/Downloads/tarea/EvaluacionesDerecho2025/proyectoIGSW/backend/src/test-reserva.js:8:21)

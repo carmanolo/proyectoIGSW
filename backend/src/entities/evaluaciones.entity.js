@@ -15,31 +15,31 @@ export const Evaluacion = new EntitySchema({
         nullable: false,
     },
     calificacion_teorica : {
-        type: "varchar",
-        length: 255,
+        type: "int",
+        unsigned: true,
         nullable: true,
     },
-    resultado_manejo :{
+    resultado_manejo_1 :{
         type: "enum",
         enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
-    resultado_manejo :{
+    resultado_manejo_2 :{
         type: "enum",
         enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
-    resultado_manejo :{
+    resultado_manejo_3 :{
         type: "enum",
         enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
-    resultado_manejo :{
+    resultado_manejo_4 :{
         type: "enum",
         enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
     },
-    resultado_manejo :{
+    resultado_manejo_5 :{
         type: "enum",
         enum: [0, 1, 2, 3], // 0: sin faltas, 1: leve, 2: grave, 3: reprobatoria
         nullable: true,
@@ -55,6 +55,11 @@ export const Evaluacion = new EntitySchema({
         nullable: false,
     },
   },
+  checks: [
+    {
+      expression: "calificacion_teorica >= 0 AND calificacion_teorica <= 38",
+    },
+  ],
 });
 
 export default Evaluacion;
