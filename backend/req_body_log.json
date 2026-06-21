@@ -1,0 +1,1 @@
+{"body":{"userId":"undefined","cantidad":"2","comprobante_url":"/uploads/comprobante-1780271454881-532581432.png"},"error":[{"message":"El ID del estudiante debe ser un número entero positivo","path":["userId"],"type":"number.base","context":{"label":"userId","value":"undefined","key":"userId"}}]}

@@ -25,7 +25,6 @@ export const Inscripcion = new EntitySchema({
       type: "date",
       nullable: true,
     },
-
     estado_pago: {
       type: "enum",
       enum: ["pagado", "pendiente", "vencido"],
@@ -56,18 +55,20 @@ export const Inscripcion = new EntitySchema({
       enum: ["activa", "completada", "cancelada"],
       default: "activa",
     },
+  },
+
   relations: {
     alumno: {
       type: "many-to-one",
       target: "User",
       joinColumn: {
-        name: "alumno_id",       
-        referencedColumnName: "id",  
+        name: "alumno_id",
+        referencedColumnName: "id",
       },
       onDelete: "CASCADE",
       nullable: false,
     },
   },
-  },
 });
+
 export default Inscripcion;

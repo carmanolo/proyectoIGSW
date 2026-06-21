@@ -34,7 +34,7 @@ export async function createReservaSer(data) {
         vehiculo: { id: Number(vehiculoId) },
         clase: { id_clase: Number(claseId) },
         fecha: fecha,
-        estado: "activa"
+        estado: "pendiente"
       }
     });
 
@@ -54,7 +54,7 @@ export async function createReservaSer(data) {
       clase,
       fecha,
       tipo: tipo || "clase_regular",
-      estado: "activa"
+      estado: "pendiente"
     });
 
     await reservaRepository.save(nuevaReserva);
@@ -70,11 +70,51 @@ export async function getReservasSer() {
   try {
     const reservaRepository = AppDataSource.getRepository(Reserva);
     const reservas = await reservaRepository.find({
-        relations: ["user", "vehiculo", "clase"]
+        relations: { user: true, vehiculo: true, clase: true }
     });
     return [reservas, null];
   } catch (error) {
     console.error("Error al obtener reservas:", error);
     return [null, "Error interno del servidor al obtener reservas"];
+  }
+}
+
+export async function getReservasUsuarioSer(userId) {
+  try {
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reservas = await reservaRepository.find({
+        where: { user: { id: Number(userId) } },
+        relations: { user: true, vehiculo: true, clase: true },
+        order: { fecha: "DESC" }
+    });
+    return [reservas, null];
+  } catch (error) {
+    console.error("Error al obtener reservas del usuario:", error);
+    import('fs').then(fs => fs.writeFileSync('reserva_error_log.txt', String(error) + '\n' + JSON.stringify(error, null, 2) + '\n' + error.stack));
+    return [null, "Error interno del servidor al obtener reservas del usuario"];
+  }
+}
+
+export async function updateReservaEstadoSer(id, estado) {
+  try {
+    const validEstados = ["pendiente", "completada", "no_realizada", "cancelada"];
+    if (!validEstados.includes(estado)) {
+      return [null, "Estado no válido"];
+    }
+
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reserva = await reservaRepository.findOneBy({ id: Number(id) });
+
+    if (!reserva) {
+      return [null, "Reserva no encontrada"];
+    }
+
+    reserva.estado = estado;
+    await reservaRepository.save(reserva);
+
+    return [reserva, null];
+  } catch (error) {
+    console.error("Error al actualizar el estado de la reserva:", error);
+    return [null, "Error interno del servidor al actualizar estado"];
   }
 }

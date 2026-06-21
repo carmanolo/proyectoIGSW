@@ -13,8 +13,8 @@ export async function login(dataUser) {
 
         if(status === 200){
             const token = data.data.token;
-            const { nombre, email, rol } = jwtDecode(token);
-            const userData = {nombre, email, rol}
+            const { sub, nombre, email, rol } = jwtDecode(token);
+            const userData = {id: sub, nombre, email, rol}
 
             sessionStorage.setItem('usuario', JSON.stringify(userData));
             cookies.set('jwt-auth', data.data.token, { path: '/' });

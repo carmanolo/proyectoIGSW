@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { venderPackSer } from "../services/venta.service.js";
+import { venderPackSer, aprobarVentaSer } from "../services/venta.service.js";
 import { integrityValidation, assignationValidation } from "../validations/venta.validation.js";
 import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
@@ -13,7 +13,15 @@ export async function registrarVenta(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
-        const { userId, cantidad, comprobante_url } = req.body;
+        const { userId, cantidad } = req.body;
+        
+        if (!req.file) {
+            return res.status(400).json({ message: "El comprobante es obligatorio" });
+        }
+        
+        const comprobante_url = `/uploads/${req.file.filename}`;
+        req.body.comprobante_url = comprobante_url; // para que pase la validacion
+
         console.log(userId, cantidad, comprobante_url); 
 
         const { error } = integrityValidation.validate(req.body);
@@ -53,7 +61,7 @@ export async function registrarVenta(req, res) {
     }
 }
 
-import { aprobarVentaSer } from "../services/venta.service.js";
+
 
 export async function aprobarVenta(req, res) {
     try {
@@ -100,7 +108,7 @@ export async function listarVentasUsuario(req, res) {
 
         const ventas = await ventaRepository.find({
             where: { user: { id: Number(id) } },
-            relations: ["user"],
+            relations: { user: true },
             order: { fecha_venta: "DESC" }
         });
 
@@ -111,12 +119,28 @@ export async function listarVentasUsuario(req, res) {
     }
 }
 
+export async function listarVentas(req, res) {
+    try {
+        const ventaRepository = AppDataSource.getRepository(Venta);
+
+        const ventas = await ventaRepository.find({
+            relations: { user: true },
+            order: { fecha_venta: "DESC" }
+        });
+
+        return handleSuccess(res, 200, "Ventas obtenidas", ventas);
+    } catch (error) {
+        console.error("Error al listar ventas", error);
+        return handleErrorServer(res, 500, "Error al obtener ventas", error.message);
+    }
+}
+
 export async function eliminarVenta(req, res) {
     try {
         const { id } = req.params;
         const ventaRepository = AppDataSource.getRepository(Venta);
 
-        const venta = await ventaRepository.findOne({ where: { id: Number(id) }, relations: ["user"] });
+        const venta = await ventaRepository.findOne({ where: { id: Number(id) }, relations: { user: true } });
         if (!venta) {
             return handleErrorClient(res, 404, "Venta no encontrada");
         }
