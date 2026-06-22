@@ -185,7 +185,7 @@ export async function deleteClaseSer(id_clase) {
   }
 }
 
-export async function editarAsignacionLoteSer(id_clase){
+export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
   try{
     if(!id_clase){
       return {data: null, message: "id_clase es requerido", error: true};
@@ -216,6 +216,10 @@ export async function editarAsignacionLoteSer(id_clase){
     const nuevos = estudiantes.filter((u) => !idsExistentes.has(u.id));
     clase.users = [...clase.users, ...nuevos];
 
+    if(Array.isArray(idsEliminar) && idsEliminar.length > 0){
+      clase.users = clase.users.filter((u) => !idsEliminar.includes(u.id));
+    }
+
     //guardar y retornar
     const guardar = await claseRepository.save(clase);
 
@@ -241,6 +245,7 @@ export async function editarAsignacionLoteSer(id_clase){
   };
 }
 
+/*
 export async function eliminarAsignacionUsuarioSer(id_usuario) {
   try {
     if(!id_usuario){
@@ -280,7 +285,6 @@ export async function eliminarAsignacionUsuarioSer(id_usuario) {
         })),
       });
     }
-    */
     for (const clase of clases) {
       const claseCompleta = await claseRepository.findOne({where: { id_clase: clase.id_clase }, relations: {users: true}});
       claseCompleta.users = claseCompleta.users.filter((u) => Number(u?.id || 0) !== usuarioId);
@@ -301,6 +305,5 @@ export async function eliminarAsignacionUsuarioSer(id_usuario) {
   }
 }
 
-
-
+*/
 

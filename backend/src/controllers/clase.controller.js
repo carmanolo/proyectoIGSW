@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer, eliminarAsignacionUsuarioSer } from "../services/clase.service.js";
+import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
@@ -176,13 +176,16 @@ export async function asignarPorLote(req, res){
 
 export async function editarAsignacionPorLote(req, res) {
     try {
-        const id = req?.params?.id || null;
+        const { id } = req.params;
         const validatedId = idValidation.validate({ id });
         if (validatedId.error) {
             return handleErrorClient(res, 400, validatedId.error.message);
         }
 
-        const result = await editarAsignacionLoteSer(id);
+        const idsEliminar = Array.isArray(req.body?.idsEliminar) ? req.body.idsEliminar : [];
+
+
+        const result = await editarAsignacionLoteSer(id, idsEliminar);
 
         if (result.error) {
             return handleErrorClient(res, 404, "usuarios inexistentes");
@@ -209,7 +212,7 @@ export async function getClasesConUsuarios(req, res) {
   }
 }
 
-export async function eliminarAsignacionUsuario(req, res) {
+/*export async function eliminarAsignacionUsuario(req, res) {
     try {
         const id_usuario = req?.params?.id || null;
 
@@ -233,5 +236,5 @@ export async function eliminarAsignacionUsuario(req, res) {
         console.error(error);
         return handleErrorServer(res, 500, "Error interno del servidor")
     }
-}
+}*/
 
