@@ -2,16 +2,16 @@ import { AppDataSource } from "../config/configDb.js";
 import { Reserva } from "../entities/reserva.entity.js";
 import { User } from "../entities/user.entity.js";
 import { Vehiculo } from "../entities/vehiculo.entity.js";
-import { Horario } from "../entities/horario.entity.js";
+import { Clase } from "../entities/clase.entity.js";
 
 export async function createReservaSer(data) {
   try {
     const reservaRepository = AppDataSource.getRepository(Reserva);
     const userRepository = AppDataSource.getRepository(User);
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    const horarioRepository = AppDataSource.getRepository(Horario);
+    const claseRepository = AppDataSource.getRepository(Clase);
 
-    const { userId, vehiculoId, horarioId, fecha, tipo } = data;
+    const { userId, vehiculoId, claseId, fecha, tipo } = data;
 
     const user = await userRepository.findOneBy({ id: Number(userId) });
     if (!user) return [null, "Usuario no encontrado"];
@@ -19,8 +19,8 @@ export async function createReservaSer(data) {
     const vehiculo = await vehiculoRepository.findOneBy({ id: Number(vehiculoId) });
     if (!vehiculo) return [null, "Vehículo no encontrado"];
 
-    const horario = await horarioRepository.findOneBy({ id_horario: Number(horarioId) });
-    if (!horario) return [null, "Horario no encontrado"];
+    const clase = await claseRepository.findOneBy({ id_clase: Number(claseId) });
+    if (!clase) return [null, "Clase no encontrada"];
 
     if (user.clases_disponibles <= 0 && tipo !== "pre_evaluacion") {
         // Asumimos que pre_evaluacion podría no descontar clase normal, o sí.
@@ -28,18 +28,18 @@ export async function createReservaSer(data) {
         return [null, "El alumno no tiene clases disponibles"];
     }
 
-    // Validar choque de reservas para el mismo vehículo, fecha y horario
+    // Validar choque de reservas para el mismo vehículo, fecha y clase
     const reservaExistente = await reservaRepository.findOne({
       where: {
         vehiculo: { id: Number(vehiculoId) },
-        horario: { id_horario: Number(horarioId) },
+        clase: { id_clase: Number(claseId) },
         fecha: fecha,
-        estado: "activa"
+        estado: "pendiente"
       }
     });
 
     if (reservaExistente) {
-      return [null, "El vehículo ya se encuentra reservado para esa fecha y horario"];
+      return [null, "El vehículo ya se encuentra reservado para esa fecha y clase"];
     }
 
     // Descontar clase si corresponde
@@ -51,10 +51,10 @@ export async function createReservaSer(data) {
     const nuevaReserva = reservaRepository.create({
       user,
       vehiculo,
-      horario,
+      clase,
       fecha,
       tipo: tipo || "clase_regular",
-      estado: "activa"
+      estado: "pendiente"
     });
 
     await reservaRepository.save(nuevaReserva);
@@ -70,11 +70,74 @@ export async function getReservasSer() {
   try {
     const reservaRepository = AppDataSource.getRepository(Reserva);
     const reservas = await reservaRepository.find({
-        relations: ["user", "vehiculo", "horario"]
+        relations: { user: true, vehiculo: true, clase: true }
     });
     return [reservas, null];
   } catch (error) {
     console.error("Error al obtener reservas:", error);
     return [null, "Error interno del servidor al obtener reservas"];
+  }
+}
+
+export async function getReservasUsuarioSer(userId) {
+  try {
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reservas = await reservaRepository.find({
+        where: { user: { id: Number(userId) } },
+        relations: { user: true, vehiculo: true, clase: true },
+        order: { fecha: "DESC" }
+    });
+    return [reservas, null];
+  } catch (error) {
+    console.error("Error al obtener reservas del usuario:", error);
+    import('fs').then(fs => fs.writeFileSync('reserva_error_log.txt', String(error) + '\n' + JSON.stringify(error, null, 2) + '\n' + error.stack));
+    return [null, "Error interno del servidor al obtener reservas del usuario"];
+  }
+}
+
+export async function updateReservaEstadoSer(id, estado) {
+  try {
+    const validEstados = ["pendiente", "completada", "no_realizada", "cancelada"];
+    if (!validEstados.includes(estado)) {
+      return [null, "Estado no válido"];
+    }
+
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reserva = await reservaRepository.findOneBy({ id: Number(id) });
+
+    if (!reserva) {
+      return [null, "Reserva no encontrada"];
+    }
+
+    reserva.estado = estado;
+    await reservaRepository.save(reserva);
+
+    return [reserva, null];
+  } catch (error) {
+    console.error("Error al actualizar el estado de la reserva:", error);
+    return [null, "Error interno del servidor al actualizar estado"];
+  }
+}
+
+export async function getOcupacionVehiculosSer() {
+  try {
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reservas = await reservaRepository.find({
+        where: [
+            { estado: "pendiente" },
+            { estado: "completada" }
+        ],
+        relations: { vehiculo: true, clase: true },
+        select: {
+            id: true,
+            fecha: true,
+            vehiculo: { id: true },
+            clase: { id_clase: true }
+        }
+    });
+    return [reservas, null];
+  } catch (error) {
+    console.error("Error al obtener ocupación de vehículos:", error);
+    return [null, "Error interno del servidor al obtener ocupación"];
   }
 }

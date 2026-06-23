@@ -156,4 +156,3 @@ export async function findUserByEmail(email) {
   const userRepository = AppDataSource.getRepository(User);
   return await userRepository.findOneBy({ email });
 }
-

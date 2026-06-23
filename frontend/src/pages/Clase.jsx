@@ -3,6 +3,7 @@ import { useGetClase } from "@hooks/Clase/useGetClase.jsx";
 import useCreateClase from "@hooks/Clase/useCreateClase.jsx";
 import editClase from "@hooks/Clase/usePatchClase.jsx"; 
 import DeleteClase from "@hooks/Clase/useDeleteClase.jsx";
+import { useEffect, useState } from "react";
 import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
 import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
 import { useEditAsignacion } from "@hooks/Clase/useEditAssignClase.jsx";
