@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer } from "../services/clase.service.js";
+import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
@@ -30,7 +30,7 @@ export async function createClase(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
         
-        const { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia } = req.body;
+        const { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor } = req.body;
         console.log(hora_inicio);
 
         const { error } = integrityValidation.validate(req.body);
@@ -38,7 +38,7 @@ export async function createClase(req, res) {
             return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
         }
 
-        let result =assignationValidation.validate(req.body);
+        let result = assignationValidation.validate(req.body);
         if(result.error){
             return handleErrorClient(res, 400, "faltan parametros", result.error.message);
         }
@@ -48,7 +48,7 @@ export async function createClase(req, res) {
             return res.status(400).json({ message: String(validationTime) });
         } 
 
-        if(newClase = await createClaseSer( tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia)){
+        if(newClase = await createClaseSer( tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor)){
             return res.status(201).json({ message: "Clase registrado exitosamente",data:newClase});
         }else{
             return res.status(500).json({message: "Error al registrar Clase"})
@@ -123,7 +123,7 @@ export async function patchClase(req, res) {
 
         Object.assign(claseUpdate, req.body);
 
-        const updatedClase = await updateClaseSer(claseUpdate)
+        const updatedClase = await updateClaseSer(claseUpdate);
         if(!(updatedClase.data)){
             if(!updatedClase.error){
                 return handleErrorClient(res, 500, updatedClase.message);
@@ -159,4 +159,82 @@ export async function deleteClase(req, res) {
         return handleErrorServer(res, 500, "Error al eliminar la clase", error.message, error);
     }
 }
+
+export async function asignarPorLote(req, res){
+    try {
+        const result = await asignarPorLoteService();
+
+        if(result.error){
+            return handleErrorClient(res, 400, result.message)
+        }
+
+        return handleSuccess(res, 200, "asignación completada", result.data);
+    } catch (error) {
+        return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
+    }
+}
+
+export async function editarAsignacionPorLote(req, res) {
+    try {
+        const { id } = req.params;
+        const validatedId = idValidation.validate({ id });
+        if (validatedId.error) {
+            return handleErrorClient(res, 400, validatedId.error.message);
+        }
+
+        const idsEliminar = Array.isArray(req.body?.idsEliminar) ? req.body.idsEliminar : [];
+
+
+        const result = await editarAsignacionLoteSer(id, idsEliminar);
+
+        if (result.error) {
+            return handleErrorClient(res, 404, "usuarios inexistentes");
+        }
+
+        return handleSuccess(res, 200, "usuarios actualizados exitosamente", result.data);
+    } catch (error) {
+        console.error(error);
+        return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
+    }
+}
+
+export async function getClasesConUsuarios(req, res) {
+  try {
+    const result = await getClasesConUsuarioSer();
+
+    if (result.error) {
+      return handleErrorClient(res, 404, "error de cliente");
+    }
+
+    return handleSuccess(res, 200, "usuarios obtenidos con éxito", result.data);
+  } catch (error) {
+    return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
+  }
+}
+
+/*export async function eliminarAsignacionUsuario(req, res) {
+    try {
+        const id_usuario = req?.params?.id || null;
+
+        console.log(id_usuario);
+
+        const validateId = idValidation.validate({ id: id_usuario });
+        if (validateId.error){
+            return handleErrorClient(res, 400, validateId?.error?.message || "Error desconocido");
+
+        }
+
+        const result = await eliminarAsignacionUsuarioSer(id_usuario);
+
+        if(result.error){
+            return handleErrorClient(res, 404, result.message)
+        }
+
+        return handleSuccess(res, 200, "Asignación de la clase eliminada exitosamente", result.data);
+
+    } catch (error) {
+        console.error(error);
+        return handleErrorServer(res, 500, "Error interno del servidor")
+    }
+}*/
 

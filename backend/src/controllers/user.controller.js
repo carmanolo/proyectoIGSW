@@ -62,21 +62,27 @@ export async function createUser(req, res) {
   }
 
   const user = await createUserService(req.body);
-  console.log(user);
+  // console.log("USER: ", user);
+  // throw Error("jaja");
+
   if(user.error){
     return handleErrorServer(res, 500, "Error interno del servidor", user.error, JSON.stringify(user));
   }
 
-  if (!user.data) {
-    if (user.details && user.details.endsWith("ya registrado")) {
+  console.log("USER DATA: ", user.data);
+  console.log("USER DATA NEGADO: ", !user.data);
+
+  if (Object.keys(user?.data || {})) {
+    if (user?.details && user?.details.endsWith("ya registrado")) {
       return handleErrorClient(res, 409, user.details, user);
     }
-
-    return handleErrorClient(res, 400, "Error al registar usuario",user);
+    if (user?.length !== 1) {
+      return handleErrorClient(res, 400, "Error al registar usuario",user);
+    }
+    return handleSuccess(res, 201, user.details, user.data);
+  } else {
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
-
-  return handleSuccess(res, 201, user.details, user.data);
-
 }
 
 export async function updateUser(req, res) {

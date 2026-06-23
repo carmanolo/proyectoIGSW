@@ -41,3 +41,5 @@ relations: {
     },
 },
 });
+
+export default Venta;

@@ -114,6 +114,7 @@ export async function deleteUserService(id) {
 export async function checkUserExists(userRepository, newData) {
     try {
         const existingEmailUser = await userRepository.findOne({where: { email: newData.email },relations: {clase: true}});
+        console.log("EXISTING EMAIL USER: ", existingEmailUser);
         if (existingEmailUser) {
             return getServiceResult(false, null, "Correo ya registrado", 0);
         }
@@ -131,7 +132,8 @@ export async function createUserService(newData) {
   try {
       const userRepository = AppDataSource.getRepository(User);
       const result = await checkUserExists(userRepository, newData);
-      if(result !==null){
+      console.log("RESULT: ", result);
+      if(result !== null){
         return result;
       }
 
@@ -140,6 +142,7 @@ export async function createUserService(newData) {
       const newUser = userRepository.create(newData);
       await userRepository.save(newUser);
       newUser.password = undefined;
+
 
       return getServiceResult(false, newUser, "Usuario registrado exitosamente",1);
 

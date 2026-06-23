@@ -11,7 +11,7 @@ export const handleSuccess = (res, statusCode, message, data = null) => {
 };
 
 export const handleErrorClient = (res, statusCode, message, errorDetails = null) => {
-  res.status(statusCode).json({
+  res.status(Number(statusCode)).json({
     message,
     errorDetails,
     status: "Client error",

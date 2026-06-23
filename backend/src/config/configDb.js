@@ -6,9 +6,9 @@ import Evaluacion from "../entities/evaluaciones.entity.js";
 import Clase from "../entities/clase.entity.js";
 import Plan from "../entities/Plan.entity.js";
 import Inscripcion from "../entities/Inscripcion.entity.js";
-import { Venta } from "../entities/venta.entity.js";
 import Reserva from "../entities/reserva.entity.js";
 import Vehiculo from "../entities/vehiculo.entity.js";
+import Venta from "../entities/venta.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",

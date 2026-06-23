@@ -12,4 +12,6 @@ export const CAMPOS_ADICIONALES="No se permiten campos adicionales.";
 export const DIAS_SEMANA=["lunes","martes","miercoles","jueves","viernes","sabado"];
 export const CLASE_NO_ENCONTRADA = "Horario no encontrado";
 export const TIPO_CLASE=["teorica","practica"]
+export const ESTADO_CLASE=["pendiente","completada", "cancelada","inasistente"];
+export const ESTADO_CLASE_OBLIGATORIA="El estado de clase es obligatorio.";
 export const FECHA_PATTERN=/^\d{4}-\d{2}-\d{2}$/
