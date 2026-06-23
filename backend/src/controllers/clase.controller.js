@@ -30,7 +30,7 @@ export async function createClase(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
         
-        const { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia } = req.body;
+        const { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor } = req.body;
         console.log(hora_inicio);
 
         const { error } = integrityValidation.validate(req.body);
@@ -38,7 +38,7 @@ export async function createClase(req, res) {
             return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
         }
 
-        let result =assignationValidation.validate(req.body);
+        let result = assignationValidation.validate(req.body);
         if(result.error){
             return handleErrorClient(res, 400, "faltan parametros", result.error.message);
         }
@@ -48,7 +48,7 @@ export async function createClase(req, res) {
             return res.status(400).json({ message: String(validationTime) });
         } 
 
-        if(newClase = await createClaseSer( tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia)){
+        if(newClase = await createClaseSer( tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor)){
             return res.status(201).json({ message: "Clase registrado exitosamente",data:newClase});
         }else{
             return res.status(500).json({message: "Error al registrar Clase"})

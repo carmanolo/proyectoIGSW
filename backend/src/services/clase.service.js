@@ -1,12 +1,12 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Clase } from "../entities/clase.entity.js";
 import { User } from "../entities/user.entity.js";
-// SER=service
+
 export async function getClaseSer(id_clase) {
     try{
         const claseRepository = AppDataSource.getRepository(Clase);
         return await claseRepository.findOne({
-            where: {id_clase: id_clase}, relations: {users: true}
+            where: {id_clase: id_clase}, relations: {users: true}, relations: {vehiculos: true}
         });
 
     }catch(error){
@@ -20,7 +20,7 @@ export async function asignarPorLoteService() {
     const useRepository = AppDataSource.getRepository(User);
     const estudiantes = await useRepository.find({
       where: {rol: "estudiante"},
-      relations: {clase: true}
+      relations: {clase: true},
     })
 
     if(!estudiantes || estudiantes.length === 0){
@@ -122,14 +122,14 @@ export async function getClasesSer() {
 }
 
 //enviar parametros que se ingresaran en el body
-export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inicio, hora_fin, dia) {
+export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor) {
 
   const claseRepository = AppDataSource.getRepository(Clase);
 
   try {
-    if (!tipo||!descripcion||!fecha_clase||!hora_inicio || !hora_fin || !dia) {
+    if (!tipo||!descripcion||!fecha_clase||!hora_inicio || !hora_fin || !dia || !estado_clase || (id_auto !== null && !id_auto) || !id_profesor) {
       //console.log( hora_inicio,hora_fin, dia);
-      throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia})
+      throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_profesor, id_auto });
     }
     const newClase = claseRepository.create({
       tipo, 
@@ -138,7 +138,10 @@ export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inici
       hora_inicio,
       hora_fin,
       dia,
-      relations: {users:true}
+      estado_clase,
+      id_profesor: Number(id_profesor),
+      id_auto: Number(id_auto),
+      relations: {users:true},
     });
     await claseRepository.save(newClase);
     return newClase;
@@ -169,7 +172,7 @@ export async function updateClaseSer(clase) {
 export async function deleteClaseSer(id_clase) {
   try{
     const claseRepository = AppDataSource.getRepository(Clase);
-    const clase = await claseRepository.findOne({where: { id_clase:id_clase}, relations: {users:true}});
+    const clase = await claseRepository.findOne({where: { id_clase:id_clase}, relations: {users:true}, relations: {vehiculos: true}});
 
     if(!clase){
       return { result: null, message: "Clase no encontrado"}

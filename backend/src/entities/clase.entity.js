@@ -38,6 +38,23 @@ export const Clase = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    estado_clase: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    id_profesor:{
+      type: Number,
+      primary: false,
+      generated: false,
+      nullable:true
+    },
+    id_auto: {
+      type: Number,
+      primary: false,
+      generated: false,
+      nullable:true
+    }
   },
   relations:{
     users:{
@@ -49,7 +66,13 @@ export const Clase = new EntitySchema({
         inverseSide: {name : "id"}
       },
       inverseSide: "clase"
-    }
+    },
+    vehiculos:{
+      target:"Vehiculo",
+      type:"many-to-one",
+      joinColumn: {name:"id_auto"},
+      onDelete:"CASCADE",
+    },
     
   }
 });
