@@ -5,6 +5,8 @@ import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
 import { SHOW_ERRORS } from "../constants/settings.constants.js";
+import { findUserByEmail } from "../services/user.service.js";
+import { obtenerVehiculoPorPatente } from "../services/vehiculo.service.js";
 
 const timeValidationHelper = (hora_inicio, hora_termino) => {
   let result = validacionHoraIntegridad(hora_inicio);
@@ -30,6 +32,15 @@ export async function createClase(req, res) {
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
         
+        if (req?.body?.email_profesor) {
+            req.body.id_profesor = ((await findUserByEmail(req.body.email_profesor)) || {id: 0})?.id;
+            delete req.body.email_profesor;
+        }
+        if (req?.body?.patente_auto) {
+            req.body.id_auto = ((await obtenerVehiculoPorPatente(req.body.patente_auto)) || {id: 0})?.id;
+            delete req.body.patente_auto;
+        }
+
         const { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor } = req.body;
         console.log(hora_inicio);
 

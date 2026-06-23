@@ -1,6 +1,7 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
 import { createVehiculoSer, getVehiculosSer, deleteVehiculoSer, obtenerListaVehiculos } from "../services/vehiculo.service.js";
+import { procesarVehiculos } from "../utils/vehiculo.utils.js";
 
 export async function createVehiculo(req, res) {
     try {
@@ -67,7 +68,8 @@ export async function deleteVehiculo(req, res) {
 export async function getVehiculoList(req, res) {
     const DEFAULT_ARRAY = [];
     try {
-        const vehiculoList = await obtenerListaVehiculos();
+        let vehiculoList = await obtenerListaVehiculos();
+        vehiculoList = procesarVehiculos(vehiculoList);
         return handleSuccess(res, 200, "Vehiculos encontrados con éxito", vehiculoList);
     } catch (error) {
         console.error(error);

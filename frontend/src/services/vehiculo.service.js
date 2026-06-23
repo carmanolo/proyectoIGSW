@@ -26,3 +26,13 @@ export async function deleteVehiculo(id) {
         return error.response?.data || { message: 'Error al eliminar vehiculo' };
     }
 }
+
+export const getVehiculoList = async () => {
+    try {
+        const response = await axios.get(`/vehiculos/frontend/getVehiculoList`);
+        return response?.data?.data || [];
+    } catch (error) {
+        console.error(error);
+        return [];
+    }        
+}

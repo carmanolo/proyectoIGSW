@@ -3,6 +3,7 @@ import { getUserByIdFromService,getUsersService, createUserService, updateUserSe
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../Handlers/responseHandlers.js";
 import { idValidation } from "../validations/modules/id.validation.js";
 import { integrityValidation, updateValidation, createValidation } from "../validations/user.validation.js";
+import { processTeachers } from "../utils/user.utils.js";
 
 export async function getUsers(req, res) {
   const users = await getUsersService();
@@ -158,6 +159,7 @@ export async function getTeacherList(req, res) {
   let teachers = DEFAULT_ARRAY;
   try {
     teachers = await getTeachersFromService();
+    teachers = processTeachers(teachers);
     return handleSuccess(res, 200, "Profesores encontrados con exito", teachers);
   } catch (error) {
     console.error(error);

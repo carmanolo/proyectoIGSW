@@ -120,3 +120,17 @@ export async function obtenerListaVehiculos() {
     return LISTA_POR_DEFECTO;
   }
 }
+
+export async function obtenerVehiculoPorPatente(patente) { 
+  try {
+    const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
+    const vehiculo = await vehiculoRepository.findOne({where: {es_nulo: false, patente: patente}});
+    if (!vehiculo) {
+      return null;
+    }
+    return vehiculo;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}

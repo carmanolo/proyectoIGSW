@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
 import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
 import { useEditAsignacion } from "@hooks/Clase/useEditAssignClase.jsx";
+import { useGetTeacherList } from "../hooks/Listas/useGetTeacherList.jsx";
+import { useGetVehiculoList } from "../hooks/Listas/useGetVehiculoList.jsx";
 
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
 import { getUserRole } from "../services/profile.service.js";
@@ -14,6 +16,12 @@ import { DUPageBrowser } from "../components/daisyui/DUPageBrowser.jsx";
 import { ACCESO_CLASES } from "../constants/permissions.constants.admin.jsx";
 
 const Clase = () => {
+    const [profesores, setProfesores] = useState([]);
+    const [vehiculos, setVehiculoList] = useState([]);
+
+    const [teacherList, fetchTeacherList] = useGetTeacherList(profesores, setProfesores);
+    const [vehiculoList, fetchVehiculoList] = useGetVehiculoList(vehiculos, setVehiculoList);
+
     const userRole = getUserRole();
     console.log(`EL ROL DEL USIARIO = ${userRole}`);
     const canCrudClases = ACCESO_CLASES.includes(userRole);
@@ -22,7 +30,7 @@ const Clase = () => {
 
     const [Clases, fetchClase] = useGetClase(claseData, setClaseData);
 
-    const { handleCreateClase } = useCreateClase(fetchClase);
+    const { handleCreateClase } = useCreateClase(setClaseData, teacherList, vehiculoList);
     const { handleEditClase } = editClase(fetchClase);
     const { handleDeleteClase } = DeleteClase(fetchClase);
 
@@ -35,7 +43,12 @@ const Clase = () => {
         if (typeof(fetchClase) === 'function') {
             fetchClase();
         }
-
+        if (typeof(fetchTeacherList) === 'function') {
+            fetchTeacherList();
+        }
+        if (typeof(fetchVehiculoList) === 'function') {
+            fetchVehiculoList();
+        }
     }, []);
 
     const limpiarFiltros = () => {
@@ -54,7 +67,7 @@ const Clase = () => {
     return (
         <div className="Clase-page">
             <div>
-                {canCrudClases && (<button className="btn btn-primary" onClick={() => handleCreateClase(fetchClase)}>Crear Clase</button>)}
+                {canCrudClases && (<button className="btn btn-primary" onClick={() => handleCreateClase(profesores, setProfesores)}>Crear Clase</button>)}
                 {canCrudClases && (
                     <button
                         className="btn btn-secondary"

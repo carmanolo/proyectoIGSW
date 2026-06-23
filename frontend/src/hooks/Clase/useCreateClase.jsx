@@ -4,7 +4,8 @@ import { createSwalField, createSwalDateField } from "../utils/swalField.jsx";
 import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
-import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA } from "../../constants/clase.constants.jsx";
+import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA, CLASE_PRACTICA } from "../../constants/clase.constants.jsx";
+import { getTeacherEmail } from "../../utils/ClaseUtils.js";
 
 const PRACTICA = 1;
 const TEORICA = 0;
@@ -69,7 +70,7 @@ async function confirmarTipoClase() {
 }
 */
 
-async function CreateClaseTeorica() {
+async function CreateClaseTeorica(profesores) {
 
   const { value: formValues } = await Swal.fire({
     title: "Crear Nueva Clase",
@@ -80,13 +81,13 @@ async function CreateClaseTeorica() {
         ${createSwalField(5, "Hora de Término", "")}
         ${StaticDropdownList(DIAS_SEMANA, "Día", "swal2-input6", "m-1", true)}
         ${StaticDropdownList(ESTADO_CLASE, "Estado", "swal2-input7", "m-1", false)}
+        ${StaticDropdownList(profesores, "Profesor", "swal2-input8", "m-1", false)}
     `,
     focusConfirm: false,
     showCancelButton: true,
     confirmButtonText: "Crear",
     cancelButtonText: "Cancelar",
     preConfirm: () => {
-      
         const tipo = CLASE_TEORICA;
         const descripcion = String(gebi('swal2-input2')?.value);
         const fecha_clase = gebi('swal2-input3')?.value;
@@ -94,8 +95,9 @@ async function CreateClaseTeorica() {
         const hora_fin = gebi('swal2-input5')?.value;
         const dia = String(gebi('swal2-input6')?.value);
         const estado_clase = String(gebi('swal2-input7')?.value);
-
-      return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase};
+        const email_profesor = getTeacherEmail(String(gebi('swal2-input8')?.value));
+        const id_auto = null;
+        return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, email_profesor, id_auto};
     },
     theme: "light",
   });
@@ -104,7 +106,46 @@ async function CreateClaseTeorica() {
   }
 }
 
-export const useCreateClase = (fetchClases) => {
+
+async function CreateClasePractica(profesores, vehiculos) {
+    console.log(profesores);
+    
+  const { value: formValues } = await Swal.fire({
+    title: "Crear Nueva Clase",
+    html: `
+        ${createSwalField(2, "Descripción", "")}
+        ${createSwalDateField(3, "fecha", "")} 
+        ${createSwalField(4, "Hora de Inicio", "")}
+        ${createSwalField(5, "Hora de Término", "")}
+        ${StaticDropdownList(DIAS_SEMANA, "Día", "swal2-input6", "m-1", true)}
+        ${StaticDropdownList(ESTADO_CLASE, "Estado", "swal2-input7", "m-1", false)}
+        ${StaticDropdownList(profesores, "Profesor", "swal2-input8", "m-1", false)}
+        ${StaticDropdownList(vehiculos, "Vehiculo", "swal2-input9", "m-1", false)}
+    `,
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: "Crear",
+    cancelButtonText: "Cancelar",
+    preConfirm: () => {
+        const tipo = CLASE_PRACTICA;
+        const descripcion = String(gebi('swal2-input2')?.value);
+        const fecha_clase = gebi('swal2-input3')?.value;
+        const hora_inicio = gebi('swal2-input4')?.value;
+        const hora_fin = gebi('swal2-input5')?.value;
+        const dia = String(gebi('swal2-input6')?.value);
+        const estado_clase = String(gebi('swal2-input7')?.value);
+        const email_profesor = getTeacherEmail(String(gebi('swal2-input8')?.value));
+        const patente_auto = String(gebi('swal2-input9')?.value);
+        return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, email_profesor, patente_auto};
+    },
+    theme: "light",
+  });
+  if (formValues) {
+    return formValues;
+  }
+}
+
+export const useCreateClase = (fetchClases, profesores, vehiculos) => {
     const handleCreateClase = async () => {
         let response = null;
         try {
@@ -114,11 +155,12 @@ export const useCreateClase = (fetchClases) => {
             if (tipoClase === PRACTICA) {
                 // TODO: Crear nuevo Swal para clases prácticas
                 console.log("CLASE PRÁCTICA");
-                formValues = await CreateClase();
+                formValues = await CreateClasePractica(profesores, vehiculos);
+                formValues = null;
             } else if (tipoClase === TEORICA) {
                 // TODO: Crear nuevo Swal para clases teóricas
                 console.log("CLASE TEÓRICA");
-                formValues = await CreateClase();
+                formValues = await CreateClaseTeorica(profesores);
             } else {
                 return;
             }
