@@ -2,6 +2,7 @@
 import User from "../entities/user.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+import { crearVehiculoNulo } from "../services/vehiculo.service.js";
 
 async function iniciarUsuarios() {
   try {
@@ -38,4 +39,12 @@ async function iniciarUsuarios() {
   }
 }
 
-export { iniciarUsuarios };
+async function iniciarVehiculos() {
+  try {
+    await crearVehiculoNulo();
+  } catch (error) {
+    console.error("Error al crear vehiculos:", error);
+  }
+}
+
+export { iniciarUsuarios, iniciarVehiculos };

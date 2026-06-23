@@ -1,5 +1,5 @@
 "use strict";
-import { getUserByIdFromService,getUsersService, createUserService, updateUserService, deleteUserService } from "../services/user.service.js";
+import { getUserByIdFromService,getUsersService, createUserService, updateUserService, deleteUserService, getTeachers as getTeachersFromService } from "../services/user.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../Handlers/responseHandlers.js";
 import { idValidation } from "../validations/modules/id.validation.js";
 import { integrityValidation, updateValidation, createValidation } from "../validations/user.validation.js";
@@ -151,6 +151,18 @@ export async function deleteUser(req, res) {
   }
 
   return handleSuccess(res, 200, "Usuario eliinado exitosamente", user);
+}
+
+export async function getTeacherList(req, res) {
+  const DEFAULT_ARRAY = [];
+  let teachers = DEFAULT_ARRAY;
+  try {
+    teachers = await getTeachersFromService();
+    return handleSuccess(res, 200, "Profesores encontrados con exito", teachers);
+  } catch (error) {
+    console.error(error);
+    return handleSuccess(res, 200, "Profesores no encontrados; disimular", DEFAULT_ARRAY);
+  }
 }
 
 /* export async function getUserById(req, res) {

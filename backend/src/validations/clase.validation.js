@@ -129,9 +129,7 @@ export const assignationValidation = Joi.object({
       "any.required": ESTADO_CLASE_OBLIGATORIA,
       "any.valid": `El estado de clase debe ser uno de los siguientes: ${ESTADO_CLASE.join(", ")}`,
     }),
-    id_auto: Joi.any().required().messages({
-      "any.required": "El auto es obligatorio",
-    }),
+    id_auto: Joi.any(),
     id_profesor: Joi.any().required().messages({
         "any.required": "El profesor es obligatorio",
     }),

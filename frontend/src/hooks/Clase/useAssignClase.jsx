@@ -22,8 +22,10 @@ export function useAsignarPorLote(){
 
         setLoading(true);
 
+        let response = null;
+
         try {
-            const response = await assignsClaseService({});
+            response = await assignsClaseService({});
             await fireDynamicSwal(response?.status, null, response?.message);
             return response;
         } catch (error) {

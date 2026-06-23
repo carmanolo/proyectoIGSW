@@ -7,8 +7,7 @@ import { useEffect, useState } from "react";
 import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
 import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
 import { useEditAsignacion } from "@hooks/Clase/useEditAssignClase.jsx";
-import { useEffect } from "react";
-import { useState } from "react";
+
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
 import { getUserRole } from "../services/profile.service.js";
 import { DUPageBrowser } from "../components/daisyui/DUPageBrowser.jsx";

@@ -1,14 +1,15 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Clase } from "../entities/clase.entity.js";
 import { User } from "../entities/user.entity.js";
+import { obtenerIdVehiculoNulo } from "./vehiculo.service.js";
 
 export async function getClaseSer(id_clase) {
     try{
         const claseRepository = AppDataSource.getRepository(Clase);
-        return await claseRepository.findOne({
-            where: {id_clase: id_clase}, relations: {users: true}, relations: {vehiculos: true}
+        const clase = await claseRepository.findOne({
+            where: {id_clase: id_clase}, relations: {users: true, vehiculos: true}
         });
-
+        return clase;
     }catch(error){
         console.error("Error al obtener la clase", error)
         return [null, "Error interno del servidor"]
@@ -131,6 +132,11 @@ export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inici
       //console.log( hora_inicio,hora_fin, dia);
       throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_profesor, id_auto });
     }
+
+    if (!id_auto) {
+      id_auto = await obtenerIdVehiculoNulo();
+    }
+
     const newClase = claseRepository.create({
       tipo, 
       descripcion,
@@ -157,6 +163,9 @@ export async function updateClaseSer(clase) {
     if(!clase){
       throw new Error("Funcion mal llamada");
     }
+    if (!(clase.id_auto)) {
+      clase.id_auto = await obtenerIdVehiculoNulo();
+    }    
     console.log(clase);
     const savedClase = await claseRepository.save(clase);
     console.log(savedClase);
@@ -200,6 +209,8 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
     //obtener clases
 
     const clase = await getClaseSer(id_clase);
+    console.log("CLASE: ", clase);
+
     if(!clase){
       return {data: null, message:"clase no encontrada", error: true};
     }
@@ -210,11 +221,14 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
       relations: {clase: true}
     });
 
+    console.log("ESTUDIANTES: ", estudiantes);
     if(!estudiantes || estudiantes.length === 0){
       return {data: null, message: "No hay estudiantes registrados", error: true}
     }
 
     //agregar solo los que aún no están en clase
+    console.log(clase);
+
     const idsExistentes = new Set(clase.users.map((u) => u.id));
     const nuevos = estudiantes.filter((u) => !idsExistentes.has(u.id));
     clase.users = [...clase.users, ...nuevos];

@@ -4,20 +4,46 @@ import { createSwalField, createSwalDateField } from "../utils/swalField.jsx";
 import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
-import { DIAS_SEMANA, TIPO_CLASE } from "../../constants/clase.constants.jsx";
+import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA } from "../../constants/clase.constants.jsx";
 
+const PRACTICA = 1;
+const TEORICA = 0;
+const CANCELADA = -1;
 
-async function CreateClase() {
+async function confirmarTipoClase() {
+    const { value: result } = await Swal.fire({
+        title: "Seleccione el tipo de clase",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Práctica",
+        denyButtonText: `Teórica`,
+        cancelButtonText: "Cancelar",
+        preConfirm: (result) => {
+            // console.log("EL RESULTADITO: ", result);
+            if (result === true) {
+                return PRACTICA;
+            } else if (result === false) {
+                return TEORICA;
+            }
+            return CANCELADA;
+        }
+    });
+
+    return Number(result);
+}
+
+/* async function CreateClase() {
 
   const { value: formValues } = await Swal.fire({
     title: "Crear Nueva Clase",
     html: `
-        ${StaticDropdownList(TIPO_CLASE, "Tipo", "swal2-input1", "m-1", true)}
+        ${StaticDropdownList(TIPO_CLASE, "Tipo", "swal2-input1", "m-1", false)}
         ${createSwalField(2, "Descripción", "")}
         ${createSwalDateField(3, "fecha", "")} 
         ${createSwalField(4, "Hora de Inicio", "")}
         ${createSwalField(5, "Hora de Término", "")}
         ${StaticDropdownList(DIAS_SEMANA, "Día", "swal2-input6", "m-1", true)}
+        ${StaticDropdownList(ESTADO_CLASE, "Estado", "swal2-input7", "m-1", false)}
     `,
     focusConfirm: false,
     showCancelButton: true,
@@ -31,8 +57,45 @@ async function CreateClase() {
         const hora_inicio = gebi('swal2-input4')?.value;
         const hora_fin = gebi('swal2-input5')?.value;
         const dia = String(gebi('swal2-input6')?.value);
+        const estado_clase = String(gebi('swal2-input7')?.value);
 
-      return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia};
+      return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase};
+    },
+    theme: "light",
+  });
+  if (formValues) {
+    return formValues;
+  }
+}
+*/
+
+async function CreateClaseTeorica() {
+
+  const { value: formValues } = await Swal.fire({
+    title: "Crear Nueva Clase",
+    html: `
+        ${createSwalField(2, "Descripción", "")}
+        ${createSwalDateField(3, "fecha", "")} 
+        ${createSwalField(4, "Hora de Inicio", "")}
+        ${createSwalField(5, "Hora de Término", "")}
+        ${StaticDropdownList(DIAS_SEMANA, "Día", "swal2-input6", "m-1", true)}
+        ${StaticDropdownList(ESTADO_CLASE, "Estado", "swal2-input7", "m-1", false)}
+    `,
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: "Crear",
+    cancelButtonText: "Cancelar",
+    preConfirm: () => {
+      
+        const tipo = CLASE_TEORICA;
+        const descripcion = String(gebi('swal2-input2')?.value);
+        const fecha_clase = gebi('swal2-input3')?.value;
+        const hora_inicio = gebi('swal2-input4')?.value;
+        const hora_fin = gebi('swal2-input5')?.value;
+        const dia = String(gebi('swal2-input6')?.value);
+        const estado_clase = String(gebi('swal2-input7')?.value);
+
+      return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase};
     },
     theme: "light",
   });
@@ -45,7 +108,21 @@ export const useCreateClase = (fetchClases) => {
     const handleCreateClase = async () => {
         let response = null;
         try {
-            const formValues = await CreateClase();
+            const tipoClase = await confirmarTipoClase();
+            let formValues = null;
+
+            if (tipoClase === PRACTICA) {
+                // TODO: Crear nuevo Swal para clases prácticas
+                console.log("CLASE PRÁCTICA");
+                formValues = await CreateClase();
+            } else if (tipoClase === TEORICA) {
+                // TODO: Crear nuevo Swal para clases teóricas
+                console.log("CLASE TEÓRICA");
+                formValues = await CreateClase();
+            } else {
+                return;
+            }
+            
             if(!formValues) return;
             response = await createClaseService(formValues);
             if (typeof(fetchClases) === "function") {

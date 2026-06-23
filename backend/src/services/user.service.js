@@ -1,4 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
+import { TEACHER_ROLE } from "../constants/user.constants.js";
 import { User } from "../entities/user.entity.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
 import { getErrorMessage, getResultLength, getServiceResult } from "./utils/utils.service.js";
@@ -155,4 +156,20 @@ export async function createUserService(newData) {
 export async function findUserByEmail(email) {
   const userRepository = AppDataSource.getRepository(User);
   return await userRepository.findOneBy({ email });
+}
+
+export async function getTeachers() {
+  const DEFAULT_ARRAY = [];
+
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const teachers = await userRepository.find({where: {rol: TEACHER_ROLE}});
+    if (!Array.isArray(teachers)) {
+      return DEFAULT_ARRAY;
+    }
+    return teachers;
+  } catch (error) {
+    console.error("Error en user.controller.js -> getTeachers()", error);
+    return DEFAULT_ARRAY;
+  }
 }

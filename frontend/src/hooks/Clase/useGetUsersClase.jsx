@@ -8,6 +8,7 @@ export function useClasesConUsuarios() {
   const [loading, setLoading]= useState(false);
 
   const fetchClasesConUsuarios = useCallback(async () => {
+    let response = null;
     setLoading(true);
     try {
       const data = await getUsersClase();
