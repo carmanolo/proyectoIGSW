@@ -5,7 +5,7 @@ import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA, CLASE_PRACTICA } from "../../constants/clase.constants.jsx";
-import { getTeacherEmail } from "../../utils/ClaseUtils.js";
+import { getTeacherEmail, processTeachers } from "../../utils/ClaseUtils.js";
 
 const PRACTICA = 1;
 const TEORICA = 0;
@@ -108,9 +108,7 @@ async function CreateClaseTeorica(profesores) {
 
 
 async function CreateClasePractica(profesores, vehiculos) {
-    console.log(profesores);
-    
-  const { value: formValues } = await Swal.fire({
+    const { value: formValues } = await Swal.fire({
     title: "Crear Nueva Clase",
     html: `
         ${createSwalField(2, "Descripción", "")}
@@ -146,6 +144,7 @@ async function CreateClasePractica(profesores, vehiculos) {
 }
 
 export const useCreateClase = (fetchClases, profesores, vehiculos) => {
+    profesores = processTeachers(profesores);
     const handleCreateClase = async () => {
         let response = null;
         try {
@@ -161,6 +160,7 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
                 // TODO: Crear nuevo Swal para clases teóricas
                 console.log("CLASE TEÓRICA");
                 formValues = await CreateClaseTeorica(profesores);
+                //console.log(profesores);
             } else {
                 return;
             }

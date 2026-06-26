@@ -1,6 +1,11 @@
 
 import { IoMdSettings } from 'react-icons/io';
 import { MdDelete } from "react-icons/md";
+//import { MdEmail } from "react-icons/md";
+
+//import Clase from '../../../pages/Clase';
+import DisplayTeacher from '../../../classes/DisplayTeacher.js';
+//import { ENABLED_MAILTO, SIN_ASIGNAR } from '../../../constants/clase.constants.jsx';
 
 /*import { NamePlusIcon } from './utils/NamePlusIcon.jsx';
 import { GiGraduateCap } from 'react-icons/gi';*/
@@ -18,17 +23,39 @@ const formatDate = (date) => {
 
 
 
-const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases) => {
+const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList) => {
   if (Array.isArray(data) && data.length > 0) {
-      return data.map((Clase) => (
+            /* console.log("EL DATA: ", JSON.stringify(data));
+            console.log("TEACHER LIST: ", JSON.stringify(teacherList));
+            const profesorCompleto = teacherList?.find(
+                (t) => t?.email === Clase.email_profesor || t?.email === Clase.id_profesor
+            );
+
+            let nombreProfesor = "Sin asignar";
+            if (typeof profesorCompleto === "string") {
+                nombreProfesor = profesorCompleto.split("(")[0].trim();
+            } else if (profesorCompleto && typeof profesorCompleto === "object") {
+                nombreProfesor =
+                    profesorCompleto.nombre ||
+                    (profesorCompleto.first_name
+                        ? `${profesorCompleto.first_name}`
+                        : null) ||
+                    (profesorCompleto.nombre && profesorCompleto.apellido
+                        ? `${profesorCompleto.nombre} ${profesorCompleto.apellido}`
+                        : null)||
+                    "Sin asignar";
+            } */
+      return data.map((Clase) => {
+        const currentTeacher = new DisplayTeacher(teacherList, Clase.id_profesor || 0);
+        return (
                   <tr key={"Class-"+Clase.id_clase}>
                       <td>
-                        <div className="badge badge-primary">
+                        <div className="badge badge-tertiary">
                           {String(Clase.tipo).toUpperCase()}
                         </div>
                       </td>
                       <td>
-                        <div className="badge badge-primary">
+                        <div className="badge badge-tertiary pt-3 pb-3">
                           {Clase.descripcion}
                         </div>
                       </td>
@@ -36,8 +63,18 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                       <td>{Clase.hora_inicio}</td>
                       <td>{Clase.hora_fin}</td>
                       <td>
-                        <div className="badge badge-secondary">
+                        <div className="badge badge-tertiary font-semibold">
                           {String(Clase.dia).toUpperCase()}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="badge badge-tertiary">
+                          {String(Clase.estado_clase).toUpperCase()}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="badge badge-quaternary">
+                          {currentTeacher.name}
                         </div>
                       </td>
                       {canCrudClases && (
@@ -56,7 +93,7 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                       </td>
                       )}
                   </tr>
-      ));
+      )});
   } else {
       return (
           <tr>
@@ -65,8 +102,9 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
       )
   }
 }
+//{currentTeacher.name !== SIN_ASIGNAR && ENABLED_MAILTO ? <a href={`mailto:${currentTeacher.email}`}><button className="btn btn-warning m-1"><MdEmail /></button></a> : <></>}
 
-export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases}) => {
+export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList}) => {
 
     return (
         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 m-3 max-h-full">
@@ -80,11 +118,13 @@ export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEd
                 <th>Hora Inicio</th>
                 <th>Hora Término</th>
                 <th>Día</th>
+                <th>Estado clase</th>
+                <th>Nombre profesor</th>
                 {canCrudClases && (<th>Acciones</th>)}             
             </tr>
             </thead>
             <tbody>
-              {mostrarClases(data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases)}
+              {mostrarClases(data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList)}
             </tbody>
         </table>
         </div>
