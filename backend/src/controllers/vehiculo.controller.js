@@ -1,13 +1,14 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { createVehiculoSer, getVehiculosSer, deleteVehiculoSer } from "../services/vehiculo.service.js";
+import { createVehiculoSer, getVehiculosSer, deleteVehiculoSer, obtenerListaVehiculos } from "../services/vehiculo.service.js";
+import { procesarVehiculos } from "../utils/vehiculo.utils.js";
 
 export async function createVehiculo(req, res) {
     try {
         if(!req.body){
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
-
+        
         const { patente, transmision } = req.body;
         
         if (!patente || !transmision) {
@@ -61,5 +62,17 @@ export async function deleteVehiculo(req, res) {
         return handleSuccess(res, 200, "Vehículo eliminado exitosamente");
     } catch (error) {
         return handleErrorServer(res, 500, "Error al eliminar vehículo");
+    }
+}
+
+export async function getVehiculoList(req, res) {
+    const DEFAULT_ARRAY = [];
+    try {
+        let vehiculoList = await obtenerListaVehiculos();
+        vehiculoList = procesarVehiculos(vehiculoList);
+        return handleSuccess(res, 200, "Vehiculos encontrados con éxito", vehiculoList);
+    } catch (error) {
+        console.error(error);
+        return handleSuccess(res, 200, "Error al obtener vehiculos; disimular", DEFAULT_ARRAY);
     }
 }

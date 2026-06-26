@@ -67,6 +67,15 @@ const router = createBrowserRouter([
         path: '/gestion-vehiculos',
         element: <GestionVehiculosSecretaria />
       },
+      /*{
+        path: '/planes',
+        element: <Planes/>
+      },
+      {
+        path: '/ventas',
+        element: <Ventas/>
+      }*/
+
     ]
   },
   {

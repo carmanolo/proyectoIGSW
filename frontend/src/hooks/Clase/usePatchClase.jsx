@@ -1,6 +1,6 @@
 import { patchClaseService } from "@services/clase.service.js";
 import Swal from "sweetalert2";
-import { createSwalField } from "../utils/swalField.jsx";
+import { createSwalField, createSwalDateField } from "../utils/swalField.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA,TIPO_CLASE } from "../../constants/clase.constants.jsx";
@@ -12,7 +12,7 @@ async function editClaseInfo(clase) {
         html: `
             ${StaticDropdownList(TIPO_CLASE, clase.tipo, "swal2-input1", "m-1", false)}
             ${createSwalField(2, "Descripcion", clase.descripcion)}
-            ${createSwalField(3, "fecha", clase.fecha_clase, "date")} 
+            ${createSwalDateField(3, "fecha", clase.fecha_clase)} 
             ${createSwalField(4, "Hora de Inicio", clase.hora_inicio)}
             ${createSwalField(5, "Hora de Término", clase.hora_fin)}
             ${StaticDropdownList(DIAS_SEMANA, clase.dia, "swal2-input6", "m-1", false)}
@@ -25,7 +25,10 @@ async function editClaseInfo(clase) {
             
             const tipo = document.getElementById('swal2-input1').value;
             const descripcion = document.getElementById('swal2-input2').value;
-            const fecha_clase = document.getElementById('swal2-input2').value;
+            const fecha_clase = document.getElementById('swal2-input3').value;
+
+            console.log("FECHA CLASE", fecha_clase);
+
             const hora_inicio = document.getElementById('swal2-input4').value;
             const hora_fin = document.getElementById('swal2-input5').value;
             const dia = document.getElementById('swal2-input6').value;
@@ -43,10 +46,9 @@ async function editClaseInfo(clase) {
         return {
             tipo: formValues.tipo,
             descripcion: formValues.descripcion,
-            fecha: formValues.fecha,
+            fecha_clase: formValues.fecha_clase,
             hora_inicio: formValues.hora_inicio,
             hora_fin: formValues.hora_fin,
-            sala: formValues.sala,
             dia: formValues.dia,
         };     
     }

@@ -1,8 +1,9 @@
 "use strict";
-import { getUserByIdFromService,getUsersService, createUserService, updateUserService, deleteUserService } from "../services/user.service.js";
+import { getUserByIdFromService,getUsersService, createUserService, updateUserService, deleteUserService, getTeachers as getTeachersFromService } from "../services/user.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../Handlers/responseHandlers.js";
 import { idValidation } from "../validations/modules/id.validation.js";
 import { integrityValidation, updateValidation, createValidation } from "../validations/user.validation.js";
+import { processTeachers } from "../utils/user.utils.js";
 
 export async function getUsers(req, res) {
   const users = await getUsersService();
@@ -62,21 +63,27 @@ export async function createUser(req, res) {
   }
 
   const user = await createUserService(req.body);
-  console.log(user);
+  // console.log("USER: ", user);
+  // throw Error("jaja");
+
   if(user.error){
     return handleErrorServer(res, 500, "Error interno del servidor", user.error, JSON.stringify(user));
   }
 
-  if (!user.data) {
-    if (user.details && user.details.endsWith("ya registrado")) {
+  console.log("USER DATA: ", user.data);
+  console.log("USER DATA NEGADO: ", !user.data);
+
+  if (Object.keys(user?.data || {})) {
+    if (user?.details && user?.details.endsWith("ya registrado")) {
       return handleErrorClient(res, 409, user.details, user);
     }
-
-    return handleErrorClient(res, 400, "Error al registar usuario",user);
+    if (user?.length !== 1) {
+      return handleErrorClient(res, 400, "Error al registar usuario",user);
+    }
+    return handleSuccess(res, 201, user.details, user.data);
+  } else {
+    return handleErrorServer(res, 500, "Error interno del servidor");
   }
-
-  return handleSuccess(res, 201, user.details, user.data);
-
 }
 
 export async function updateUser(req, res) {
@@ -145,6 +152,19 @@ export async function deleteUser(req, res) {
   }
 
   return handleSuccess(res, 200, "Usuario eliinado exitosamente", user);
+}
+
+export async function getTeacherList(req, res) {
+  const DEFAULT_ARRAY = [];
+  let teachers = DEFAULT_ARRAY;
+  try {
+    teachers = await getTeachersFromService();
+    teachers = processTeachers(teachers);
+    return handleSuccess(res, 200, "Profesores encontrados con exito", teachers);
+  } catch (error) {
+    console.error(error);
+    return handleSuccess(res, 200, "Profesores no encontrados; disimular", DEFAULT_ARRAY);
+  }
 }
 
 /* export async function getUserById(req, res) {

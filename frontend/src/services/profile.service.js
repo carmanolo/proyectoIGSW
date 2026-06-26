@@ -31,3 +31,13 @@ export const getUserRole = () => {
         return STUDENT_ROLE;
     }
 }
+
+export const getTeacherList = async () => {
+    try {
+        const response = await axios.get(`/users/frontend/getTeacherList`);
+        return response?.data?.data || [];
+    } catch (error) {
+        console.error(error);
+        return [];
+    }    
+}
