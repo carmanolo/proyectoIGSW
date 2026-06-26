@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { createVehiculoSer, getVehiculosSer, deleteVehiculoSer, obtenerListaVehiculos } from "../services/vehiculo.service.js";
+import { createVehiculoSer, getVehiculosSer, deleteVehiculoSer, obtenerListaVehiculos, updateVehiculoSer } from "../services/vehiculo.service.js";
 import { procesarVehiculos } from "../utils/vehiculo.utils.js";
 
 export async function createVehiculo(req, res) {
@@ -74,5 +74,31 @@ export async function getVehiculoList(req, res) {
     } catch (error) {
         console.error(error);
         return handleSuccess(res, 200, "Error al obtener vehiculos; disimular", DEFAULT_ARRAY);
+    }
+}
+
+export async function updateVehiculo(req, res) {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return handleErrorClient(res, 400, "ID requerido");
+        }
+
+        const { patente, transmision, estado } = req.body;
+        
+        if (transmision && transmision !== "mecanico" && transmision !== "automatico") {
+            return handleErrorClient(res, 400, "Transmisión inválida (mecanico/automatico)");
+        }
+
+        const [vehiculo, error] = await updateVehiculoSer(id, { patente, transmision, estado });
+
+        if (error) {
+            return handleErrorClient(res, 400, error);
+        }
+
+        return handleSuccess(res, 200, "Vehículo actualizado exitosamente", vehiculo);
+    } catch (error) {
+        console.error("error al actualizar vehiculo", error);
+        return handleErrorServer(res, 500, "Error al actualizar vehículo");
     }
 }

@@ -98,3 +98,29 @@ export async function aprobarVentaSer(ventaId) {
     return [null, "Error interno del servidor al aprobar venta"];
   }
 }
+
+export async function rechazarVentaSer(ventaId) {
+  try {
+    const ventaRepository = AppDataSource.getRepository(Venta);
+
+    const venta = await ventaRepository.findOne({
+      where: { id: Number(ventaId) }
+    });
+
+    if (!venta) {
+      return [null, "La venta no existe"];
+    }
+
+    if (venta.estado !== "pendiente") {
+      return [null, "Solo se pueden rechazar ventas pendientes"];
+    }
+
+    venta.estado = "rechazada";
+    await ventaRepository.save(venta);
+
+    return [venta, null];
+  } catch (error) {
+    console.error("Error al rechazar la venta:", error);
+    return [null, "Error interno del servidor al rechazar venta"];
+  }
+}

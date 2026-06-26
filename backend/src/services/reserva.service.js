@@ -19,6 +19,10 @@ export async function createReservaSer(data) {
     const vehiculo = await vehiculoRepository.findOneBy({ id: Number(vehiculoId) });
     if (!vehiculo) return [null, "Vehículo no encontrado"];
 
+    if (vehiculo.estado !== "disponible") {
+      return [null, `El vehículo seleccionado no se encuentra disponible (estado: ${vehiculo.estado})`];
+    }
+
     const clase = await claseRepository.findOneBy({ id_clase: Number(claseId) });
     if (!clase) return [null, "Clase no encontrada"];
 
@@ -40,6 +44,20 @@ export async function createReservaSer(data) {
 
     if (reservaExistente) {
       return [null, "El vehículo ya se encuentra reservado para esa fecha y clase"];
+    }
+
+    // Validar que el alumno no tenga ya una reserva para esa misma clase y fecha
+    const reservaExistenteUser = await reservaRepository.findOne({
+      where: {
+        user: { id: Number(userId) },
+        clase: { id_clase: Number(claseId) },
+        fecha: fecha,
+        estado: "pendiente"
+      }
+    });
+
+    if (reservaExistenteUser) {
+      return [null, "El alumno ya tiene una reserva para esa fecha y clase"];
     }
 
     // Descontar clase si corresponde
@@ -103,10 +121,23 @@ export async function updateReservaEstadoSer(id, estado) {
     }
 
     const reservaRepository = AppDataSource.getRepository(Reserva);
-    const reserva = await reservaRepository.findOneBy({ id: Number(id) });
+    const userRepository = AppDataSource.getRepository(User);
+    
+    const reserva = await reservaRepository.findOne({
+      where: { id: Number(id) },
+      relations: { user: true }
+    });
 
     if (!reserva) {
       return [null, "Reserva no encontrada"];
+    }
+
+    // Si la reserva pasa a 'cancelada' desde 'pendiente' y no era pre_evaluacion, devolvemos el cupo al usuario
+    if (estado === "cancelada" && reserva.estado === "pendiente" && reserva.tipo !== "pre_evaluacion") {
+      if (reserva.user) {
+        reserva.user.clases_disponibles += 1;
+        await userRepository.save(reserva.user);
+      }
     }
 
     reserva.estado = estado;

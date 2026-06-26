@@ -134,3 +134,31 @@ export async function obtenerVehiculoPorPatente(patente) {
     return null;
   }
 }
+
+export async function updateVehiculoSer(id, data) {
+  try {
+    const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
+    const vehiculo = await vehiculoRepository.findOneBy({ id: Number(id) });
+    
+    if (!vehiculo) {
+      return [null, "Vehículo no encontrado"];
+    }
+
+    if (data.patente && data.patente !== vehiculo.patente) {
+      const existe = await vehiculoRepository.findOneBy({ patente: data.patente });
+      if (existe) {
+        return [null, "La patente ya está registrada en otro vehículo"];
+      }
+    }
+
+    if (data.patente) vehiculo.patente = data.patente;
+    if (data.transmision) vehiculo.transmision = data.transmision;
+    if (data.estado) vehiculo.estado = data.estado;
+
+    await vehiculoRepository.save(vehiculo);
+    return [vehiculo, null];
+  } catch (error) {
+    console.error("Error al actualizar vehículo:", error);
+    return [null, "Error interno del servidor al actualizar vehículo"];
+  }
+}

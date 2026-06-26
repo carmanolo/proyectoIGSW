@@ -50,9 +50,6 @@ export const SidebarBase = ({pageContent}) => {
                     </>
                 )}
                 {user?.rol === 'secretario' && (
-                    <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
-                )}
-                {user?.rol === 'secretario' && (
                     <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
                 )}
                 {user?.rol === 'secretario' && (
