@@ -5,7 +5,7 @@ export const processTeachers = (teachers) => {
         return DEFAULT_TEACHERS;
     }
     const processedTeachers = teachers.map((teacher) => {
-        return (String(teacher.nombre) || "Juanito Perez") + " (" + (String(teacher.email) || "juanitoperez@escuela.cl") + ")"; 
+        return (String(teacher.id || "0")) + ". " + (String(teacher.nombre) || "Juanito Perez") + " (" + (String(teacher.email) || "juanitoperez@escuela.cl") + ")"; 
     });
     return processedTeachers;
 }

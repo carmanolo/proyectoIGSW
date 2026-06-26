@@ -23,14 +23,14 @@ const Clase = () => {
     const [vehiculoList, fetchVehiculoList] = useGetVehiculoList(vehiculos, setVehiculoList);
 
     const userRole = getUserRole();
-    console.log(`EL ROL DEL USIARIO = ${userRole}`);
+    //console.log(`EL ROL DEL USIARIO = ${userRole}`);
     const canCrudClases = ACCESO_CLASES.includes(userRole);
 
     const [claseData, setClaseData] = useState([]);
 
     const [Clases, fetchClase] = useGetClase(claseData, setClaseData);
 
-    const { handleCreateClase } = useCreateClase(setClaseData, teacherList, vehiculoList);
+    const { handleCreateClase } = useCreateClase(setClaseData, profesores, vehiculoList);
     const { handleEditClase } = editClase(fetchClase);
     const { handleDeleteClase } = DeleteClase(fetchClase);
 
@@ -46,6 +46,8 @@ const Clase = () => {
         if (typeof(fetchTeacherList) === 'function') {
             fetchTeacherList();
         }
+         /*console.log("teacherList:", teacherList);
+        console.log("claseData[0]:", claseData[0]);*/
         if (typeof(fetchVehiculoList) === 'function') {
             fetchVehiculoList();
         }
@@ -93,7 +95,7 @@ const Clase = () => {
                 )}
             </div>
             <div className="Clase2-page">
-                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases}/>
+                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases} teacherList={teacherList}/>
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>
