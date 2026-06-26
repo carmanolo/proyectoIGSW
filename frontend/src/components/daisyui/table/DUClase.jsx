@@ -1,11 +1,11 @@
 
 import { IoMdSettings } from 'react-icons/io';
 import { MdDelete } from "react-icons/md";
-import { MdEmail } from "react-icons/md";
+//import { MdEmail } from "react-icons/md";
 
-import Clase from '../../../pages/Clase';
+//import Clase from '../../../pages/Clase';
 import DisplayTeacher from '../../../classes/DisplayTeacher.js';
-import { ENABLED_MAILTO, SIN_ASIGNAR } from '../../../constants/clase.constants.jsx';
+//import { ENABLED_MAILTO, SIN_ASIGNAR } from '../../../constants/clase.constants.jsx';
 
 /*import { NamePlusIcon } from './utils/NamePlusIcon.jsx';
 import { GiGraduateCap } from 'react-icons/gi';*/
