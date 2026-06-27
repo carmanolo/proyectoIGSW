@@ -16,7 +16,7 @@ async function confirmarTipoClase() {
         title: "Seleccione el tipo de clase",
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: "Práctica",
+        confirmButtonText: `Práctica`,
         denyButtonText: `Teórica`,
         cancelButtonText: "Cancelar",
         preConfirm: (result) => {
@@ -29,6 +29,7 @@ async function confirmarTipoClase() {
             return CANCELADA;
         }
     });
+
 
     return Number(result);
 }
@@ -155,7 +156,7 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
                 // TODO: Crear nuevo Swal para clases prácticas
                 console.log("CLASE PRÁCTICA");
                 formValues = await CreateClasePractica(profesores, vehiculos);
-                formValues = null;
+                //formValues = null;
             } else if (tipoClase === TEORICA) {
                 // TODO: Crear nuevo Swal para clases teóricas
                 console.log("CLASE TEÓRICA");

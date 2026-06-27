@@ -37,7 +37,7 @@ export async function createClase(req, res) {
             delete req.body.email_profesor;
         }
         if (req?.body?.patente_auto) {
-            req.body.id_auto = ((await obtenerVehiculoPorPatente(req.body.patente_auto)) || {id: 0})?.id;
+            req.body.id_auto = ((await obtenerVehiculoPorPatente(req.body.patente_auto)) || {id: 0})?.id_auto;
             delete req.body.patente_auto;
         }
 
