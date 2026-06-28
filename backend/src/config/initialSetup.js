@@ -29,7 +29,7 @@ async function iniciarUsuarios() {
         nombre:"Leonardo Araya",
         email: "leo.@gmail.com",
         password: await encryptPassword("alum2026"),
-        rol: "alumnos",
+        rol: "estudiante",
       })),
     ]);
 
