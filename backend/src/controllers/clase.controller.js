@@ -5,7 +5,7 @@ import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
 import { SHOW_ERRORS } from "../constants/settings.constants.js";
-import { findUserByEmail } from "../services/user.service.js";
+import { findTeacherByEmail, findUserByEmail } from "../services/user.service.js";
 import { obtenerVehiculoPorPatente } from "../services/vehiculo.service.js";
 
 const timeValidationHelper = (hora_inicio, hora_termino) => {
@@ -33,7 +33,7 @@ export async function createClase(req, res) {
         }
         
         if (req?.body?.email_profesor) {
-            req.body.id_profesor = ((await findUserByEmail(req.body.email_profesor)) || {id: 0})?.id;
+            req.body.id_profesor = ((await findTeacherByEmail(req.body.email_profesor)) || {id: 0})?.id;
             delete req.body.email_profesor;
         }
         if (req?.body?.patente_auto) {
@@ -85,13 +85,33 @@ export async function getClases(req, res) {
 }
 
 export async function patchClase(req, res) {
+    let vehiculoEncontrado = null;
+
     try {
         if (!req || !req.params || !req.body) {
+            if (SHOW_ERRORS) {
+                console.log("REQ: ", req);
+                console.log("REQ PARAMS: ", req?.params || undefined);
+                console.log("REQ BODY: ", req?.body || undefined);
+            }
             return res.status(400).json({message: "Datos no proporcionados"});
+        }
+        if (req?.body?.email_profesor) {
+            req.body.id_profesor = ((await findTeacherByEmail(req.body.email_profesor)) || {id: 0})?.id;
+            delete req.body.email_profesor;
+        }
+        if (req?.body?.patente_auto) {
+            vehiculoEncontrado = ((await obtenerVehiculoPorPatente(req.body.patente_auto)) || {id: 0});
+            req.body.id_auto = vehiculoEncontrado.id_auto;
+            delete req.body.patente_auto;
         }
 
         const { id } = req.params;
         if(!id){
+            if (SHOW_ERRORS) {
+                console.log("NO HAY ID XDDDD");
+                console.log("REQ PARAMS: ", req?.params || undefined);
+            }
             return res.status(400).json({ message: "El ID de la clase es obligatorio" });
         }
 
@@ -107,7 +127,10 @@ export async function patchClase(req, res) {
             req.body.tipo = String(req.body.tipo).toLowerCase().trim()
         }
 
-        if (req.body.tipo === "tipo" || req.body.tipo === "tipo") {
+        if (req.body.tipo === "tipo") {
+            if (SHOW_ERRORS) {
+                console.log("TIPO: ", req.body.tipo);
+            }
             return res.status(400).json({ message: "Debe seleccionar un solo tipo"});
         }
 
@@ -115,33 +138,59 @@ export async function patchClase(req, res) {
             req.body.dia = String(req.body.dia).toLowerCase().trim()
         }
 
-        if (req.body.dia === "día" || req.body.dia === "dia") {
+        if (req.body.dia === "día") {
+            if (SHOW_ERRORS) {
+                console.log("DIA: ", req.body.dia);
+            }            
             return res.status(400).json({ message: "Debe seleccionar un día de la semana"});
         }
 
+        if (req.body.estado_clase === "Estado") {
+            if (SHOW_ERRORS) {
+                console.log("ESTADO CLASE: ", req.body.estado_clase);
+            }     
+            return res.status(400).json({ message: "Debe seleccionar un estado de la semana"});
+        }
+
+        console.log(req.body.estado_clase);
+
         const { error } = integrityValidation.validate(req.body);
         if (error) {
+            if (SHOW_ERRORS) {
+                console.log("REQ BODY: ", req.body);
+                console.log("ERROR: ", error.message || undefined);
+            }                 
             return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
         }
 
         let result =updateValidation.validate(req.body);
 
         if(result.error){
+            if (SHOW_ERRORS) {
+                console.log("REQ BODY: ", req.body);
+                console.log("ERROR: ", result.error.message || undefined);
+            }                      
             return handleErrorClient(res, 400, "falto actualizar parametros", result.error.message);
         }
 
         const claseUpdate = await getClaseSer(id);
 
         if(!claseUpdate){
-            return handleErrorClient(res, 404, "Clase no encontrado");
+            return handleErrorClient(res, 404, "Clase no encontrada");
         }
 
         Object.assign(claseUpdate, req.body);
+        if (vehiculoEncontrado && vehiculoEncontrado.patente) {
+            Object.assign(claseUpdate, {vehiculos: vehiculoEncontrado});
+        }
 
         const updatedClase = await updateClaseSer(claseUpdate);
         if(!(updatedClase.data)){
             if(!updatedClase.error){
                 return handleErrorClient(res, 500, updatedClase.message);
+            }
+            if (SHOW_ERRORS) {
+                console.log("ERROR?:", updatedClase?.message || undefined);
             }
             return handleErrorClient(res, 400, updatedClase.message);
         }

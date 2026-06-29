@@ -70,3 +70,29 @@ export const processTeachers = (teachers) => {
     });
     return newTeachers;
 }
+
+export const processCars = (cars) => {
+    console.log("LOS AUTOS: ", JSON.stringify(cars));
+
+    const DEFAULT_CAR = "CR-7C-R7";
+
+    if (!Array.isArray(cars)) {
+        return [];
+    }
+
+    const newCars = cars.map((car) => {
+        try {
+            if (typeof(car) !== "string") {
+                console.error("Auto desconocido: ", String(car));
+                return DEFAULT_CAR;
+            }
+
+            return car.split(". ")[1].trim() || DEFAULT_CAR;
+        } catch (error) {
+            console.error(error);
+            return DEFAULT_CAR;
+        }
+    });
+
+    return newCars;
+}

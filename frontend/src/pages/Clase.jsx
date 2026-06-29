@@ -31,7 +31,7 @@ const Clase = () => {
     const [Clases, fetchClase] = useGetClase(claseData, setClaseData);
 
     const { handleCreateClase } = useCreateClase(fetchClase, profesores, vehiculoList);
-    const { handleEditClase } = editClase(fetchClase);
+    const { handleEditClase } = editClase(fetchClase, profesores, vehiculos);
     const { handleDeleteClase } = DeleteClase(fetchClase);
 
     const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
@@ -95,7 +95,7 @@ const Clase = () => {
                 )}
             </div>
             <div className="Clase2-page">
-                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases} teacherList={teacherList}/>
+                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases} teacherList={teacherList} vehiculoList={vehiculoList}/>
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>

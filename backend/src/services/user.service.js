@@ -1,4 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
+import { SHOW_ERRORS } from "../constants/settings.constants.js";
 import { TEACHER_ROLE } from "../constants/user.constants.js";
 import { User } from "../entities/user.entity.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
@@ -155,7 +156,22 @@ export async function createUserService(newData) {
 
 export async function findUserByEmail(email) {
   const userRepository = AppDataSource.getRepository(User);
-  return await userRepository.findOneBy({ email });
+  return await userRepository.findOne({ where: {email: email} });
+}
+
+export async function findTeacherByEmail(email) {
+  if (SHOW_ERRORS) {
+    console.log("EMAIL: ", email);
+  }
+
+  const user = (await findUserByEmail(email)) || null;
+  if (SHOW_ERRORS) {
+    console.log("¿Encontró al profesor?:", JSON.stringify(user));
+  }
+  if (user && (user?.rol !== TEACHER_ROLE)) {
+    return null;
+  }
+  return user;
 }
 
 export async function getTeachers() {

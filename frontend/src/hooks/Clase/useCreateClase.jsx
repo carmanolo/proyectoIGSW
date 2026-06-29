@@ -5,7 +5,7 @@ import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA, CLASE_PRACTICA } from "../../constants/clase.constants.jsx";
-import { getTeacherEmail, processTeachers } from "../../utils/ClaseUtils.js";
+import { getTeacherEmail, processCars, processTeachers } from "../../utils/ClaseUtils.js";
 
 const PRACTICA = 1;
 const TEORICA = 0;
@@ -146,6 +146,8 @@ async function CreateClasePractica(profesores, vehiculos) {
 
 export const useCreateClase = (fetchClases, profesores, vehiculos) => {
     profesores = processTeachers(profesores);
+    vehiculos = processCars(vehiculos);
+    
     const handleCreateClase = async () => {
         let response = null;
         try {

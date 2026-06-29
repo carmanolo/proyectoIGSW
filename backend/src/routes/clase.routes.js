@@ -13,7 +13,7 @@ import { getClases,
 const router = Router();
 
 router.use(authMiddleware);
-router.get("/asignar", getClasesConUsuarios);
+router.get("/asignar", authorizeRoles("secretario","profesor"), getClasesConUsuarios);
 router.get("/",getClases);
 router.post("/crear",authorizeRoles("secretario") ,createClase);
 router.post("/asignar",authorizeRoles("secretario"), asignarPorLote);
