@@ -106,11 +106,22 @@ export async function getClasesConUsuarioSer(){
   }
 }
 
-export async function getClasesSer() {
+export async function getClasesSer(userId, userRole) {
     try {
         const claseRepository = AppDataSource.getRepository(Clase);
 
-        const clases = await claseRepository.find();
+        let clases;
+
+        //filtra por id usuarios asignados
+
+        if(userRole === "alumnos" || userRole === "estudiante"){
+          clases = await claseRepository.find({where: { users:{id: userId} }});
+
+        }else{
+          clases = await claseRepository.find();
+        }
+
+        //const clases = await claseRepository.find();
 
         if (!clases || clases.length === 0) return [null, "No hay clases"];
 

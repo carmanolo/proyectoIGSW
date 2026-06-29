@@ -30,7 +30,7 @@ const Clase = () => {
 
     const [Clases, fetchClase] = useGetClase(claseData, setClaseData);
 
-    const { handleCreateClase } = useCreateClase(setClaseData, profesores, vehiculoList);
+    const { handleCreateClase } = useCreateClase(fetchClase, profesores, vehiculoList);
     const { handleEditClase } = editClase(fetchClase);
     const { handleDeleteClase } = DeleteClase(fetchClase);
 

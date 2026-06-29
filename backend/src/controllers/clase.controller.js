@@ -71,7 +71,11 @@ export async function createClase(req, res) {
 }
 
 export async function getClases(req, res) {
-    const claseData = await getClasesSer()
+
+    const userId = req.user.id || req.user.sub;
+    const userRole = req.user.rol;
+
+    const claseData = await getClasesSer(userId, userRole)
     //console.log(horarioData);
     if(!claseData){
         return handleErrorClient(res, 400, "Clases no encontrados");
