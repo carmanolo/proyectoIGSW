@@ -14,8 +14,10 @@ import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
 
 import HistorialClasesAlumno from '@pages/HistorialClasesAlumno';
-import AgendarClaseAlumno from '@pages/AgendarClaseAlumno';
 import GestionVehiculosSecretaria from '@pages/GestionVehiculosSecretaria';
+import GenerarQRProfesor from '@pages/GenerarQRProfesor';
+import EscanearQRAlumno from '@pages/EscanearQRAlumno';
+import VerAsistenciaProfesor from '@pages/VerAsistenciaProfesor';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -55,12 +57,20 @@ const router = createBrowserRouter([
         element: <HistorialClasesAlumno />
       },
       {
-        path: '/agendar-clase',
-        element: <AgendarClaseAlumno />
-      },
-      {
         path: '/gestion-vehiculos',
         element: <GestionVehiculosSecretaria />
+      },
+      {
+        path: '/generar-qr-clase',
+        element: <GenerarQRProfesor />
+      },
+      {
+        path: '/escanear-asistencia',
+        element: <EscanearQRAlumno />
+      },
+      {
+        path: '/ver-asistencia',
+        element: <VerAsistenciaProfesor />
       },
       /*{
         path: '/planes',
