@@ -39,8 +39,8 @@ export async function registrarVenta(req, res) {
         if (!targetUser) {
             return handleErrorClient(res, 404, "Usuario no encontrado");
         }
-        if (targetUser.rol !== "alumnos") {
-            return handleErrorClient(res, 403, "Solo los usuarios con rol 'alumnos' pueden recibir packs");
+        if (targetUser.rol !== "estudiante") {
+            return handleErrorClient(res, 403, "Solo los usuarios con rol 'estudiante' pueden recibir packs");
         }
 
         const [resultVenta, errorServicio] = await venderPackSer(userId, cantidad, comprobante_url);
