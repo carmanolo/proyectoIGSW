@@ -5,7 +5,8 @@ import {
     listarVentasUsuarioService, 
     aprobarVentaService, 
     eliminarVentaService,
-    listarVentasService
+    listarVentasService,
+    rechazarVentaService
 } from '../services/venta.service';
 
 export const useVentas = () => {
@@ -68,6 +69,20 @@ export const useVentas = () => {
         }
     };
 
+    const rechazarVenta = async (ventaId) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await rechazarVentaService(ventaId);
+            return response;
+        } catch (err) {
+            setError(err.message || 'Error al rechazar la venta');
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const eliminarVenta = async (ventaId) => {
         setLoading(true);
         setError(null);
@@ -104,6 +119,7 @@ export const useVentas = () => {
         getHistorialVentas,
         getAllVentas,
         aprobarVenta,
+        rechazarVenta,
         eliminarVenta
     };
 };

@@ -4,7 +4,7 @@ import { useVentas } from '../hooks/useVentas';
 
 export default function GestionarVentas() {
   const { user } = useAuth();
-  const { getAllVentas, aprobarVenta, eliminarVenta, loading, error } = useVentas();
+  const { getAllVentas, aprobarVenta, rechazarVenta, eliminarVenta, loading, error } = useVentas();
   
   const [ventas, setVentas] = useState([]);
   const [mensaje, setMensaje] = useState(null);
@@ -34,6 +34,19 @@ export default function GestionarVentas() {
       cargarVentas();
     } catch (err) {
       setMensaje({ type: 'error', text: err.message || 'Error al aprobar la venta.' });
+    }
+  };
+
+  const handleRechazar = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas rechazar esta venta?")) return;
+    
+    setMensaje(null);
+    try {
+      await rechazarVenta(id);
+      setMensaje({ type: 'success', text: 'Venta rechazada correctamente.' });
+      cargarVentas();
+    } catch (err) {
+      setMensaje({ type: 'error', text: err.message || 'Error al rechazar la venta.' });
     }
   };
 
@@ -131,13 +144,22 @@ export default function GestionarVentas() {
                     </td>
                     <td className="px-4 py-3 text-sm text-right space-x-2">
                       {venta.estado === 'pendiente' && (
-                        <button
-                          onClick={() => handleAprobar(venta.id)}
-                          disabled={loading}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition disabled:opacity-50"
-                        >
-                          Aprobar
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleAprobar(venta.id)}
+                            disabled={loading}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition disabled:opacity-50"
+                          >
+                            Aprobar
+                          </button>
+                          <button
+                            onClick={() => handleRechazar(venta.id)}
+                            disabled={loading}
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition disabled:opacity-50"
+                          >
+                            Rechazar
+                          </button>
+                        </>
                       )}
                       <button
                         onClick={() => handleEliminar(venta.id)}
