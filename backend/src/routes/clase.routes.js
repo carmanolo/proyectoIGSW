@@ -8,7 +8,8 @@ import { getClases,
         deleteClase, 
         asignarPorLote, 
         getClasesConUsuarios, 
-        editarAsignacionPorLote } from "../controllers/clase.controller.js";
+        editarAsignacionPorLote,
+        asignacionIndividual } from "../controllers/clase.controller.js";
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.get("/asignar", authorizeRoles("secretario","profesor"), getClasesConUsua
 router.get("/",getClases);
 router.post("/crear",authorizeRoles("secretario") ,createClase);
 router.post("/asignar",authorizeRoles("secretario"), asignarPorLote);
+router.patch("/asignar_practica/:id", authorizeRoles("secretario"), asignacionIndividual);
 router.patch("/asignar/:id",authorizeRoles("secretario"), editarAsignacionPorLote);
 router.patch("/editar/:id", authorizeRoles("secretario","profesor"), patchClase);
 router.delete("/:id", authorizeRoles("secretario"), deleteClase);

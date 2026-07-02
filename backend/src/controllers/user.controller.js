@@ -1,9 +1,9 @@
 "use strict";
-import { getUserByIdFromService,getUsersService, createUserService, updateUserService, deleteUserService, getTeachers as getTeachersFromService } from "../services/user.service.js";
+import { getUserByIdFromService,getUsersService, createUserService, updateUserService, deleteUserService, getTeachers as getTeachersFromService, getStudents as getStudentsFromService } from "../services/user.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../Handlers/responseHandlers.js";
 import { idValidation } from "../validations/modules/id.validation.js";
 import { integrityValidation, updateValidation, createValidation } from "../validations/user.validation.js";
-import { processTeachers } from "../utils/user.utils.js";
+import { processTeachers, processStudents } from "../utils/user.utils.js";
 
 export async function getUsers(req, res) {
   const users = await getUsersService();
@@ -166,6 +166,24 @@ export async function getTeacherList(req, res) {
     return handleSuccess(res, 200, "Profesores no encontrados; disimular", DEFAULT_ARRAY);
   }
 }
+
+export async function getStudentList(req, res) {
+  const DEFAULT_ARRAY = [];
+  let students = DEFAULT_ARRAY;
+  try {
+    students = await getStudentsFromService();
+    students = processStudents(students);
+    if (!Array.isArray(students) || students.length === 0) {
+      return handleSuccess(res, 204, "No hay estudiantes para mostrar", students);
+    }
+    return handleSuccess(res, 200, "Estudiantes encontrados con exito", students);
+  } catch (error) {
+    console.error(error);
+    return handleSuccess(res, 200, "Estudiantes no encontrados; disimular", DEFAULT_ARRAY);
+  }
+}
+
+
 
 /* export async function getUserById(req, res) {
   const { id } = req.params;

@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
 import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
 import { useEditAsignacion } from "@hooks/Clase/useEditAssignClase.jsx";
+import { useAsignarClasePractica } from "@hooks/Clase/useAssignClasePractica.jsx";
 import { useGetTeacherList } from "../hooks/Listas/useGetTeacherList.jsx";
 import { useGetVehiculoList } from "../hooks/Listas/useGetVehiculoList.jsx";
+import { useGetStudentList } from "../hooks/Listas/useGetStudentList.jsx";
 
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
 import { getUserRole } from "../services/profile.service.js";
@@ -18,9 +20,11 @@ import { ACCESO_CLASES } from "../constants/permissions.constants.admin.jsx";
 const Clase = () => {
     const [profesores, setProfesores] = useState([]);
     const [vehiculos, setVehiculoList] = useState([]);
+    const [estudaintes, setEstudiantes] = useState([]);
 
     const [teacherList, fetchTeacherList] = useGetTeacherList(profesores, setProfesores);
     const [vehiculoList, fetchVehiculoList] = useGetVehiculoList(vehiculos, setVehiculoList);
+    const [studentList, fetchStudentList] = useGetStudentList(estudaintes, setEstudiantes);
 
     const userRole = getUserRole();
     //console.log(`EL ROL DEL USIARIO = ${userRole}`);
@@ -37,6 +41,7 @@ const Clase = () => {
     const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
     const { loading: loadingLote, asignarPorLote} =useAsignarPorLote();
     const {loading: loadingEditarAsignacion, editarAsignacion} = useEditAsignacion();
+    const {loading: loadingAsignarUsuarioIndividual, asignarUsuarioIndividual } = useAsignarClasePractica();
     const [buscar, setBuscar] = useState("");
 
     useEffect(() => {
@@ -50,6 +55,10 @@ const Clase = () => {
         console.log("claseData[0]:", claseData[0]);*/
         if (typeof(fetchVehiculoList) === 'function') {
             fetchVehiculoList();
+        }
+
+        if (typeof(fetchStudentList) === 'function') {
+            fetchStudentList();
         }
     }, []);
 
@@ -79,7 +88,7 @@ const Clase = () => {
                         {loadingLote ? 'Asignando...' : 'Asignar por lote'}
                     </button>
                 )}
-                {(
+                {canCrudClases &&(
                     <button
                         className="btn btn-accent"
                         onClick={fetchClasesConUsuarios}
@@ -95,7 +104,16 @@ const Clase = () => {
                 )}
             </div>
             <div className="Clase2-page">
-                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases} teacherList={teacherList} vehiculoList={vehiculoList}/>
+                <DUClaseTable data={currentPageContent || []}  
+                    handleEditClase={handleEditClase} 
+                    handleDeleteClase={handleDeleteClase} 
+                    handleEditarAsignacion={editarAsignacion} 
+                    loadingEditarAsignacion={loadingEditarAsignacion} 
+                    handleAsignarUsuarioIndividual={(id_clase) => asignarUsuarioIndividual(id_clase, studentList)}
+                    loadingAsignarUsuarioIndividual={loadingAsignarUsuarioIndividual}
+                    canCrudClases={canCrudClases} 
+                    teacherList={teacherList} 
+                    vehiculoList={vehiculoList}/>
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>

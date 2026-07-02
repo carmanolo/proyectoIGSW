@@ -54,7 +54,7 @@ npm run preview
 ```
 src/
 ├── assets/         # Imágenes, iconos, etc.
-├── classes/        #lista Profesores
+├── classes/        #lista Profesores y vehiculos
 ├── components/     # Componentes reutilizables
 ├── constants/     # Constantes de valiadación
 ├── context/        # Contextos de React

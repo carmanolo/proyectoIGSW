@@ -41,3 +41,14 @@ export const getTeacherList = async () => {
         return [];
     }    
 }
+
+export const getStudentList = async () => {
+    try {
+        const response = await axios.get(`/users/frontend/getStudentList`);
+        console.log("getStudentList RESPONSE: ", response);
+        return response?.data?.data || [];
+    } catch (error) {
+        console.error(error);
+        return [];
+    }    
+}

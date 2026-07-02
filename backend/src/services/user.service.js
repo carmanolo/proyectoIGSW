@@ -1,6 +1,6 @@
 import { AppDataSource } from "../config/configDb.js";
 import { SHOW_ERRORS } from "../constants/settings.constants.js";
-import { TEACHER_ROLE } from "../constants/user.constants.js";
+import { TEACHER_ROLE, STUDENT_ROLE } from "../constants/user.constants.js";
 import { User } from "../entities/user.entity.js";
 import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
 import { getErrorMessage, getResultLength, getServiceResult } from "./utils/utils.service.js";
@@ -186,6 +186,23 @@ export async function getTeachers() {
     return teachers;
   } catch (error) {
     console.error("Error en user.controller.js -> getTeachers()", error);
+    return DEFAULT_ARRAY;
+  }
+}
+
+export async function getStudents() {
+  const DEFAULT_ARRAY = [];
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const students = await userRepository.find({where: {rol: STUDENT_ROLE}});
+    console.log("ESTUDIANTES ENCONTRADOS: ", JSON.stringify(students));
+    if(!Array.isArray(students)){
+      return DEFAULT_ARRAY;
+    }
+    console.log(students);
+    return students;
+  } catch (error) {
+    console.error("Error en user.controller.js -> getStudents()", error);
     return DEFAULT_ARRAY;
   }
 }

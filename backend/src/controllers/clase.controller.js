@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer } from "../services/clase.service.js";
+import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer, asignacionIndividualService } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
@@ -276,29 +276,32 @@ export async function getClasesConUsuarios(req, res) {
   }
 }
 
-/*export async function eliminarAsignacionUsuario(req, res) {
+export async function asignacionIndividual(req, res) {
     try {
-        const id_usuario = req?.params?.id || null;
+        const { id } = req.params;
+        const { id_usuario } = req.body;
+        console.log("ID USUARIO: ", id_usuario);
 
-        console.log(id_usuario);
-
-        const validateId = idValidation.validate({ id: id_usuario });
-        if (validateId.error){
-            return handleErrorClient(res, 400, validateId?.error?.message || "Error desconocido");
-
+        const validatedId = idValidation.validate({ id });
+        if (validatedId.error) {
+            return handleErrorClient(res, 400, "id de clase inavlido",validatedId.error.message);
         }
 
-        const result = await eliminarAsignacionUsuarioSer(id_usuario);
-
-        if(result.error){
-            return handleErrorClient(res, 404, result.message)
+        const validatedUserId = idValidation.validate({ id: id_usuario });
+        if (validatedUserId.error) {
+            return handleErrorClient(res, 400, "id_usuario inválido", validatedUserId.error.message);
         }
 
-        return handleSuccess(res, 200, "Asignación de la clase eliminada exitosamente", result.data);
+        const result = await asignacionIndividualService(id, id_usuario);
 
+        if (result.error) {
+            return handleErrorClient(res, 400, "error al signar");
+        }
+
+        return handleSuccess(res, 200, "asignacion individual a clase practica exitosa", result.data);
     } catch (error) {
         console.error(error);
-        return handleErrorServer(res, 500, "Error interno del servidor")
+        return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
     }
-}*/
+}
 

@@ -31,12 +31,12 @@ const mostrarPatente = (Clase) => {
   } else {
     // TODO: Poner un ícono como corresponde
     return (
-      <div>🚫</div>
+      <div className='font-black'> no aplica </div>
     )
   } 
 }
 
-const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList, vehiculoList) => {
+const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, handleAsignarUsuarioIndividual, loadingAsignarUsuarioIndividual, canCrudClases, teacherList, vehiculoList) => {
   if (Array.isArray(data) && data.length > 0) {
             /* console.log("EL DATA: ", JSON.stringify(data));
             console.log("TEACHER LIST: ", JSON.stringify(teacherList));
@@ -116,6 +116,15 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                           {loadingEditarAsignacion ? 'actualizando' : 'Editar asignacion'}
                         </button>
                       )}
+                      {Clase.tipo === "practica" && (
+                        <button
+                          className='btn btn-info btn-sm m-1'
+                          onClick={() => {handleAsignarUsuarioIndividual(Clase.id_clase)}}
+                          disabled={loadingAsignarUsuarioIndividual}
+                        >
+                          {loadingAsignarUsuarioIndividual ? 'asignado ' : 'Asignar alumno'}
+                        </button>
+                      )}
                       </td>
                       )}
                   </tr>
@@ -130,7 +139,7 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
 }
 //{currentTeacher.name !== SIN_ASIGNAR && ENABLED_MAILTO ? <a href={`mailto:${currentTeacher.email}`}><button className="btn btn-warning m-1"><MdEmail /></button></a> : <></>}
 
-export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList, vehiculoList}) => {
+export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion,  handleAsignarUsuarioIndividual, loadingAsignarUsuarioIndividual, canCrudClases, teacherList, vehiculoList}) => {
 
     return (
         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 m-3 max-h-full">
@@ -151,7 +160,14 @@ export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEd
             </tr>
             </thead>
             <tbody>
-              {mostrarClases(data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList, vehiculoList)}
+              {mostrarClases(data, 
+                handleEditClase, 
+                handleDeleteClase, 
+                handleEditarAsignacion, 
+                loadingEditarAsignacion, 
+                handleAsignarUsuarioIndividual, 
+                loadingAsignarUsuarioIndividual, 
+                canCrudClases, teacherList, vehiculoList)}
             </tbody>
         </table>
         </div>

@@ -76,6 +76,63 @@ export async function asignarPorLoteService() {
   }
 }
 
+export async function asignacionIndividualService(id_clase, id_usuario) {
+  try {
+    if(!id_clase || !id_usuario){
+      return {data: null, message: "los id de clase y usuario son rqueridos", error: true}
+    }
+
+    const claseRepository = AppDataSource.getRepository(Clase);
+    const userRepository = AppDataSource.getRepository(User);
+
+    //conseguir clases de tipo practica
+    const clase = await claseRepository.findOne({
+      where: {id_clase, tipo: "practica"},
+      relations: {users: true},
+    });
+
+    if (!clase) {
+      return { data: null, message: "Clase práctica no encontrada", error: true };
+    }
+
+    const estudiante = await userRepository.findOne({
+      where: { id: id_usuario, rol: "estudiante" },
+    });
+
+    if (!estudiante) {
+      return { data: null, message: "Estudiante no encontrado", error: true };
+    }
+
+    //verificar si el estudiante no fue asignado previamente
+    const fueAsignado = clase.users.some((u) => u.id === estudiante.id);
+    if(fueAsignado){
+      return {data : null, message: "El estudiante ya esta asignado a esa clase", error: true}
+    }
+
+    //guardar usuario asignado a clase practica
+    clase.users = [...clase.users, estudiante];
+    const guardar = await claseRepository.save(clase);
+
+    return {
+      data: {
+        id_clase: guardar.id_clase,
+        tipo: guardar.tipo,
+        descripcion: guardar.descripcion,
+        usuario_asignado: guardar.users.map((u) => ({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email,
+        })),
+      },
+      message: "Estudainte asignado a la clase practica exitosamnete",
+      error: false
+    };
+  } catch (error) {
+    console.error("Error al asignar usuario a clase práctica:", error);
+    return { data: null, message: "Error interno del servidor", error: true };
+  }
+}
+
 export async function getClasesConUsuarioSer(){
   try {
     const claseRepository = AppDataSource.getRepository(Clase);
