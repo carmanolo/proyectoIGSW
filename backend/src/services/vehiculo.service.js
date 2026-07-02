@@ -86,7 +86,7 @@ export async function crearVehiculoNulo() {
       throw Error("Solo puede haber un solo vehículo nulo");
     }
     if (cantidadVehiculosNulos < 1) {
-      const vehiculo = vehiculoRepository.create({id_auto: 0, patente: "", transmision: "", estado: "", es_nulo: true});
+      const vehiculo = vehiculoRepository.create({id: 0, patente: "", transmision: "", estado: "", es_nulo: true});
       await vehiculoRepository.save(vehiculo);
     }
     if (cantidadVehiculosNulos === 1) {
@@ -103,7 +103,7 @@ export async function obtenerIdVehiculoNulo() {
     if (vehiculoNulo === null) {
       throw Error("No existe el vehículo nulo");
     }
-    return Number(vehiculoNulo.id_auto);
+    return Number(vehiculoNulo.id);
   } catch (error) {
     throw Error("Error al obtener ID del vehículo nulo: ", error);
   }
@@ -113,7 +113,7 @@ export async function obtenerListaVehiculos() {
   const LISTA_POR_DEFECTO = [];
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    const vehiculos = await vehiculoRepository.find({where: {es_nulo: false}});
+    const vehiculos = await vehiculoRepository.find({where: {es_nulo: false, estado: "disponible"}});
     return vehiculos;
   } catch (error) {
     console.error(error);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
-import { getVehiculos, createVehiculo, deleteVehiculo } from '@services/vehiculo.service';
+import { getVehiculos, createVehiculo, deleteVehiculo, updateVehiculo } from '@services/vehiculo.service';
 import { getReservas } from '@services/reserva.service';
 
 export default function GestionVehiculosSecretaria() {
@@ -12,9 +12,11 @@ export default function GestionVehiculosSecretaria() {
 
 
   const [showModal, setShowModal] = useState(false);
+  const [editingVehiculo, setEditingVehiculo] = useState(null);
   const [formData, setFormData] = useState({
     patente: '',
-    transmision: 'mecanico'
+    transmision: 'mecanico',
+    estado: 'disponible'
   });
 
   useEffect(() => {
@@ -51,17 +53,30 @@ export default function GestionVehiculosSecretaria() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await createVehiculo(formData);
-      if (res?.data) {
-        alert("Vehículo registrado exitosamente");
-        setShowModal(false);
-        setFormData({ patente: '', transmision: 'mecanico' });
-        cargarVehiculos(); // Recargar lista
+      if (editingVehiculo) {
+        const res = await updateVehiculo(editingVehiculo.id, formData);
+        if (res?.data || res?.status === "Success" || res?.message) {
+          alert("Vehículo actualizado exitosamente");
+          setShowModal(false);
+          setEditingVehiculo(null);
+          setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' });
+          cargarVehiculos();
+        } else {
+          alert(res?.message || "Error al actualizar vehículo");
+        }
       } else {
-        alert(res?.message || "Error al registrar vehículo");
+        const res = await createVehiculo(formData);
+        if (res?.data) {
+          alert("Vehículo registrado exitosamente");
+          setShowModal(false);
+          setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' });
+          cargarVehiculos();
+        } else {
+          alert(res?.message || "Error al registrar vehículo");
+        }
       }
     } catch (err) {
-      alert("Error al registrar vehículo");
+      alert(editingVehiculo ? "Error al actualizar vehículo" : "Error al registrar vehículo");
     }
   };
 
@@ -95,7 +110,7 @@ export default function GestionVehiculosSecretaria() {
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Gestión de Vehículos</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={() => { setEditingVehiculo(null); setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' }); setShowModal(true); }}>
           + Agregar Vehículo
         </button>
       </div>
@@ -128,7 +143,21 @@ export default function GestionVehiculosSecretaria() {
                         {vehiculo.estado || 'DISPONIBLE'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right space-x-2">
+                      <button 
+                        className="btn btn-sm btn-info text-white"
+                        onClick={() => {
+                          setEditingVehiculo(vehiculo);
+                          setFormData({ 
+                            patente: vehiculo.patente, 
+                            transmision: vehiculo.transmision,
+                            estado: vehiculo.estado || 'disponible'
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        Editar
+                      </button>
                       <button 
                         className="btn btn-sm btn-error text-white"
                         onClick={() => handleDelete(vehiculo.id)}
@@ -199,7 +228,7 @@ export default function GestionVehiculosSecretaria() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Agregar Nuevo Vehículo</h2>
+            <h2 className="text-2xl font-bold mb-4">{editingVehiculo ? "Editar Vehículo" : "Agregar Nuevo Vehículo"}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Patente</label>
@@ -224,6 +253,21 @@ export default function GestionVehiculosSecretaria() {
                   <option value="automatico">Automático</option>
                 </select>
               </div>
+
+              {editingVehiculo && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Estado</label>
+                  <select 
+                    className="select select-bordered w-full mt-1" 
+                    value={formData.estado} 
+                    onChange={e => setFormData({...formData, estado: e.target.value})}
+                  >
+                    <option value="disponible">Disponible</option>
+                    <option value="en_taller">En Taller</option>
+                    <option value="inactivo">Inactivo</option>
+                  </select>
+                </div>
+              )}
 
               <div className="flex justify-end gap-2 mt-6">
                 <button type="button" className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancelar</button>
