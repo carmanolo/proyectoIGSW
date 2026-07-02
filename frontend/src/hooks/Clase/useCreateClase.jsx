@@ -20,7 +20,7 @@ async function confirmarTipoClase() {
         denyButtonText: `Teórica`,
         cancelButtonText: "Cancelar",
         preConfirm: (result) => {
-            // console.log("EL RESULTADITO: ", result);
+            // // console.log("EL RESULTADITO: ", result);
             if (result === true) {
                 return PRACTICA;
             } else if (result === false) {
@@ -156,14 +156,14 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
 
             if (tipoClase === PRACTICA) {
                 // TODO: Crear nuevo Swal para clases prácticas
-                console.log("CLASE PRÁCTICA");
+                // console.log("CLASE PRÁCTICA");
                 formValues = await CreateClasePractica(profesores, vehiculos);
                 //formValues = null;
             } else if (tipoClase === TEORICA) {
                 // TODO: Crear nuevo Swal para clases teóricas
-                console.log("CLASE TEÓRICA");
+                // console.log("CLASE TEÓRICA");
                 formValues = await CreateClaseTeorica(profesores);
-                //console.log(profesores);
+                //// console.log(profesores);
             } else {
                 return;
             }
@@ -173,7 +173,7 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
             if (typeof(fetchClases) === "function") {
                 fetchClases();
             }
-            console.log(response);
+            // console.log(response);
         } catch (error) {
             console.error(error);
             response = error?.response || {status: 500, message: "Error desconocido"};

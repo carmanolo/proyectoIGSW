@@ -7,7 +7,7 @@ import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE } from "../../constants/clase.con
 import { getTeacherEmail, processCars, processTeachers } from "../../utils/ClaseUtils.js";
 
 async function editClaseTeoricaInfo(clase, profesores) {
-    console.log(JSON.stringify(clase));
+    // console.log(JSON.stringify(clase));
     const { value: formValues } = await Swal.fire({
         title: 'Editar clase',
         html: `
@@ -31,7 +31,7 @@ async function editClaseTeoricaInfo(clase, profesores) {
             const descripcion = document.getElementById('swal2-input2').value;
             const fecha_clase = document.getElementById('swal2-input3').value;
 
-            console.log("FECHA CLASE", fecha_clase);
+            // console.log("FECHA CLASE", fecha_clase);
             const hora_inicio = document.getElementById('swal2-input4').value;
             const hora_fin = document.getElementById('swal2-input5').value;
             const dia = document.getElementById('swal2-input6').value;
@@ -63,7 +63,7 @@ async function editClaseTeoricaInfo(clase, profesores) {
 }
 
 async function editClasePracticaInfo(clase, profesores, vehiculos) {
-    console.log(JSON.stringify(clase));
+    // console.log(JSON.stringify(clase));
     const { value: formValues } = await Swal.fire({
         title: 'Editar clase',
         html: `
@@ -87,7 +87,7 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
             const descripcion = document.getElementById('swal2-input2').value;
             const fecha_clase = document.getElementById('swal2-input3').value;
 
-            console.log("FECHA CLASE", fecha_clase);
+            // console.log("FECHA CLASE", fecha_clase);
             const hora_inicio = document.getElementById('swal2-input4').value;
             const hora_fin = document.getElementById('swal2-input5').value;
             const dia = document.getElementById('swal2-input6').value;
@@ -130,10 +130,10 @@ export const editClase = (fetchClase, profesores, vehiculos) => {
             let formValues = null;
 
             if (clase.tipo === "practica") {
-                console.log("Clase practica");
+                // console.log("Clase practica");
                 formValues = await editClasePracticaInfo(clase, profesores, vehiculos);
             } else if (clase.tipo === "teorica") {
-                console.log("CLASE TEÓRICA");
+                // console.log("CLASE TEÓRICA");
                 formValues = await editClaseTeoricaInfo(clase, profesores);
             } else {
                 return;

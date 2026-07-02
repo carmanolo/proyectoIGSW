@@ -24,7 +24,7 @@ const formatDate = (date) => {
 
 const mostrarPatente = (Clase) => {
   if (Clase && Clase.tipo && String(Clase?.tipo).toLowerCase() === "practica") {
-    console.log("La clase: ", JSON.stringify(Clase));
+    // console.log("La clase: ", JSON.stringify(Clase));
     return (
       <div>{Clase?.carObject?.patente || "Sin asignar"}</div>
     )
@@ -38,8 +38,8 @@ const mostrarPatente = (Clase) => {
 
 const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, handleAsignarUsuarioIndividual, loadingAsignarUsuarioIndividual, canCrudClases, teacherList, vehiculoList) => {
   if (Array.isArray(data) && data.length > 0) {
-            /* console.log("EL DATA: ", JSON.stringify(data));
-            console.log("TEACHER LIST: ", JSON.stringify(teacherList));
+            /* // console.log("EL DATA: ", JSON.stringify(data));
+            // console.log("TEACHER LIST: ", JSON.stringify(teacherList));
             const profesorCompleto = teacherList?.find(
                 (t) => t?.email === Clase.email_profesor || t?.email === Clase.id_profesor
             );
@@ -59,7 +59,7 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                     "Sin asignar";
             } */
       return data.map((Clase) => {
-        console.log("VEHICULOLIST ANTES DE ASIGNAR: ", vehiculoList);
+        // console.log("VEHICULOLIST ANTES DE ASIGNAR: ", vehiculoList);
 
         const currentTeacher = new DisplayTeacher(teacherList, Clase.id_profesor || 0);
         const currentCar = new DisplayCar(vehiculoList, Clase.id_auto || 0);

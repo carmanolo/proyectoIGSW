@@ -4,8 +4,8 @@ const DEFAULT_PATENTE = "CR-7C-R7";
 const DEFAULT_CAR = `${DEFAULT_ID}. ${DEFAULT_PATENTE}`;
 
 const findCar = (carList, id) => {
-    console.log("Carlist: ", carList);
-    console.log("id: ", id);
+    // console.log("Carlist: ", carList);
+    // console.log("id: ", id);
     if (!Array.isArray(carList)) {
         return DEFAULT_CAR;
     }
@@ -30,7 +30,7 @@ export class DisplayCar {
     constructor(carList = [], id = 0) {
         try {
             const foundCar = findCar(carList, id);
-            console.log("FoundCar = ", foundCar);
+            // console.log("FoundCar = ", foundCar);
 
             this._id = Number(foundCar.split(". ")[0].trim());
             this._patente = foundCar.split(". ")[1].trim();

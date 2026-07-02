@@ -116,7 +116,7 @@ export async function deleteUserService(id) {
 export async function checkUserExists(userRepository, newData) {
     try {
         const existingEmailUser = await userRepository.findOne({where: { email: newData.email },relations: {clase: true}});
-        console.log("EXISTING EMAIL USER: ", existingEmailUser);
+        // console.log("EXISTING EMAIL USER: ", existingEmailUser);
         if (existingEmailUser) {
             return getServiceResult(false, null, "Correo ya registrado", 0);
         }
@@ -134,7 +134,7 @@ export async function createUserService(newData) {
   try {
       const userRepository = AppDataSource.getRepository(User);
       const result = await checkUserExists(userRepository, newData);
-      console.log("RESULT: ", result);
+      // console.log("RESULT: ", result);
       if(result !== null){
         return result;
       }
@@ -161,12 +161,12 @@ export async function findUserByEmail(email) {
 
 export async function findTeacherByEmail(email) {
   if (SHOW_ERRORS) {
-    console.log("EMAIL: ", email);
+    // console.log("EMAIL: ", email);
   }
 
   const user = (await findUserByEmail(email)) || null;
   if (SHOW_ERRORS) {
-    console.log("¿Encontró al profesor?:", JSON.stringify(user));
+    // console.log("¿Encontró al profesor?:", JSON.stringify(user));
   }
   if (user && (user?.rol !== TEACHER_ROLE)) {
     return null;
@@ -195,11 +195,11 @@ export async function getStudents() {
   try {
     const userRepository = AppDataSource.getRepository(User);
     const students = await userRepository.find({where: {rol: STUDENT_ROLE}});
-    console.log("ESTUDIANTES ENCONTRADOS: ", JSON.stringify(students));
+    // console.log("ESTUDIANTES ENCONTRADOS: ", JSON.stringify(students));
     if(!Array.isArray(students)){
       return DEFAULT_ARRAY;
     }
-    console.log(students);
+    // console.log(students);
     return students;
   } catch (error) {
     console.error("Error en user.controller.js -> getStudents()", error);

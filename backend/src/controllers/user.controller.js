@@ -32,7 +32,7 @@ export async function getUserById(req, res) {
   }
 
   const user = await getUserByIdFromService(id);
-  console.log(user);
+  // console.log(user);
 
   if (user.error) {
     return handleErrorServer(res, 500, "Error interno de srvidor", user.details, JSON.stringify(user));
@@ -53,7 +53,7 @@ export async function createUser(req, res) {
   }
 
   var validationResult = createValidation.validate(req.body);
-  console.log(validationResult);
+  // console.log(validationResult);
   if (validationResult.error) {
     return handleErrorClient(res, 400, "Datos inválidos create")
   }     
@@ -63,15 +63,15 @@ export async function createUser(req, res) {
   }
 
   const user = await createUserService(req.body);
-  // console.log("USER: ", user);
+  // // console.log("USER: ", user);
   // throw Error("jaja");
 
   if(user.error){
     return handleErrorServer(res, 500, "Error interno del servidor", user.error, JSON.stringify(user));
   }
 
-  console.log("USER DATA: ", user.data);
-  console.log("USER DATA NEGADO: ", !user.data);
+  // console.log("USER DATA: ", user.data);
+  // console.log("USER DATA NEGADO: ", !user.data);
 
   if (Object.keys(user?.data || {})) {
     if (user?.details && user?.details.endsWith("ya registrado")) {
@@ -197,7 +197,7 @@ export async function getStudentList(req, res) {
   }
 
   const user = await getUserByIdFromService(id);
-  console.log(user);
+  // console.log(user);
 
   if (user.error) {
     return handleErrorServer(res, 500, "Error interno de srvidor", user.details, JSON.stringify(user));
@@ -218,7 +218,7 @@ export async function createUser(req, res) {
   }
 
   var validationResult = createValidation.validate(req.body);
-  console.log(validationResult);
+  // console.log(validationResult);
   if (validationResult.error) {
     return handleErrorClient(res, 400, "Datos inválidos create")
   }     
@@ -228,7 +228,7 @@ export async function createUser(req, res) {
   }
 
   const user = await createUserService(req.body);
-  console.log(user);
+  // console.log(user);
   if(user.error){
     return handleErrorServer(res, 500, "Error interno del servidor", user.error, JSON.stringify(user));
   }
@@ -325,7 +325,7 @@ export async function getUserById(req, res) {
   }
 
   const user = await getUserByIdFromService(id);
-  console.log(user);
+  // console.log(user);
 
   if (user.error) {
     return handleErrorServer(res, 500, "Error interno de srvidor", user.details, JSON.stringify(user));
@@ -346,7 +346,7 @@ export async function createUser(req, res) {
   }
 
   var validationResult = createValidation.validate(req.body);
-  console.log(validationResult);
+  // console.log(validationResult);
   if (validationResult.error) {
     return handleErrorClient(res, 400, "Datos inválidos create")
   }     
@@ -356,7 +356,7 @@ export async function createUser(req, res) {
   }
 
   const user = await createUserService(req.body);
-  console.log(user);
+  // console.log(user);
   if(user.error){
     return handleErrorServer(res, 500, "Error interno del servidor", user.error, JSON.stringify(user));
   }

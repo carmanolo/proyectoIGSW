@@ -28,7 +28,7 @@ export async function createClase(req, res) {
     try {
         let newClase = null;
         if(!req.body || !req.params){
-            console.log(req.body);
+            // console.log(req.body);
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
         
@@ -42,7 +42,7 @@ export async function createClase(req, res) {
         }
 
         const { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_auto, id_profesor } = req.body;
-        console.log(hora_inicio);
+        // console.log(hora_inicio);
 
         const { error } = integrityValidation.validate(req.body);
         if (error) {
@@ -76,10 +76,12 @@ export async function getClases(req, res) {
     const userRole = req.user.rol;
 
     const claseData = await getClasesSer(userId, userRole)
-    //console.log(horarioData);
+    //// console.log(horarioData);
     if(!claseData){
         return handleErrorClient(res, 400, "Clases no encontrados");
     }
+
+    // console.log("CLASEDATA: ", JSON.stringify(claseData));
     //enviar informacion de horarios de hoarios encontrados
     return handleSuccess(res, 200, "clases obtenidas exitosamente", claseData);
 }
@@ -90,9 +92,9 @@ export async function patchClase(req, res) {
     try {
         if (!req || !req.params || !req.body) {
             if (SHOW_ERRORS) {
-                console.log("REQ: ", req);
-                console.log("REQ PARAMS: ", req?.params || undefined);
-                console.log("REQ BODY: ", req?.body || undefined);
+                // console.log("REQ: ", req);
+                // console.log("REQ PARAMS: ", req?.params || undefined);
+                // console.log("REQ BODY: ", req?.body || undefined);
             }
             return res.status(400).json({message: "Datos no proporcionados"});
         }
@@ -109,8 +111,8 @@ export async function patchClase(req, res) {
         const { id } = req.params;
         if(!id){
             if (SHOW_ERRORS) {
-                console.log("NO HAY ID XDDDD");
-                console.log("REQ PARAMS: ", req?.params || undefined);
+                // console.log("NO HAY ID XDDDD");
+                // console.log("REQ PARAMS: ", req?.params || undefined);
             }
             return res.status(400).json({ message: "El ID de la clase es obligatorio" });
         }
@@ -129,7 +131,7 @@ export async function patchClase(req, res) {
 
         if (req.body.tipo === "tipo") {
             if (SHOW_ERRORS) {
-                console.log("TIPO: ", req.body.tipo);
+                // console.log("TIPO: ", req.body.tipo);
             }
             return res.status(400).json({ message: "Debe seleccionar un solo tipo"});
         }
@@ -140,25 +142,25 @@ export async function patchClase(req, res) {
 
         if (req.body.dia === "día") {
             if (SHOW_ERRORS) {
-                console.log("DIA: ", req.body.dia);
+                // console.log("DIA: ", req.body.dia);
             }            
             return res.status(400).json({ message: "Debe seleccionar un día de la semana"});
         }
 
         if (req.body.estado_clase === "Estado") {
             if (SHOW_ERRORS) {
-                console.log("ESTADO CLASE: ", req.body.estado_clase);
+                // console.log("ESTADO CLASE: ", req.body.estado_clase);
             }     
             return res.status(400).json({ message: "Debe seleccionar un estado de la semana"});
         }
 
-        console.log(req.body.estado_clase);
+        // console.log(req.body.estado_clase);
 
         const { error } = integrityValidation.validate(req.body);
         if (error) {
             if (SHOW_ERRORS) {
-                console.log("REQ BODY: ", req.body);
-                console.log("ERROR: ", error.message || undefined);
+                // console.log("REQ BODY: ", req.body);
+                // console.log("ERROR: ", error.message || undefined);
             }                 
             return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
         }
@@ -167,8 +169,8 @@ export async function patchClase(req, res) {
 
         if(result.error){
             if (SHOW_ERRORS) {
-                console.log("REQ BODY: ", req.body);
-                console.log("ERROR: ", result.error.message || undefined);
+                // console.log("REQ BODY: ", req.body);
+                // console.log("ERROR: ", result.error.message || undefined);
             }                      
             return handleErrorClient(res, 400, "falto actualizar parametros", result.error.message);
         }
@@ -190,7 +192,7 @@ export async function patchClase(req, res) {
                 return handleErrorClient(res, 500, updatedClase.message);
             }
             if (SHOW_ERRORS) {
-                console.log("ERROR?:", updatedClase?.message || undefined);
+                // console.log("ERROR?:", updatedClase?.message || undefined);
             }
             return handleErrorClient(res, 400, updatedClase.message);
         }
@@ -280,7 +282,7 @@ export async function asignacionIndividual(req, res) {
     try {
         const { id } = req.params;
         const { id_usuario } = req.body;
-        console.log("ID USUARIO: ", id_usuario);
+        // console.log("ID USUARIO: ", id_usuario);
 
         const validatedId = idValidation.validate({ id });
         if (validatedId.error) {

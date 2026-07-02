@@ -125,12 +125,12 @@ export async function obtenerListaVehiculos() {
 export async function obtenerVehiculoPorPatente(patente) { 
   try {
     if (SHOW_ERRORS) {
-      console.log("PATENTE DADA: ", patente);
+      // console.log("PATENTE DADA: ", patente);
     }
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
     const vehiculo = await vehiculoRepository.findOne({where: {es_nulo: false, patente: patente}});
     if (SHOW_ERRORS) {
-      console.log("¿Encontró al auto?:", JSON.stringify(vehiculo));
+      // console.log("¿Encontró al auto?:", JSON.stringify(vehiculo));
     }
     if (!vehiculo) {
       return null;

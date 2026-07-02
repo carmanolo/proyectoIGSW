@@ -172,10 +172,10 @@ export async function getClasesSer(userId, userRole) {
         //filtra por id usuarios asignados
 
         if(userRole === "alumnos" || userRole === "estudiante"){
-          clases = await claseRepository.find({where: { users:{id: userId} }});
+          clases = await claseRepository.find({where: { users:{id: userId}}});
 
         }else{
-          clases = await claseRepository.find();
+          clases = await claseRepository.find({relations: { users: true }});
         }
 
         //const clases = await claseRepository.find();
@@ -197,7 +197,7 @@ export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inici
 
   try {
     if (!tipo||!descripcion||!fecha_clase||!hora_inicio || !hora_fin || !dia || !estado_clase || (id_auto !== null && !id_auto) || !id_profesor) {
-      //console.log( hora_inicio,hora_fin, dia);
+      //// console.log( hora_inicio,hora_fin, dia);
       throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_profesor, id_auto });
     }
 
@@ -234,9 +234,9 @@ export async function updateClaseSer(clase) {
     if (!(clase.id_auto)) {
       clase.id_auto = await obtenerIdVehiculoNulo();
     }    
-    console.log(clase);
+    // console.log(clase);
     const savedClase = await claseRepository.save(clase);
-    console.log(savedClase);
+    // console.log(savedClase);
     return {data: await savedClase, message: "CLASE actualizada con éxito", error: null}
     
   }catch(error){
@@ -277,7 +277,7 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
     //obtener clases
 
     const clase = await getClaseSer(id_clase);
-    console.log("CLASE: ", clase);
+    // console.log("CLASE: ", clase);
 
     if(!clase){
       return {data: null, message:"clase no encontrada", error: true};
@@ -289,13 +289,13 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
       relations: {clase: true}
     });
 
-    console.log("ESTUDIANTES: ", estudiantes);
+    // console.log("ESTUDIANTES: ", estudiantes);
     if(!estudiantes || estudiantes.length === 0){
       return {data: null, message: "No hay estudiantes registrados", error: true}
     }
 
     //agregar solo los que aún no están en clase
-    console.log(clase);
+    // console.log(clase);
 
     const idsExistentes = new Set(clase.users.map((u) => u.id));
     const nuevos = estudiantes.filter((u) => !idsExistentes.has(u.id));
@@ -345,7 +345,7 @@ export async function eliminarAsignacionUsuarioSer(id_usuario) {
       relations: {users: true},
     });
 
-    // console.log(JSON.stringify(clases));
+    // // console.log(JSON.stringify(clases));
 
     if(!clases || clases.length === 0){
       return {data: null, message:"El usuario no esta asignado a ninguna clase ", error:true }

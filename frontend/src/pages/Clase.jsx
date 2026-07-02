@@ -27,7 +27,7 @@ const Clase = () => {
     const [studentList, fetchStudentList] = useGetStudentList(estudaintes, setEstudiantes);
 
     const userRole = getUserRole();
-    //console.log(`EL ROL DEL USIARIO = ${userRole}`);
+    //// console.log(`EL ROL DEL USIARIO = ${userRole}`);
     const canCrudClases = ACCESO_CLASES.includes(userRole);
 
     const [claseData, setClaseData] = useState([]);
@@ -51,8 +51,8 @@ const Clase = () => {
         if (typeof(fetchTeacherList) === 'function') {
             fetchTeacherList();
         }
-         /*console.log("teacherList:", teacherList);
-        console.log("claseData[0]:", claseData[0]);*/
+         /*// console.log("teacherList:", teacherList);
+        // console.log("claseData[0]:", claseData[0]);*/
         if (typeof(fetchVehiculoList) === 'function') {
             fetchVehiculoList();
         }

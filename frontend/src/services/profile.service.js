@@ -22,9 +22,9 @@ export async function getUser(id) {
 export const getUserRole = () => {
    try {
         const user = JSON.parse(sessionStorage.getItem('usuario'));
-        console.log(user);
+        // console.log(user);
         const rol = String(user?.rol || STUDENT_ROLE); 
-        // console.log("ROL ACTUAL: " + rol);
+        // // console.log("ROL ACTUAL: " + rol);
         return rol;
     } catch (error) {
         console.error(error);
@@ -45,7 +45,7 @@ export const getTeacherList = async () => {
 export const getStudentList = async () => {
     try {
         const response = await axios.get(`/users/frontend/getStudentList`);
-        console.log("getStudentList RESPONSE: ", response);
+        // console.log("getStudentList RESPONSE: ", response);
         return response?.data?.data || [];
     } catch (error) {
         console.error(error);

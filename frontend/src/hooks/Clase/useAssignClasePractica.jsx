@@ -13,8 +13,8 @@ export function useAsignarClasePractica(){
             return;
         }
 
-        console.log(studentList);
-        console.log("¿Es la lista de estudiantes un arreglo?: ", Array.isArray(studentList));
+        // console.log(studentList);
+        // console.log("¿Es la lista de estudiantes un arreglo?: ", Array.isArray(studentList));
 
         if(!Array.isArray(studentList) || studentList.length === 0){
             await fireDynamicSwal(404, "Sin estudiantes", "No hay estudiantes disponibles");
@@ -23,12 +23,12 @@ export function useAsignarClasePractica(){
 
         const opcionesDataList = studentList
             .map((u)=> {
-                console.log(u);
+                // console.log(u);
                 return `<option value="${String(u).split(". ")[1]}"></option>`;
             })
             .join("");
 
-        console.log(opcionesDataList);
+        // console.log(opcionesDataList);
         const HTML_COMPLETO = `
                 <input
                     id = "input-buscar-alumno"
@@ -40,7 +40,7 @@ export function useAsignarClasePractica(){
                 <datalist id="lista-alumnos">${opcionesDataList}</datalist>
                 </input>
             `;
-        console.log(HTML_COMPLETO);
+        // console.log(HTML_COMPLETO);
 
         const result = await Swal.fire({
             title: "¿Asignar alumno a esta clase practica?",
@@ -56,7 +56,7 @@ export function useAsignarClasePractica(){
                     (u) => String(u).split(". ")[1] === valor
                 );
 
-                console.log("ESTUDIANTE ENCONTRADO: ", estudiante);
+                // console.log("ESTUDIANTE ENCONTRADO: ", estudiante);
 
                 if(!estudiante){
                     Swal.showValidationMessage("Selecciona un alumno valido de la lista");

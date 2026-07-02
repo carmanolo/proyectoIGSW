@@ -9,7 +9,7 @@ import { Venta } from "../entities/venta.entity.js";
 export async function registrarVenta(req, res) {
     try {
         if(!req.body){
-            console.log(req.body);
+            // console.log(req.body);
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
@@ -22,7 +22,7 @@ export async function registrarVenta(req, res) {
         const comprobante_url = `/uploads/${req.file.filename}`;
         req.body.comprobante_url = comprobante_url; // para que pase la validacion
 
-        console.log(userId, cantidad, comprobante_url); 
+        // console.log(userId, cantidad, comprobante_url); 
 
         const { error } = integrityValidation.validate(req.body);
         if (error) {
