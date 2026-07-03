@@ -99,6 +99,14 @@ export async function pagarDeuda(id_inscripcion, montoPago) {
   if (inscripcion.monto_pagado >= inscripcion.monto_total) {
     inscripcion.estado_pago = "pagado";
     inscripcion.fecha_pago_completo = new Date();
+
+    // Cuando se paga el plan completo, otorgar las clases disponibles al alumno
+    const plan = await planService.obtenerPlanPorId(inscripcion.plan_id);
+    if (plan && inscripcion.alumno) {
+      const user = inscripcion.alumno;
+      user.clases_disponibles = (user.clases_disponibles || 0) + plan.clases_totales;
+      await userRepository.save(user);
+    }
   } else if (inscripcion.monto_pagado > 0) {
     inscripcion.estado_pago = "parcial";
   }
