@@ -13,6 +13,8 @@ export default function GestionVehiculosSecretaria() {
 
   const [showModal, setShowModal] = useState(false);
   const [editingVehiculo, setEditingVehiculo] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterEstado, setFilterEstado] = useState('todos');
   const [formData, setFormData] = useState({
     patente: '',
     transmision: 'mecanico',
@@ -52,6 +54,14 @@ export default function GestionVehiculosSecretaria() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Regex para formato chileno: 2 letras 4 números (AB1234) o 4 letras 2 números (ABCD12), con o sin guion
+    const patenteRegex = /^([A-Z]{2}-?[0-9]{4}|[A-Z]{4}-?[0-9]{2})$/;
+    if (!patenteRegex.test(formData.patente)) {
+      alert("La patente debe tener el formato chileno válido (ej: AB1234, ABCD12, AB-1234 o ABCD-12).");
+      return;
+    }
+
     try {
       if (editingVehiculo) {
         const res = await updateVehiculo(editingVehiculo.id, formData);
@@ -106,6 +116,12 @@ export default function GestionVehiculosSecretaria() {
     );
   }
 
+  const vehiculosFiltrados = vehiculos.filter(v => {
+    const matchesSearch = v.patente.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesEstado = filterEstado === 'todos' || (v.estado || 'disponible') === filterEstado;
+    return matchesSearch && matchesEstado;
+  });
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -113,6 +129,26 @@ export default function GestionVehiculosSecretaria() {
         <button className="btn btn-primary" onClick={() => { setEditingVehiculo(null); setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' }); setShowModal(true); }}>
           + Agregar Vehículo
         </button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <input 
+          type="text" 
+          placeholder="Buscar por patente..." 
+          className="input input-bordered w-full sm:max-w-xs"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select 
+          className="select select-bordered w-full sm:max-w-xs"
+          value={filterEstado}
+          onChange={(e) => setFilterEstado(e.target.value)}
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="disponible">Disponible</option>
+          <option value="en_taller">En Taller</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
       </div>
       
       {loading ? (
@@ -133,7 +169,7 @@ export default function GestionVehiculosSecretaria() {
                 </tr>
               </thead>
               <tbody>
-                {vehiculos.map((vehiculo) => (
+                {vehiculosFiltrados.map((vehiculo) => (
                   <tr key={vehiculo.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-500">{vehiculo.id}</td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{vehiculo.patente}</td>
@@ -169,8 +205,8 @@ export default function GestionVehiculosSecretaria() {
                 ))}
               </tbody>
             </table>
-            {vehiculos.length === 0 && (
-              <div className="text-center py-6 text-gray-500">No hay vehículos registrados en la flota.</div>
+            {vehiculosFiltrados.length === 0 && (
+              <div className="text-center py-6 text-gray-500">No hay vehículos que coincidan con los filtros.</div>
             )}
           </div>
         </div>
