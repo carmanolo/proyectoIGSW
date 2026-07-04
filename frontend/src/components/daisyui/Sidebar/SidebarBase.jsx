@@ -60,6 +60,9 @@ export const SidebarBase = ({pageContent}) => {
                 )}
                 <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
                 {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
+                {user?.rol === 'estudiante' && (
+                    <SidebarItem label="Proximas clases" destination="/calendario-clases" icon={MdSchool}/>
+                )}
             </ul>
             </div>
         </div>

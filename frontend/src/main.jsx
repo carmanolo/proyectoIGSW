@@ -5,6 +5,7 @@ import Home from '@pages/Home';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Clase from '@pages/Clase';
+import CalendarioClasesAlumno from '@pages/CalendarioClasesAlumno';
 import ComprarClases from '@pages/ComprarClases';
 import GestionarVentas from '@pages/GestionarVentas';
 import ProtectedRoute from '@components/ProtectedRoute';
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
       {
         path: '/gestion-vehiculos',
         element: <GestionVehiculosSecretaria />
+      },
+      {
+        path: '/calendario-clases',
+        element: <CalendarioClasesAlumno />
       },
       /*{
         path: '/planes',
