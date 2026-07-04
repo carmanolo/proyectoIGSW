@@ -21,3 +21,7 @@ export const DB_HOST = process.env.DB_HOST || process.env.HOST;
 
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const COOKIE_KEY = process.env.COOKIE_KEY;
+
+// Variables de Email
+export const EMAIL_USER = process.env.EMAIL_USER;
+export const EMAIL_PASS = process.env.EMAIL_PASS;

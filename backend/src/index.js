@@ -3,11 +3,21 @@ import express from "express";
 import morgan from "morgan";
 import connectDB from "../src/config/configDb.js";
 import routerApi from "../src/routes/index.routes.js";
-import { PORT,HOST } from "./config/configEnv.js";
+import { PORT, HOST, EMAIL_USER, EMAIL_PASS } from "./config/configEnv.js";
 import { iniciarUsuarios, iniciarVehiculos } from "./config/initialSetup.js";
 import cors from "cors";
 
 async function setupServer() {
+  // Validar variables de entorno al iniciar
+  console.log("[Startup] Validando variables de entorno de correo...");
+  console.log("[Startup] EMAIL_USER:", EMAIL_USER ? "✓ Configurado" : "✗ NO configurado");
+  console.log("[Startup] EMAIL_PASS:", EMAIL_PASS ? "✓ Configurado" : "✗ NO configurado");
+
+  if (!EMAIL_USER || !EMAIL_PASS) {
+    console.warn("[Startup] ⚠️  ADVERTENCIA: Credenciales de email no configuradas.");
+    console.warn("[Startup] El envío de correos no funcionará.");
+  }
+
   //Crea la instancia de express
   const app = express();
   app.disable("x-powered-by");
