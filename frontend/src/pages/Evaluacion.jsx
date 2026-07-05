@@ -104,10 +104,12 @@ const Evaluacion = () => {
     }
 
     return (
-        <div className="evaluacion-page p-4">
+        <div className="evaluacion-page p-4 text-black">
             <div className="mb-4">
-                <h1 className="text-3xl font-bold mb-4">Gestión de Evaluaciones</h1>
+                <h1 className="text-3xl font-bold mb-4 text-black">Gestión de Evaluaciones</h1>
+            </div>
 
+            <div className="bg-white rounded-3xl shadow-lg p-6 mb-6 text-black">
                 <div className="flex gap-2 mb-4 flex-wrap">
                     {/* Botón crear evaluación */}
                     <button
@@ -137,16 +139,16 @@ const Evaluacion = () => {
                         </button>
                     )}
                 </div>
-            </div>
 
-            {/* Tabla de evaluaciones */}
-            <div className="mb-4">
-                <EvaluacionTable
-                    data={currentPageContent}
-                    onEdit={handleOpenForm}
-                    onDelete={handleDeleteClick}
-                    isLoading={isLoading}
-                />
+                {/* Tabla de evaluaciones */}
+                <div>
+                    <EvaluacionTable
+                        data={currentPageContent}
+                        onEdit={handleOpenForm}
+                        onDelete={handleDeleteClick}
+                        isLoading={isLoading}
+                    />
+                </div>
             </div>
 
             {/* Paginación */}
