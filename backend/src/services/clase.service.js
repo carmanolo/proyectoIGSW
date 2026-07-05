@@ -76,6 +76,63 @@ export async function asignarPorLoteService() {
   }
 }
 
+export async function asignacionIndividualService(id_clase, id_usuario) {
+  try {
+    if(!id_clase || !id_usuario){
+      return {data: null, message: "los id de clase y usuario son rqueridos", error: true}
+    }
+
+    const claseRepository = AppDataSource.getRepository(Clase);
+    const userRepository = AppDataSource.getRepository(User);
+
+    //conseguir clases de tipo practica
+    const clase = await claseRepository.findOne({
+      where: {id_clase, tipo: "practica"},
+      relations: {users: true},
+    });
+
+    if (!clase) {
+      return { data: null, message: "Clase práctica no encontrada", error: true };
+    }
+
+    const estudiante = await userRepository.findOne({
+      where: { id: id_usuario, rol: "estudiante" },
+    });
+
+    if (!estudiante) {
+      return { data: null, message: "Estudiante no encontrado", error: true };
+    }
+
+    //verificar si el estudiante no fue asignado previamente
+    const fueAsignado = clase.users.some((u) => u.id === estudiante.id);
+    if(fueAsignado){
+      return {data : null, message: "El estudiante ya esta asignado a esa clase", error: true}
+    }
+
+    //guardar usuario asignado a clase practica
+    clase.users = [...clase.users, estudiante];
+    const guardar = await claseRepository.save(clase);
+
+    return {
+      data: {
+        id_clase: guardar.id_clase,
+        tipo: guardar.tipo,
+        descripcion: guardar.descripcion,
+        usuario_asignado: guardar.users.map((u) => ({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email,
+        })),
+      },
+      message: "Estudainte asignado a la clase practica exitosamnete",
+      error: false
+    };
+  } catch (error) {
+    console.error("Error al asignar usuario a clase práctica:", error);
+    return { data: null, message: "Error interno del servidor", error: true };
+  }
+}
+
 export async function getClasesConUsuarioSer(){
   try {
     const claseRepository = AppDataSource.getRepository(Clase);
@@ -106,11 +163,22 @@ export async function getClasesConUsuarioSer(){
   }
 }
 
-export async function getClasesSer() {
+export async function getClasesSer(userId, userRole) {
     try {
         const claseRepository = AppDataSource.getRepository(Clase);
 
-        const clases = await claseRepository.find();
+        let clases;
+
+        //filtra por id usuarios asignados
+
+        if(userRole === "alumnos" || userRole === "estudiante"){
+          clases = await claseRepository.find({where: { users:{id: userId}}});
+
+        }else{
+          clases = await claseRepository.find({relations: { users: true }});
+        }
+
+        //const clases = await claseRepository.find();
 
         if (!clases || clases.length === 0) return [null, "No hay clases"];
 
@@ -129,7 +197,7 @@ export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inici
 
   try {
     if (!tipo||!descripcion||!fecha_clase||!hora_inicio || !hora_fin || !dia || !estado_clase || (id_auto !== null && !id_auto) || !id_profesor) {
-      //console.log( hora_inicio,hora_fin, dia);
+      //// console.log( hora_inicio,hora_fin, dia);
       throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_profesor, id_auto });
     }
 
@@ -166,9 +234,9 @@ export async function updateClaseSer(clase) {
     if (!(clase.id_auto)) {
       clase.id_auto = await obtenerIdVehiculoNulo();
     }    
-    console.log(clase);
+    // console.log(clase);
     const savedClase = await claseRepository.save(clase);
-    console.log(savedClase);
+    // console.log(savedClase);
     return {data: await savedClase, message: "CLASE actualizada con éxito", error: null}
     
   }catch(error){
@@ -209,7 +277,7 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
     //obtener clases
 
     const clase = await getClaseSer(id_clase);
-    console.log("CLASE: ", clase);
+    // console.log("CLASE: ", clase);
 
     if(!clase){
       return {data: null, message:"clase no encontrada", error: true};
@@ -221,13 +289,13 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
       relations: {clase: true}
     });
 
-    console.log("ESTUDIANTES: ", estudiantes);
+    // console.log("ESTUDIANTES: ", estudiantes);
     if(!estudiantes || estudiantes.length === 0){
       return {data: null, message: "No hay estudiantes registrados", error: true}
     }
 
     //agregar solo los que aún no están en clase
-    console.log(clase);
+    // console.log(clase);
 
     const idsExistentes = new Set(clase.users.map((u) => u.id));
     const nuevos = estudiantes.filter((u) => !idsExistentes.has(u.id));
@@ -277,7 +345,7 @@ export async function eliminarAsignacionUsuarioSer(id_usuario) {
       relations: {users: true},
     });
 
-    // console.log(JSON.stringify(clases));
+    // // console.log(JSON.stringify(clases));
 
     if(!clases || clases.length === 0){
       return {data: null, message:"El usuario no esta asignado a ninguna clase ", error:true }

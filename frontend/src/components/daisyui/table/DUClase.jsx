@@ -5,6 +5,7 @@ import { MdDelete } from "react-icons/md";
 
 //import Clase from '../../../pages/Clase';
 import DisplayTeacher from '../../../classes/DisplayTeacher.js';
+import DisplayCar from '../../../classes/DisplayCar.js';
 //import { ENABLED_MAILTO, SIN_ASIGNAR } from '../../../constants/clase.constants.jsx';
 
 /*import { NamePlusIcon } from './utils/NamePlusIcon.jsx';
@@ -21,12 +22,24 @@ const formatDate = (date) => {
   }
 };
 
+const mostrarPatente = (Clase) => {
+  if (Clase && Clase.tipo && String(Clase?.tipo).toLowerCase() === "practica") {
+    // console.log("La clase: ", JSON.stringify(Clase));
+    return (
+      <div>{Clase?.carObject?.patente || "Sin asignar"}</div>
+    )
+  } else {
+    // TODO: Poner un ícono como corresponde
+    return (
+      <div className='font-black'> no aplica </div>
+    )
+  } 
+}
 
-
-const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList) => {
+const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, handleAsignarUsuarioIndividual, loadingAsignarUsuarioIndividual, canCrudClases, teacherList, vehiculoList) => {
   if (Array.isArray(data) && data.length > 0) {
-            /* console.log("EL DATA: ", JSON.stringify(data));
-            console.log("TEACHER LIST: ", JSON.stringify(teacherList));
+            /* // console.log("EL DATA: ", JSON.stringify(data));
+            // console.log("TEACHER LIST: ", JSON.stringify(teacherList));
             const profesorCompleto = teacherList?.find(
                 (t) => t?.email === Clase.email_profesor || t?.email === Clase.id_profesor
             );
@@ -46,7 +59,13 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                     "Sin asignar";
             } */
       return data.map((Clase) => {
+        // console.log("VEHICULOLIST ANTES DE ASIGNAR: ", vehiculoList);
+
         const currentTeacher = new DisplayTeacher(teacherList, Clase.id_profesor || 0);
+        const currentCar = new DisplayCar(vehiculoList, Clase.id_auto || 0);
+
+        Object.assign(Clase ,{carObject: currentCar});
+        Object.assign(Clase, {teacherObject: currentTeacher});
         return (
                   <tr key={"Class-"+Clase.id_clase}>
                       <td>
@@ -73,10 +92,17 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                         </div>
                       </td>
                       <td>
-                        <div className="badge badge-quaternary">
+                        <div className="badge badge-quaternary font-black">
                           {currentTeacher.name}
                         </div>
                       </td>
+
+                      <td>
+                        <div className="badge badge-quaternary">
+                          {mostrarPatente(Clase)}
+                        </div>
+                      </td>            
+
                       {canCrudClases && (
                       <td>
                       <button className="btn btn-primary m-1" onClick={() => {handleEditClase(Clase.id_clase, Clase)}}><IoMdSettings></IoMdSettings></button>
@@ -88,6 +114,15 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
                           disabled={loadingEditarAsignacion}
                         >
                           {loadingEditarAsignacion ? 'actualizando' : 'Editar asignacion'}
+                        </button>
+                      )}
+                      {Clase.tipo === "practica" && (
+                        <button
+                          className='btn btn-info btn-sm m-1'
+                          onClick={() => {handleAsignarUsuarioIndividual(Clase.id_clase)}}
+                          disabled={loadingAsignarUsuarioIndividual}
+                        >
+                          {loadingAsignarUsuarioIndividual ? 'asignado ' : 'Asignar alumno'}
                         </button>
                       )}
                       </td>
@@ -104,7 +139,7 @@ const mostrarClases = (data, handleEditClase, handleDeleteClase, handleEditarAsi
 }
 //{currentTeacher.name !== SIN_ASIGNAR && ENABLED_MAILTO ? <a href={`mailto:${currentTeacher.email}`}><button className="btn btn-warning m-1"><MdEmail /></button></a> : <></>}
 
-export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList}) => {
+export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion,  handleAsignarUsuarioIndividual, loadingAsignarUsuarioIndividual, canCrudClases, teacherList, vehiculoList}) => {
 
     return (
         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 m-3 max-h-full">
@@ -120,11 +155,19 @@ export const DUClaseTable = ({data, handleEditClase, handleDeleteClase, handleEd
                 <th>Día</th>
                 <th>Estado clase</th>
                 <th>Nombre profesor</th>
+                <th>Patente vehículo</th>
                 {canCrudClases && (<th>Acciones</th>)}             
             </tr>
             </thead>
             <tbody>
-              {mostrarClases(data, handleEditClase, handleDeleteClase, handleEditarAsignacion, loadingEditarAsignacion, canCrudClases, teacherList)}
+              {mostrarClases(data, 
+                handleEditClase, 
+                handleDeleteClase, 
+                handleEditarAsignacion, 
+                loadingEditarAsignacion, 
+                handleAsignarUsuarioIndividual, 
+                loadingAsignarUsuarioIndividual, 
+                canCrudClases, teacherList, vehiculoList)}
             </tbody>
         </table>
         </div>

@@ -74,7 +74,7 @@ export const createValidation = Joi.object({
     }),
     rol: Joi.any().required().messages({
         "any.required":"El rol es obligatorio",
-        "any.valid": `El rol debe ser uno de los siguientes: ${STUDENT_ROLE.join(", ")}`,
+        "any.valid": `El rol debe ser uno de los siguientes: ${STUDENT_ROLE}`,
     }),
 }).min(1).unknown(false)
   .messages({

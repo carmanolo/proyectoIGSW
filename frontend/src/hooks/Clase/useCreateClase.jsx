@@ -5,7 +5,7 @@ import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA, CLASE_PRACTICA } from "../../constants/clase.constants.jsx";
-import { getTeacherEmail, processTeachers } from "../../utils/ClaseUtils.js";
+import { getTeacherEmail, processCars, processTeachers } from "../../utils/ClaseUtils.js";
 
 const PRACTICA = 1;
 const TEORICA = 0;
@@ -16,11 +16,11 @@ async function confirmarTipoClase() {
         title: "Seleccione el tipo de clase",
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: "Práctica",
+        confirmButtonText: `Práctica`,
         denyButtonText: `Teórica`,
         cancelButtonText: "Cancelar",
         preConfirm: (result) => {
-            // console.log("EL RESULTADITO: ", result);
+            // // console.log("EL RESULTADITO: ", result);
             if (result === true) {
                 return PRACTICA;
             } else if (result === false) {
@@ -29,6 +29,7 @@ async function confirmarTipoClase() {
             return CANCELADA;
         }
     });
+
 
     return Number(result);
 }
@@ -145,6 +146,8 @@ async function CreateClasePractica(profesores, vehiculos) {
 
 export const useCreateClase = (fetchClases, profesores, vehiculos) => {
     profesores = processTeachers(profesores);
+    vehiculos = processCars(vehiculos);
+    
     const handleCreateClase = async () => {
         let response = null;
         try {
@@ -153,13 +156,14 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
 
             if (tipoClase === PRACTICA) {
                 // TODO: Crear nuevo Swal para clases prácticas
-                console.log("CLASE PRÁCTICA");
+                // console.log("CLASE PRÁCTICA");
                 formValues = await CreateClasePractica(profesores, vehiculos);
+
             } else if (tipoClase === TEORICA) {
                 // TODO: Crear nuevo Swal para clases teóricas
-                console.log("CLASE TEÓRICA");
+                // console.log("CLASE TEÓRICA");
                 formValues = await CreateClaseTeorica(profesores);
-                //console.log(profesores);
+                //// console.log(profesores);
             } else {
                 return;
             }
@@ -169,7 +173,7 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
             if (typeof(fetchClases) === "function") {
                 fetchClases();
             }
-            console.log(response);
+            // console.log(response);
         } catch (error) {
             console.error(error);
             response = error?.response || {status: 500, message: "Error desconocido"};

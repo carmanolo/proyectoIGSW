@@ -6,7 +6,7 @@ export const getTeacherEmail = (teacher) => {
     try {
         const splitTeacher = teacher.split("(")[1];
         const trimmedTeacher = splitTeacher.substring(0, splitTeacher.length - 1);
-        console.log("TRIMMED TEACHER: ", trimmedTeacher);
+        // console.log("TRIMMED TEACHER: ", trimmedTeacher);
         return trimmedTeacher;
     } catch (error) {
         console.error(error);
@@ -23,7 +23,7 @@ export const getTeacherNombre = (teacher) => {
         const splitTeacher = teacher.split("(")[0];
         const nameTeacher = splitTeacher.substring(0, splitTeacher.length - 1);
         const nameTeacherWithoutId = nameTeacher.split(". ")[1];
-        console.log("TRIMMED TEACHER: ", nameTeacherWithoutId);
+        // console.log("TRIMMED TEACHER: ", nameTeacherWithoutId);
         return nameTeacherWithoutId;
     } catch (error) {
         console.error(error);
@@ -47,7 +47,7 @@ export const getTeacherEmailFromTeacherList = (teacher) => {
 }
 
 export const processTeachers = (teachers) => {
-    console.log("LOS PROFES: ", JSON.stringify(teachers));
+    // console.log("LOS PROFES: ", JSON.stringify(teachers));
 
     const DEFAULT_TEACHER = "Juanito Perez (juanitoperez@gmail.com)";
 
@@ -69,4 +69,30 @@ export const processTeachers = (teachers) => {
         }
     });
     return newTeachers;
+}
+
+export const processCars = (cars) => {
+    // console.log("LOS AUTOS: ", JSON.stringify(cars));
+
+    const DEFAULT_CAR = "CR-7C-R7";
+
+    if (!Array.isArray(cars)) {
+        return [];
+    }
+
+    const newCars = cars.map((car) => {
+        try {
+            if (typeof(car) !== "string") {
+                console.error("Auto desconocido: ", String(car));
+                return DEFAULT_CAR;
+            }
+
+            return car.split(". ")[1].trim() || DEFAULT_CAR;
+        } catch (error) {
+            console.error(error);
+            return DEFAULT_CAR;
+        }
+    });
+
+    return newCars;
 }

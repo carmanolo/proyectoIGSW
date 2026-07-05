@@ -12,7 +12,7 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
     const userRepository = AppDataSource.getRepository(User);
 
     if (!userId || !cantidad) {
-      console.log(userId, cantidad);
+      // console.log(userId, cantidad);
       throw Error("Función mal llamada", { userId, cantidad });
     }
 

@@ -74,4 +74,13 @@ export async function editAssignsClase(id_clase, idsEliminar = []){
     }
 }
 
+export async function asignarUsuarioClasePracticaService(id_clase, id_usuario) {
+    try {
+        const response = await axios.patch(`/clases/asignar_practica/${id_clase}`, {id_usuario});
+        return Object.assign(response.data, {status: response.status});
+    } catch (error) {
+        throw error.response || error;
+    }
+}
+
 

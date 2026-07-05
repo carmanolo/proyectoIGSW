@@ -9,3 +9,15 @@ export const processTeachers = (teachers) => {
     });
     return processedTeachers;
 }
+
+export const processStudents = (students) => {
+    const DEFAULT_STUDENTS = [];
+    if (!Array.isArray(students)) {
+        console.error("¡Los ALUMNOS deben ser un arreglo!");
+        return DEFAULT_STUDENTS;
+    }
+    const processedTeachers = students.map((student) => {
+        return (String(student.id || "0")) + ". " + (String(student.nombre) || "niño simbolo") + " (" + (String(student.email) || "angelosalgado@escuela.cl") + ")"; 
+    });
+    return processedTeachers;
+}

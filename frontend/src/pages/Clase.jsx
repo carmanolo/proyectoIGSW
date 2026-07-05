@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import { useClasesConUsuarios } from "@hooks/Clase/useGetUsersClase.jsx";
 import { useAsignarPorLote } from "@hooks/Clase/useAssignClase.jsx";
 import { useEditAsignacion } from "@hooks/Clase/useEditAssignClase.jsx";
+import { useAsignarClasePractica } from "@hooks/Clase/useAssignClasePractica.jsx";
 import { useGetTeacherList } from "../hooks/Listas/useGetTeacherList.jsx";
 import { useGetVehiculoList } from "../hooks/Listas/useGetVehiculoList.jsx";
+import { useGetStudentList } from "../hooks/Listas/useGetStudentList.jsx";
 
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
 import { getUserRole } from "../services/profile.service.js";
@@ -18,25 +20,28 @@ import { ACCESO_CLASES } from "../constants/permissions.constants.admin.jsx";
 const Clase = () => {
     const [profesores, setProfesores] = useState([]);
     const [vehiculos, setVehiculoList] = useState([]);
+    const [estudaintes, setEstudiantes] = useState([]);
 
     const [teacherList, fetchTeacherList] = useGetTeacherList(profesores, setProfesores);
     const [vehiculoList, fetchVehiculoList] = useGetVehiculoList(vehiculos, setVehiculoList);
+    const [studentList, fetchStudentList] = useGetStudentList(estudaintes, setEstudiantes);
 
     const userRole = getUserRole();
-    //console.log(`EL ROL DEL USIARIO = ${userRole}`);
+    //// console.log(`EL ROL DEL USIARIO = ${userRole}`);
     const canCrudClases = ACCESO_CLASES.includes(userRole);
 
     const [claseData, setClaseData] = useState([]);
 
     const [Clases, fetchClase] = useGetClase(claseData, setClaseData);
 
-    const { handleCreateClase } = useCreateClase(setClaseData, profesores, vehiculoList);
-    const { handleEditClase } = editClase(fetchClase);
+    const { handleCreateClase } = useCreateClase(fetchClase, profesores, vehiculoList);
+    const { handleEditClase } = editClase(fetchClase, profesores, vehiculos);
     const { handleDeleteClase } = DeleteClase(fetchClase);
 
     const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
     const { loading: loadingLote, asignarPorLote} =useAsignarPorLote();
     const {loading: loadingEditarAsignacion, editarAsignacion} = useEditAsignacion();
+    const {loading: loadingAsignarUsuarioIndividual, asignarUsuarioIndividual } = useAsignarClasePractica();
     const [buscar, setBuscar] = useState("");
 
     useEffect(() => {
@@ -46,10 +51,14 @@ const Clase = () => {
         if (typeof(fetchTeacherList) === 'function') {
             fetchTeacherList();
         }
-         /*console.log("teacherList:", teacherList);
-        console.log("claseData[0]:", claseData[0]);*/
+         /*// console.log("teacherList:", teacherList);
+        // console.log("claseData[0]:", claseData[0]);*/
         if (typeof(fetchVehiculoList) === 'function') {
             fetchVehiculoList();
+        }
+
+        if (typeof(fetchStudentList) === 'function') {
+            fetchStudentList();
         }
     }, []);
 
@@ -79,7 +88,7 @@ const Clase = () => {
                         {loadingLote ? 'Asignando...' : 'Asignar por lote'}
                     </button>
                 )}
-                {(
+                {canCrudClases &&(
                     <button
                         className="btn btn-accent"
                         onClick={fetchClasesConUsuarios}
@@ -95,7 +104,16 @@ const Clase = () => {
                 )}
             </div>
             <div className="Clase2-page">
-                <DUClaseTable data={currentPageContent || []}  handleEditClase={handleEditClase} handleDeleteClase={handleDeleteClase} handleEditarAsignacion={editarAsignacion} loadingEditarAsignacion={loadingEditarAsignacion} canCrudClases={canCrudClases} teacherList={teacherList}/>
+                <DUClaseTable data={currentPageContent || []}  
+                    handleEditClase={handleEditClase} 
+                    handleDeleteClase={handleDeleteClase} 
+                    handleEditarAsignacion={editarAsignacion} 
+                    loadingEditarAsignacion={loadingEditarAsignacion} 
+                    handleAsignarUsuarioIndividual={(id_clase) => asignarUsuarioIndividual(id_clase, studentList)}
+                    loadingAsignarUsuarioIndividual={loadingAsignarUsuarioIndividual}
+                    canCrudClases={canCrudClases} 
+                    teacherList={teacherList} 
+                    vehiculoList={vehiculoList}/>
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>
