@@ -1,4 +1,4 @@
-import { RESULTADOS_MANEJO, RESULTADOS_EVALUACION } from "../../constants/evaluacion.constants.jsx";
+import { RESULTADOS_EVALUACION } from "../../constants/evaluacion.constants.jsx";
 
 export const EvaluacionTable = ({
     data,
@@ -6,12 +6,26 @@ export const EvaluacionTable = ({
     onDelete,
     isLoading = false,
 }) => {
-    const getResultadoManejoLabel = (value) => {
-        return RESULTADOS_MANEJO.find((r) => r.value === value)?.label || "N/A";
+    const getResultadoValue = (evaluacion) => {
+        return (
+            evaluacion?.Resultado ||
+            evaluacion?.resultado ||
+            evaluacion?.estado ||
+            evaluacion?.status ||
+            "evaluando"
+        );
     };
 
     const getResultadoLabel = (value) => {
-        return RESULTADOS_EVALUACION.find((r) => r.value === value)?.label || value;
+        const normalized = String(value || "").toLowerCase();
+        return RESULTADOS_EVALUACION.find((r) => r.value === normalized)?.label || value || "N/A";
+    };
+
+    const getEstadoClass = (value) => {
+        const normalized = String(value || "").toLowerCase();
+        if (normalized === "aprobado") return "badge-success";
+        if (normalized === "reprobado") return "badge-error";
+        return "badge-warning";
     };
 
     if (!data || data.length === 0) {
@@ -28,10 +42,8 @@ export const EvaluacionTable = ({
                 <thead>
                     <tr>
                         <th>Alumno</th>
-                        <th>Calif. Teórica</th>
-                        <th>Manejo</th>
-                        <th>Resultado</th>
-                        <th>Comentario</th>
+                        <th>Calificación Teórica</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -41,37 +53,18 @@ export const EvaluacionTable = ({
                             <td className="font-semibold">{evaluacion.alumno}</td>
                             <td>
                                 <span className="badge badge-lg">
-                                    {evaluacion.calificacion_teorica}/{38}
+                                    {evaluacion.calificacion_teorica ?? 0}/{38}
                                 </span>
                             </td>
                             <td>
-                                <div className="flex flex-col gap-1 text-xs">
-                                    <span>
-                                        M1: {getResultadoManejoLabel(evaluacion.resultado_manejo_1)}
-                                    </span>
-                                    <span>
-                                        M2: {getResultadoManejoLabel(evaluacion.resultado_manejo_2)}
-                                    </span>
-                                    <span>
-                                        M3: {getResultadoManejoLabel(evaluacion.resultado_manejo_3)}
-                                    </span>
-                                </div>
-                            </td>
-                            <td>
-                                <span
-                                    className={`badge badge-lg ${
-                                        evaluacion.Resultado === "aprobado"
-                                            ? "badge-success"
-                                            : evaluacion.Resultado === "reprobado"
-                                                ? "badge-error"
-                                                : "badge-warning"
-                                    }`}
-                                >
-                                    {getResultadoLabel(evaluacion.Resultado)}
-                                </span>
-                            </td>
-                            <td className="max-w-xs truncate text-sm">
-                                {evaluacion.comentario || "-"}
+                                {(() => {
+                                    const resultado = String(getResultadoValue(evaluacion) || "").toLowerCase();
+                                    return (
+                                        <span className={`badge badge-lg ${getEstadoClass(resultado)}`}>
+                                            {getResultadoLabel(resultado)}
+                                        </span>
+                                    );
+                                })()}
                             </td>
                             <td className="space-x-2">
                                 <button
