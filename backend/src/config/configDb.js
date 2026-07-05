@@ -17,8 +17,13 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${DB_PASSWORD}`,
   database: `${DATABASE}`,
+<<<<<<< HEAD
   entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo, Asistencia],
   synchronize: true, 
+=======
+  entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo],
+  synchronize: false,
+>>>>>>> origin/nelsonDev
   logging: false,
 });
 

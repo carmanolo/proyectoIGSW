@@ -57,7 +57,17 @@ export const User = new EntitySchema({
     clase:{
       type: "many-to-many",
       target: "Clase",
+<<<<<<< HEAD
       inverseSide: "users",
+=======
+      inverseSide: "user",
+    },
+    evaluaciones: {
+      type: "one-to-many",
+      target: "Evaluacion",
+      inverseSide: "alumno_relacion",
+      cascade: true,
+>>>>>>> origin/nelsonDev
     }
   }
 });

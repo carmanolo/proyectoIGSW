@@ -9,7 +9,7 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/",getEvaluacion);
-router.post("/crear",authorizeRoles("profesor") ,createEvaluacion);
+router.post("/crear",authorizeRoles("profesor"), createEvaluacion);
 router.patch("/:id", authorizeRoles("profesor"), patchEvaluacion);
 router.delete("/:id", authorizeRoles("profesor"), deleteEvaluacion);
 
