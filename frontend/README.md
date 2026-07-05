@@ -10,12 +10,16 @@ Plantilla de frontend desarrollada para las clases de Ingeniería de Software.
 - Axios
 - SweetAlert2
 - JWT Authentication
+- DaisyUI
+- TailwindCss
+- Multer
 
 ## Instalación
 
 1. Instalar dependencias:
 ```bash
 npm install
+
 ```
 
 2. Configurar variables de entorno:
@@ -50,13 +54,16 @@ npm run preview
 ```
 src/
 ├── assets/         # Imágenes, iconos, etc.
+├── classes/        #lista Profesores y vehiculos
 ├── components/     # Componentes reutilizables
+├── constants/     # Constantes de valiadación
 ├── context/        # Contextos de React
 ├── helpers/        # Funciones auxiliares
 ├── hooks/          # Hooks personalizados
 ├── pages/          # Páginas de la aplicación
 ├── services/       # Servicios de API
-└── styles/         # Archivos CSS
+├── styles/         # Archivos CSS
+└── utils/          # Utilidades para el procesamiento de datos
 ```
 
 ## Funcionalidades
@@ -74,7 +81,9 @@ https://github.com/Marco-0107/CLASE-2-AYUDANTIA-ISW-ALUMNOS
 
 ## Autores
 
-- Marco Cerda
-- Sebastian Espinoza
+- Mauricio Peréz
+- Carlos Domínguez
+- Fermín Millanao
+- Nelson Venegas
 
 Universidad del Bio Bio - 2025

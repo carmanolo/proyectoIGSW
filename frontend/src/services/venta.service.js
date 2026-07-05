@@ -40,6 +40,15 @@ export async function aprobarVentaService(ventaId) {
     }
 }
 
+export async function rechazarVentaService(ventaId) {
+    try {
+        const response = await axios.patch(`/ventas/${ventaId}/rechazar`);
+        return Object.assign(response.data, { status: response.status });
+    } catch (error) {
+        throw error.response?.data || error;
+    }
+}
+
 export async function eliminarVentaService(ventaId) {
     try {
         const response = await axios.delete(`/ventas/${ventaId}`);

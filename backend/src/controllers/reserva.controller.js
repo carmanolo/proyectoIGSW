@@ -80,3 +80,18 @@ export async function updateReservaEstado(req, res) {
         return handleErrorServer(res, 500, "Error al actualizar estado de la reserva");
     }
 }
+
+export async function getOcupacionVehiculos(req, res) {
+    try {
+        const { getOcupacionVehiculosSer } = await import("../services/reserva.service.js");
+        const [ocupacion, error] = await getOcupacionVehiculosSer();
+        
+        if (error) {
+            return handleErrorClient(res, 400, error);
+        }
+        
+        return handleSuccess(res, 200, "Ocupación obtenida", ocupacion);
+    } catch (error) {
+        return handleErrorServer(res, 500, "Error al obtener ocupación de vehículos");
+    }
+}

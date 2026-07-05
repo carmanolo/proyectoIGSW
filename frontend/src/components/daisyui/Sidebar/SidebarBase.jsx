@@ -39,15 +39,19 @@ export const SidebarBase = ({pageContent}) => {
                 <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
                 <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
                 {user?.rol === 'profesor' && (
-                    <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
+                    <>
+                        <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
+                        <SidebarItem label="Generar QR Asistencia" destination="/generar-qr-clase" icon={MdSchool} />
+                        <SidebarItem label="Ver Asistencias" destination="/ver-asistencia" icon={MdSchool} />
+                    </>
                 )}
                 <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                 <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                {user?.rol === 'alumnos' && (
-                    <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
-                )}
-                {user?.rol === 'secretario' && (
-                    <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
+                {user?.rol === 'estudiante' && (
+                    <>
+                        <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
+                        <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} />
+                    </>
                 )}
                 {user?.rol === 'secretario' && (
                     <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />

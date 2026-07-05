@@ -25,7 +25,18 @@ export const Vehiculo = new EntitySchema({
       length: 50,
       default: "disponible",
     },
+    es_nulo: {
+      type: "boolean",
+      default: false,
+    }
   },
+  relations:{
+    clase:{
+      type: "one-to-many",
+      target: "Clase",
+      inverseSide: "vehiculos",
+    }
+  }
 });
 
 export default Vehiculo;

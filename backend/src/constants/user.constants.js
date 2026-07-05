@@ -4,7 +4,7 @@ export const FULLNAME_REGEX = /^[A-Za-zÁÉÍÓÚáéíóúÑñ ]*$/;
 
 
 export const TEACHER_ROLE = 'profesor';
-export const STUDENT_ROLE = ['estudiante'];
+export const STUDENT_ROLE = 'estudiante';
 export const ADMIN_ROLE = 'ADMINISTRADOR';
 export const SECRETARIA_ROLE = 'SECREATRIA';
 export const VALID_ROLES = [TEACHER_ROLE, 'estudiante', ADMIN_ROLE,SECRETARIA_ROLE];
