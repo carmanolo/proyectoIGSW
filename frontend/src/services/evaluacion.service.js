@@ -14,8 +14,8 @@ export async function getEvaluacionesService() {
 */
 export async function getEvaluacionesService() {
   try {
-    const response = await  axios.get("/evaluaciones");
-    return response;
+    const response = await axios.get("/evaluaciones");
+    return response.data?.data || [];
   } catch (error) {
     throw error.response?.data || error;
   }
