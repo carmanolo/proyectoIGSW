@@ -1,4 +1,3 @@
-
 export const createSwalField_OLD = (inputId, label, value) => {
     return `
         <div class="input m-1 form-group">

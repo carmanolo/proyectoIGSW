@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { venderPackSer, aprobarVentaSer } from "../services/venta.service.js";
+import { venderPackSer, aprobarVentaSer, rechazarVentaSer } from "../services/venta.service.js";
 import { integrityValidation, assignationValidation } from "../validations/venta.validation.js";
 import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
@@ -9,7 +9,7 @@ import { Venta } from "../entities/venta.entity.js";
 export async function registrarVenta(req, res) {
     try {
         if(!req.body){
-            console.log(req.body);
+            // console.log(req.body);
             return res.status(400).json({ message: "Datos no proporcionados"});
         }
 
@@ -22,7 +22,7 @@ export async function registrarVenta(req, res) {
         const comprobante_url = `/uploads/${req.file.filename}`;
         req.body.comprobante_url = comprobante_url; // para que pase la validacion
 
-        console.log(userId, cantidad, comprobante_url); 
+        // console.log(userId, cantidad, comprobante_url); 
 
         const { error } = integrityValidation.validate(req.body);
         if (error) {
@@ -39,8 +39,8 @@ export async function registrarVenta(req, res) {
         if (!targetUser) {
             return handleErrorClient(res, 404, "Usuario no encontrado");
         }
-        if (targetUser.rol !== "alumnos") {
-            return handleErrorClient(res, 403, "Solo los usuarios con rol 'alumnos' pueden recibir packs");
+        if (targetUser.rol !== "estudiante") {
+            return handleErrorClient(res, 403, "Solo los usuarios con rol 'estudiante' pueden recibir packs");
         }
 
         const [resultVenta, errorServicio] = await venderPackSer(userId, cantidad, comprobante_url);
@@ -80,6 +80,26 @@ export async function aprobarVenta(req, res) {
     } catch (error) {
         console.error("error al aprobar la venta", error);
         return res.status(500).json({ message: "Error interno al aprobar la venta" });
+    }
+}
+
+export async function rechazarVenta(req, res) {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ message: "El ID de la venta es obligatorio" });
+        }
+
+        const [resultVenta, errorServicio] = await rechazarVentaSer(id);
+
+        if (errorServicio) {
+            return handleErrorClient(res, 400, errorServicio);
+        }
+
+        return res.status(200).json({ message: "Venta rechazada exitosamente", data: resultVenta });
+    } catch (error) {
+        console.error("error al rechazar la venta", error);
+        return res.status(500).json({ message: "Error interno al rechazar la venta" });
     }
 }
 
@@ -146,7 +166,7 @@ export async function eliminarVenta(req, res) {
         }
 
         const user = venta.user;
-        if (user) {
+        if (user && venta.estado === "aprobada") {
             const userRepository = AppDataSource.getRepository(User);
             user.clases_disponibles = Math.max(0, (user.clases_disponibles || 0) - Number(venta.cantidad));
             await userRepository.save(user);

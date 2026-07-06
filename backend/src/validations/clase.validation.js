@@ -1,6 +1,7 @@
 "use strict";
 import Joi from "joi";
-import { DIAS_SEMANA, HORARIO_PATTERN, MIN_STRING,MAX_STRING, DIA_OBLIGATORIO, CAMPOS_ADICIONALES, HORA_INICIO_OBLIGATORIA, HORA_TERMINO_OBLIGATORIA,TIPO_CLASE, TIPO_OBLIGATORIO, DESCRIPCION_OBLIGATORIA,DESCRIPCION_PATTERN, FECHA_PATTERN, FECHA_OBLIGATORIA } from "../constants/clase.constants.js";
+import { DIAS_SEMANA, HORARIO_PATTERN, MIN_STRING,MAX_STRING, DIA_OBLIGATORIO, CAMPOS_ADICIONALES, HORA_INICIO_OBLIGATORIA, HORA_TERMINO_OBLIGATORIA,TIPO_CLASE, TIPO_OBLIGATORIO, DESCRIPCION_OBLIGATORIA,DESCRIPCION_PATTERN, FECHA_PATTERN, FECHA_OBLIGATORIA,ESTADO_CLASE, ESTADO_CLASE_OBLIGATORIA } from "../constants/clase.constants.js";
+import { idValidationFunction, nullIdValidationFunction } from "./modules/id.validation.js";
 
 const enRango = (integer =0 , min=0, max=0) => {
     const _integer =Math.trunc(Number(integer) || 0);
@@ -80,7 +81,23 @@ export const integrityValidation = Joi.object({
             "string.valid": `El día debe der uno de los siguientes ${DIAS_SEMANA.join(",")}`,
             "any.only":`El día debe ser uno se los siguientes ${DIAS_SEMANA.join(",")}`,
             "string.only": `El día debe der uno de los siguientes ${DIAS_SEMANA.join(",")}`
-        })
+        }),
+    
+    estado_clase: Joi.string()
+        .min(MIN_STRING)
+        .max(MAX_STRING)
+        .valid(...ESTADO_CLASE)
+        .messages({
+            "String.pattern.base":
+            "el día solo puede contener letras números y guiones bajos",
+            "any.valid":`El día debe ser uno se los siguientes ${ESTADO_CLASE.join(",")}`,
+            "string.valid": `El día debe der uno de los siguientes ${ESTADO_CLASE.join(",")}`,
+            "any.only":`El día debe ser uno se los siguientes ${ESTADO_CLASE.join(",")}`,
+            "string.only": `El día debe der uno de los siguientes ${ESTADO_CLASE.join(",")}`
+        }),
+
+    id_profesor: Joi.custom(idValidationFunction),
+    id_auto: Joi.custom(nullIdValidationFunction),
 })
 
 export const assignationValidation = Joi.object({
@@ -96,17 +113,25 @@ export const assignationValidation = Joi.object({
         "any.required": FECHA_OBLIGATORIA
     }),
 
-  hora_inicio: Joi.any().required().messages({
+    hora_inicio: Joi.any().required().messages({
         "any.required": HORA_INICIO_OBLIGATORIA,
     }),
 
-  hora_fin: Joi.any().required().messages({
+    hora_fin: Joi.any().required().messages({
         "any.required": HORA_TERMINO_OBLIGATORIA, 
     }),
 
-  dia: Joi.any().required().messages({
+    dia: Joi.any().required().messages({
       "any.required": DIA_OBLIGATORIO,
       "any.valid": `El día debe ser uno de los siguientes: ${DIAS_SEMANA.join(", ")}`,
+    }),
+    estado_clase: Joi.any().required().messages({
+      "any.required": ESTADO_CLASE_OBLIGATORIA,
+      "any.valid": `El estado de clase debe ser uno de los siguientes: ${ESTADO_CLASE.join(", ")}`,
+    }),
+    id_auto: Joi.any(),
+    id_profesor: Joi.any().required().messages({
+        "any.required": "El profesor es obligatorio",
     }),
 })
   .unknown(false)
@@ -121,6 +146,9 @@ export const updateValidation = Joi.object({
     hora_inicio: Joi.any(),
     hora_fin: Joi.any(),
     dia: Joi.any(),
+    estado_clase: Joi.any(),
+    id_profesor: Joi.any(),
+    id_auto: Joi.any(),
 }).min(1).unknown(false).messages({
     "object.min": "Se requiere al menos un campo para actualizar",
     "object.unknown": CAMPOS_ADICIONALES,

@@ -55,9 +55,9 @@ export const User = new EntitySchema({
   },
   relations:{
     clase:{
-      type: "one-to-many",
+      type: "many-to-many",
       target: "Clase",
-      inverseSide: "user",
+      inverseSide: "users",
     },
     evaluaciones: {
       type: "one-to-many",

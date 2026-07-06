@@ -58,7 +58,7 @@ export default function HistorialClasesAlumno() {
     }
   };
 
-  if (user?.rol !== 'alumnos') {
+  if (user?.rol !== 'estudiante') {
     return (
       <div className="flex justify-center mt-10">
         <div className="bg-red-100 text-red-700 p-4 rounded-lg">

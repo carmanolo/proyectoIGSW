@@ -19,10 +19,24 @@ columns: {
     createDate: true,
     default: () => "CURRENT_TIMESTAMP",
     },
+    monto_total: {
+    type: "int",
+    nullable: false,
+    default: 0,
+    },
     estado: {
     type: "varchar",
     length: 50,
     default: "pendiente",
+    },
+    fecha_vencimiento: {
+    type: "timestamp",
+    nullable: true,
+    },
+    clases_restantes: {
+    type: "int",
+    nullable: false,
+    default: 0,
     },
     comprobante_url: {
     type: "varchar",
@@ -41,3 +55,5 @@ relations: {
     },
 },
 });
+
+export default Venta;

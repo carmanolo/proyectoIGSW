@@ -24,3 +24,10 @@ export const idValidationFunction = (value, helpers) => {
     }
     return true;
 }
+
+export const nullIdValidationFunction = (value, helpers) => {
+    if (value === null) {
+        return true;
+    }
+    return idValidationFunction(value, helpers);
+}

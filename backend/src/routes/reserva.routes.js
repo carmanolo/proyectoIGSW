@@ -7,12 +7,16 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// Las reservas las puede hacer la secretaria, o el alumno (depende de la logica de negocio, lo dejamos en secretaria por ahora)
+// Las reservas las puede hacer la secretaria
 router.post("/", authorizeRoles("secretario"), createReserva);
 router.get("/", authorizeRoles("secretario"), getReservas);
 
 // Nuevas rutas
-router.get("/user/:id", authorizeRoles("alumnos", "secretario", "profesor"), getReservasUsuario);
+router.get("/ocupacion", authorizeRoles("estudiante", "secretario", "profesor"), async (req, res) => {
+    const { getOcupacionVehiculos } = await import("../controllers/reserva.controller.js");
+    return getOcupacionVehiculos(req, res);
+});
+router.get("/user/:id", authorizeRoles("estudiante", "secretario", "profesor"), getReservasUsuario);
 router.patch("/:id/estado", authorizeRoles("secretario"), updateReservaEstado);
 
 export default router;

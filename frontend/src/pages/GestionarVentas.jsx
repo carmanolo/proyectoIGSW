@@ -4,10 +4,11 @@ import { useVentas } from '../hooks/useVentas';
 
 export default function GestionarVentas() {
   const { user } = useAuth();
-  const { getAllVentas, aprobarVenta, eliminarVenta, loading, error } = useVentas();
+  const { getAllVentas, aprobarVenta, rechazarVenta, eliminarVenta, loading, error } = useVentas();
   
   const [ventas, setVentas] = useState([]);
   const [mensaje, setMensaje] = useState(null);
+  const [filterEstado, setFilterEstado] = useState('pendiente');
 
   useEffect(() => {
     if (user?.rol === 'secretario') {
@@ -34,6 +35,19 @@ export default function GestionarVentas() {
       cargarVentas();
     } catch (err) {
       setMensaje({ type: 'error', text: err.message || 'Error al aprobar la venta.' });
+    }
+  };
+
+  const handleRechazar = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas rechazar esta venta?")) return;
+    
+    setMensaje(null);
+    try {
+      await rechazarVenta(id);
+      setMensaje({ type: 'success', text: 'Venta rechazada correctamente.' });
+      cargarVentas();
+    } catch (err) {
+      setMensaje({ type: 'error', text: err.message || 'Error al rechazar la venta.' });
     }
   };
 
@@ -70,14 +84,33 @@ export default function GestionarVentas() {
         </div>
       )}
 
+      <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <h2 className="text-xl font-semibold text-gray-700">Filtrar Solicitudes</h2>
+        <select 
+          className="select select-bordered w-full sm:max-w-xs"
+          value={filterEstado}
+          onChange={(e) => setFilterEstado(e.target.value)}
+        >
+          <option value="todas">Todas las Solicitudes</option>
+          <option value="pendiente">Solo Pendientes</option>
+          <option value="aprobada">Solo Aprobadas</option>
+          <option value="rechazada">Solo Rechazadas</option>
+        </select>
+      </div>
+
       <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">Todas las Solicitudes</h2>
+        <h2 className="text-xl font-semibold text-gray-700 mb-4">Listado de Ventas</h2>
         
-        {loading && ventas.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">Cargando...</p>
-        ) : ventas.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No hay solicitudes registradas.</p>
-        ) : (
+        {(() => {
+          const ventasFiltradas = ventas.filter(venta => {
+            if (filterEstado === 'todas') return true;
+            return venta.estado === filterEstado;
+          });
+
+          if (loading && ventas.length === 0) return <p className="text-gray-500 text-center py-4">Cargando...</p>;
+          if (ventasFiltradas.length === 0) return <p className="text-gray-500 text-center py-4">No hay solicitudes para el filtro seleccionado.</p>;
+
+          return (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -85,14 +118,15 @@ export default function GestionarVentas() {
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">ID</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Alumno</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Fecha</th>
-                  <th className="px-4 py-3 text-sm font-medium text-gray-600">Cant. Clases</th>
+                  <th className="px-4 py-3 text-sm font-medium text-gray-600">Cant. / Restantes</th>
+                  <th className="px-4 py-3 text-sm font-medium text-gray-600">Monto Total</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Comprobante</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600">Estado</th>
                   <th className="px-4 py-3 text-sm font-medium text-gray-600 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {ventas.map((venta) => (
+                {ventasFiltradas.map((venta) => (
                   <tr key={venta.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-700">{venta.id}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">
@@ -108,7 +142,15 @@ export default function GestionarVentas() {
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {new Date(venta.fecha_venta).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-sm font-semibold text-gray-700">{venta.cantidad}</td>
+                    <td className="px-4 py-3 text-sm text-gray-700">
+                      <span className="font-semibold">{venta.cantidad}</span>
+                      {venta.estado === 'aprobada' && (
+                        <span className="text-xs text-gray-500 block">Quedan: {venta.clases_restantes}</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm font-medium text-blue-600">
+                      {venta.monto_total ? venta.monto_total.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' }) : '$0'}
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-700">
                       <a 
                         href={`http://localhost:3000${venta.comprobante_url}`} 
@@ -122,22 +164,37 @@ export default function GestionarVentas() {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        venta.estado === 'aprobado' ? 'bg-green-100 text-green-800' : 
+                        venta.estado === 'aprobada' ? 'bg-green-100 text-green-800' : 
+                        venta.estado === 'vencida' ? 'bg-gray-200 text-gray-600' :
                         venta.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' : 
                         'bg-red-100 text-red-800'
                       }`}>
-                        {venta.estado.charAt(0).toUpperCase() + venta.estado.slice(1)}
+                        {venta.estado ? venta.estado.charAt(0).toUpperCase() + venta.estado.slice(1) : 'Desconocido'}
                       </span>
+                      {venta.estado === 'aprobada' && venta.fecha_vencimiento && (
+                        <span className="text-xs text-red-500 block mt-1 font-medium">
+                          Vence: {new Date(venta.fecha_vencimiento).toLocaleDateString()}
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm text-right space-x-2">
                       {venta.estado === 'pendiente' && (
-                        <button
-                          onClick={() => handleAprobar(venta.id)}
-                          disabled={loading}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition disabled:opacity-50"
-                        >
-                          Aprobar
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleAprobar(venta.id)}
+                            disabled={loading}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded text-xs font-medium transition disabled:opacity-50"
+                          >
+                            Aprobar
+                          </button>
+                          <button
+                            onClick={() => handleRechazar(venta.id)}
+                            disabled={loading}
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded text-xs font-medium transition disabled:opacity-50"
+                          >
+                            Rechazar
+                          </button>
+                        </>
                       )}
                       <button
                         onClick={() => handleEliminar(venta.id)}
@@ -152,7 +209,8 @@ export default function GestionarVentas() {
               </tbody>
             </table>
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );

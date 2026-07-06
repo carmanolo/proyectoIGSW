@@ -3,6 +3,75 @@ import { Reserva } from "../entities/reserva.entity.js";
 import { User } from "../entities/user.entity.js";
 import { Vehiculo } from "../entities/vehiculo.entity.js";
 import { Clase } from "../entities/clase.entity.js";
+import { Venta } from "../entities/venta.entity.js";
+import { LessThan } from "typeorm";
+
+async function limpiarPacksVencidos(user) {
+  const ventaRepository = AppDataSource.getRepository(Venta);
+  const userRepository = AppDataSource.getRepository(User);
+  const now = new Date();
+
+  const packsVencidos = await ventaRepository.find({
+    where: {
+      user: { id: user.id },
+      estado: "aprobada",
+      fecha_vencimiento: LessThan(now)
+    }
+  });
+
+  let needsSave = false;
+  for (const pack of packsVencidos) {
+    if (pack.clases_restantes > 0) {
+      user.clases_disponibles = Math.max(0, user.clases_disponibles - pack.clases_restantes);
+      pack.clases_restantes = 0;
+      pack.estado = "vencida";
+      await ventaRepository.save(pack);
+      needsSave = true;
+    }
+  }
+  if (needsSave) {
+    await userRepository.save(user);
+  }
+  return user;
+}
+
+async function consumirClase(user) {
+  const ventaRepository = AppDataSource.getRepository(Venta);
+  const userRepository = AppDataSource.getRepository(User);
+  const now = new Date();
+
+  const packsVigentes = await ventaRepository.find({
+    where: {
+      user: { id: user.id },
+      estado: "aprobada"
+    },
+    order: { fecha_vencimiento: "ASC" }
+  });
+
+  let clasesEnPacks = 0;
+  for (const pack of packsVigentes) {
+    if (pack.fecha_vencimiento >= now && pack.clases_restantes > 0) {
+      clasesEnPacks += pack.clases_restantes;
+    }
+  }
+
+  const clasesRegulares = user.clases_disponibles - clasesEnPacks;
+
+  if (clasesRegulares > 0) {
+    user.clases_disponibles -= 1;
+  } else if (clasesEnPacks > 0) {
+    for (const pack of packsVigentes) {
+      if (pack.fecha_vencimiento >= now && pack.clases_restantes > 0) {
+        pack.clases_restantes -= 1;
+        await ventaRepository.save(pack);
+        break;
+      }
+    }
+    user.clases_disponibles -= 1;
+  }
+
+  await userRepository.save(user);
+}
 
 export async function createReservaSer(data) {
   try {
@@ -13,19 +82,25 @@ export async function createReservaSer(data) {
 
     const { userId, vehiculoId, claseId, fecha, tipo } = data;
 
-    const user = await userRepository.findOneBy({ id: Number(userId) });
+    let user = await userRepository.findOneBy({ id: Number(userId) });
     if (!user) return [null, "Usuario no encontrado"];
+
+    if (tipo !== "pre_evaluacion") {
+        user = await limpiarPacksVencidos(user);
+    }
 
     const vehiculo = await vehiculoRepository.findOneBy({ id: Number(vehiculoId) });
     if (!vehiculo) return [null, "Vehículo no encontrado"];
+
+    if (vehiculo.estado !== "disponible") {
+      return [null, `El vehículo seleccionado no se encuentra disponible (estado: ${vehiculo.estado})`];
+    }
 
     const clase = await claseRepository.findOneBy({ id_clase: Number(claseId) });
     if (!clase) return [null, "Clase no encontrada"];
 
     if (user.clases_disponibles <= 0 && tipo !== "pre_evaluacion") {
-        // Asumimos que pre_evaluacion podría no descontar clase normal, o sí.
-        // Si descuenta, quitamos la condicion. Por ahora validamos que tenga clases.
-        return [null, "El alumno no tiene clases disponibles"];
+        return [null, "El alumno no tiene clases disponibles (o las que tenía han caducado)"];
     }
 
     // Validar choque de reservas para el mismo vehículo, fecha y clase
@@ -42,10 +117,23 @@ export async function createReservaSer(data) {
       return [null, "El vehículo ya se encuentra reservado para esa fecha y clase"];
     }
 
-    // Descontar clase si corresponde
+    // Validar que el alumno no tenga ya una reserva para esa misma clase y fecha
+    const reservaExistenteUser = await reservaRepository.findOne({
+      where: {
+        user: { id: Number(userId) },
+        clase: { id_clase: Number(claseId) },
+        fecha: fecha,
+        estado: "pendiente"
+      }
+    });
+
+    if (reservaExistenteUser) {
+      return [null, "El alumno ya tiene una reserva para esa fecha y clase"];
+    }
+
+    // Descontar clase si corresponde (priorizando regulares, luego extras)
     if (tipo !== "pre_evaluacion") {
-        user.clases_disponibles -= 1;
-        await userRepository.save(user);
+        await consumirClase(user);
     }
 
     const nuevaReserva = reservaRepository.create({
@@ -103,10 +191,23 @@ export async function updateReservaEstadoSer(id, estado) {
     }
 
     const reservaRepository = AppDataSource.getRepository(Reserva);
-    const reserva = await reservaRepository.findOneBy({ id: Number(id) });
+    const userRepository = AppDataSource.getRepository(User);
+    
+    const reserva = await reservaRepository.findOne({
+      where: { id: Number(id) },
+      relations: { user: true }
+    });
 
     if (!reserva) {
       return [null, "Reserva no encontrada"];
+    }
+
+    // Si la reserva pasa a 'cancelada' desde 'pendiente' y no era pre_evaluacion, devolvemos el cupo al usuario
+    if (estado === "cancelada" && reserva.estado === "pendiente" && reserva.tipo !== "pre_evaluacion") {
+      if (reserva.user) {
+        reserva.user.clases_disponibles += 1;
+        await userRepository.save(reserva.user);
+      }
     }
 
     reserva.estado = estado;
@@ -116,5 +217,28 @@ export async function updateReservaEstadoSer(id, estado) {
   } catch (error) {
     console.error("Error al actualizar el estado de la reserva:", error);
     return [null, "Error interno del servidor al actualizar estado"];
+  }
+}
+
+export async function getOcupacionVehiculosSer() {
+  try {
+    const reservaRepository = AppDataSource.getRepository(Reserva);
+    const reservas = await reservaRepository.find({
+        where: [
+            { estado: "pendiente" },
+            { estado: "completada" }
+        ],
+        relations: { vehiculo: true, clase: true },
+        select: {
+            id: true,
+            fecha: true,
+            vehiculo: { id: true },
+            clase: { id_clase: true }
+        }
+    });
+    return [reservas, null];
+  } catch (error) {
+    console.error("Error al obtener ocupación de vehículos:", error);
+    return [null, "Error interno del servidor al obtener ocupación"];
   }
 }
