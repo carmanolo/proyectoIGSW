@@ -1,5 +1,44 @@
 import { RESULTADOS_EVALUACION } from "../../constants/evaluacion.constants.jsx";
 
+const countPracticeScores = (evaluacion) => {
+    const counts = { sinFaltas: 0, leves: 0, graves: 0, reprobatorios: 0 };
+    const practicePrefixes = [
+        "comprobacion_",
+        "ingreso_",
+        "circulacion_",
+        "cambio_",
+        "viraje_",
+        "interseccion_",
+        "adelantamiento_",
+        "estacionamiento_",
+        "demarcaciones_",
+        "manejo_",
+        "observacion_",
+        "senal_",
+        "luces_",
+        "preferencias_",
+        "mandos_",
+    ];
+
+    Object.entries(evaluacion).forEach(([field, value]) => {
+        if (!practicePrefixes.some((prefix) => field.startsWith(prefix))) {
+            return;
+        }
+
+        const numericValue = Number(value);
+        if (Number.isNaN(numericValue)) {
+            return;
+        }
+
+        if (numericValue === 0) counts.sinFaltas += 1;
+        if (numericValue === 1) counts.leves += 1;
+        if (numericValue === 2) counts.graves += 1;
+        if (numericValue === 3) counts.reprobatorios += 1;
+    });
+
+    return counts;
+};
+
 export const EvaluacionTable = ({
     data,
     onEdit,
@@ -42,48 +81,54 @@ export const EvaluacionTable = ({
                 <thead>
                     <tr>
                         <th>Alumno</th>
-                        <th>Calificación Teórica</th>
+                        <th>Tipo</th>
+                        <th>Detalle</th>
                         <th>Estado</th>
+                        <th>Observación</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((evaluacion) => (
-                        <tr key={evaluacion.id_evaluacion}>
-                            <td className="font-semibold">{evaluacion.alumno}</td>
-                            <td>
-                                <span className="badge badge-lg">
-                                    {evaluacion.calificacion_teorica ?? 0}/{38}
-                                </span>
-                            </td>
-                            <td>
-                                {(() => {
-                                    const resultado = String(getResultadoValue(evaluacion) || "").toLowerCase();
-                                    return (
-                                        <span className={`badge badge-lg ${getEstadoClass(resultado)}`}>
-                                            {getResultadoLabel(resultado)}
-                                        </span>
-                                    );
-                                })()}
-                            </td>
-                            <td className="space-x-2">
-                                <button
-                                    onClick={() => onEdit(evaluacion)}
-                                    className="btn btn-sm btn-info"
-                                    disabled={isLoading}
-                                >
-                                    Editar
-                                </button>
-                                <button
-                                    onClick={() => onDelete(evaluacion.id_evaluacion)}
-                                    className="btn btn-sm btn-error"
-                                    disabled={isLoading}
-                                >
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {data.map((evaluacion) => {
+                        const tipo = evaluacion.tipo_evaluacion || evaluacion.tipo || "practica";
+                        const detalle = tipo === "teorica"
+                            ? `${evaluacion.calificacion_teorica ?? 0}/${38}`
+                            : (() => {
+                                const counts = countPracticeScores(evaluacion);
+                                return `Sin faltas: ${counts.sinFaltas}, Leves: ${counts.leves}, Graves: ${counts.graves}, Reprobatorios: ${counts.reprobatorios}`;
+                            })();
+                        const resultado = String(getResultadoValue(evaluacion) || "").toLowerCase();
+
+                        return (
+                            <tr key={evaluacion.id_evaluacion}>
+                                <td className="font-semibold">{evaluacion.alumno}</td>
+                                <td>{tipo === "teorica" ? "Teórica" : "Práctica"}</td>
+                                <td>{detalle}</td>
+                                <td>
+                                    <span className={`badge badge-lg ${getEstadoClass(resultado)}`}>
+                                        {getResultadoLabel(resultado)}
+                                    </span>
+                                </td>
+                                <td>{evaluacion.comentario}</td>
+                                <td className="space-x-2">
+                                    <button
+                                        onClick={() => onEdit(evaluacion)}
+                                        className="btn btn-sm btn-info"
+                                        disabled={isLoading}
+                                    >
+                                        Editar
+                                    </button>
+                                    <button
+                                        onClick={() => onDelete(evaluacion.id_evaluacion)}
+                                        className="btn btn-sm btn-error"
+                                        disabled={isLoading}
+                                    >
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         </div>
