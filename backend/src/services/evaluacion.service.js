@@ -135,12 +135,20 @@ export async function generateEvaluacionExcel(evaluacion) {
   }
 }
 
-export async function getEvaluacionSer(id = null) {
+export async function getEvaluacionSer(id = null, alumnoId = null) {
   try {
     const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
     if (id) {
       const evaluacion = await evaluacionRepository.findOne({ where: { id_evaluacion: Number(id) }, relations: ["alumno_relacion"] });
       return evaluacion || null;
+    }
+
+    if (alumnoId) {
+      const evaluaciones = await evaluacionRepository.find({
+        where: { alumno_relacion: { id: Number(alumnoId) } },
+        relations: ["alumno_relacion"],
+      });
+      return evaluaciones;
     }
 
     const evaluaciones = await evaluacionRepository.find({ relations: ["alumno_relacion"] });

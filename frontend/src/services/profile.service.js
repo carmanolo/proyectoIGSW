@@ -22,13 +22,11 @@ export async function getUser(id) {
 export const getUserRole = () => {
    try {
         const user = JSON.parse(sessionStorage.getItem('usuario'));
-        // console.log(user);
-        const rol = String(user?.rol || STUDENT_ROLE); 
-        // // console.log("ROL ACTUAL: " + rol);
+        const rol = String(user?.rol || STUDENT_ROLE).toLowerCase();
         return rol;
     } catch (error) {
         console.error(error);
-        return STUDENT_ROLE;
+        return STUDENT_ROLE.toLowerCase();
     }
 }
 

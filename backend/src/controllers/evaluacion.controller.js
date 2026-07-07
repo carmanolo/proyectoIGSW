@@ -39,9 +39,12 @@ export async function createEvaluacion(req, res) {
 
 export async function getEvaluacion(req, res) {
   try {
-    const evaluacionData = await getEvaluacionSer();
+    const userRole = req.user?.rol;
+    const userId = req.user?.sub;
+
+    const evaluacionData = await getEvaluacionSer(null, userRole === "profesor" ? null : userId);
     if (!evaluacionData || evaluacionData.length === 0) {
-      return handleErrorClient(res, 400, "Evaluaciones no encontradas");
+      return handleSuccess(res, 200, "No hay evaluaciones para mostrar", []);
     }
     return handleSuccess(res, 200, "Evaluaciones obtenidas exitosamente", evaluacionData);
   } catch (error) {

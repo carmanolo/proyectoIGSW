@@ -111,20 +111,24 @@ export const EvaluacionTable = ({
                                 </td>
                                 <td>{evaluacion.comentario}</td>
                                 <td className="space-x-2">
-                                    <button
-                                        onClick={() => onEdit(evaluacion)}
-                                        className="btn btn-sm btn-info"
-                                        disabled={isLoading}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        onClick={() => onDelete(evaluacion.id_evaluacion)}
-                                        className="btn btn-sm btn-error"
-                                        disabled={isLoading}
-                                    >
-                                        Eliminar
-                                    </button>
+                                    {onEdit && (
+                                        <button
+                                            onClick={() => onEdit(evaluacion)}
+                                            className="btn btn-sm btn-info"
+                                            disabled={isLoading}
+                                        >
+                                            Editar
+                                        </button>
+                                    )}
+                                    {onDelete && (
+                                        <button
+                                            onClick={() => onDelete(evaluacion.id_evaluacion)}
+                                            className="btn btn-sm btn-error"
+                                            disabled={isLoading}
+                                        >
+                                            Eliminar
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         );

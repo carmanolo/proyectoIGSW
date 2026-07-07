@@ -12,6 +12,7 @@ import { useAuth } from '@context/AuthContext';
 
 export const SidebarBase = ({pageContent}) => {
     const { user } = useAuth();
+    const role = String(user?.rol || "").toLowerCase();
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -38,25 +39,25 @@ export const SidebarBase = ({pageContent}) => {
             <ul className="menu w-full grow">
                 <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
                 <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                {user?.rol === 'profesor' && (
+                <SidebarItem label="Material Descargable" destination="/mis-clases" icon={MdSchool} />
+                {(role === 'profesor' || role === 'secretario') && (
                     <>
-                        <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
                         <SidebarItem label="Generar QR Asistencia" destination="/generar-qr-clase" icon={MdSchool} />
                         <SidebarItem label="Ver Asistencias" destination="/ver-asistencia" icon={MdSchool} />
                     </>
                 )}
                 <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                 <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                {user?.rol === 'estudiante' && (
+                {role === 'estudiante' && (
                     <>
                         <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
                         <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} />
                     </>
                 )}
-                {user?.rol === 'secretario' && (
+                {role === 'secretario' && (
                     <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
                 )}
-                {user?.rol === 'secretario' && (
+                {role === 'secretario' && (
                     <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
                 )}
                 <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
