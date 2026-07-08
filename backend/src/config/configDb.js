@@ -18,7 +18,7 @@ export const AppDataSource = new DataSource({
   password: `${DB_PASSWORD}`,
   database: `${DATABASE}`,
   entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo, Asistencia],
-  synchronize: false, // true. or falae don't know
+  synchronize: true, // true. or falae don't know
   logging: false,
 });
 

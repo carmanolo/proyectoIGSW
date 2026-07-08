@@ -151,7 +151,12 @@ export async function getEvaluacionSer(id = null, alumnoId = null) {
       return evaluaciones;
     }
 
-    const evaluaciones = await evaluacionRepository.find({ relations: ["alumno_relacion"] });
+    const evaluaciones = await evaluacionRepo.find({
+  relations: { 
+    alumno: true, 
+    otraRelacion: true 
+  }
+  });
     return evaluaciones;
   } catch (error) {
     console.error("Error al obtener los evaluacions", error);
