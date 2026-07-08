@@ -4,7 +4,7 @@ import { createSwalField, createSwalDateField } from "../utils/swalField.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE } from "../../constants/clase.constants.jsx";
-import { getTeacherEmail, processCars, processTeachers } from "../../utils/ClaseUtils.js";
+import { getTeacherEmail, processCars, processTeachers, isFechaValida } from "../../utils/ClaseUtils.js";
 
 async function editClaseTeoricaInfo(clase, profesores) {
     // console.log(JSON.stringify(clase));
@@ -42,6 +42,11 @@ async function editClaseTeoricaInfo(clase, profesores) {
             if (!tipo || !descripcion || !fecha_clase || !hora_inicio || !hora_fin || !dia || !estado_clase || !email_profesor) {
                 Swal.showValidationMessage('Por favor complete todos los campos');
                 return;
+            }
+
+            if (!isFechaValida(fecha_clase)) {
+                Swal.showValidationMessage('La fecha no puede ser anterior a hoy');
+                return false; 
             }
             return { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, email_profesor };
 
@@ -98,6 +103,11 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
             if (!tipo || !descripcion || !fecha_clase || !hora_inicio || !hora_fin || !dia || !estado_clase || !email_profesor || !patente_auto) {
                 Swal.showValidationMessage('Por favor complete todos los campos');
                 return;
+            }
+
+            if (!isFechaValida(fecha_clase)) {
+                Swal.showValidationMessage('La fecha no puede ser anterior a hoy');
+                return false; 
             }
             return { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, email_profesor, patente_auto };
 

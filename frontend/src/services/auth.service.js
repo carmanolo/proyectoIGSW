@@ -4,24 +4,46 @@ import { jwtDecode } from 'jwt-decode';
 
 export async function login(dataUser) {
     try {
+        console.log('🔍 Enviando login request...');
         const response = await axios.post('/auth/login', {
             email: dataUser.email,
             password: dataUser.password
         });
 
-        const { status, data} = response;
+        console.log('📝 Login response:', response);
 
-        if(status === 200){
-            const token = data.data.token;
-            const { sub, nombre, email, rol } = jwtDecode(token);
-            const userData = {id: sub, nombre, email, rol}
-
-            sessionStorage.setItem('usuario', JSON.stringify(userData));
-            cookies.set('jwt-auth', data.data.token, { path: '/' });
-        
+        if (response.status === 200) {
+            const { user, token } = response.data.data;
+            
+            console.log('👤 Usuario recibido:', user);
+            console.log('🔑 Token recibido:', token);
+            
+            // ✅ GUARDAR TOKEN Y USUARIO EN SESSIONSTORAGE
+            if (token) {
+                sessionStorage.setItem('token', token);
+                console.log('✅ Token guardado en sessionStorage');
+            } else {
+                console.error('❌ No se recibió token');
+            }
+            
+            if (user) {
+                sessionStorage.setItem('usuario', JSON.stringify(user));
+                console.log('✅ Usuario guardado en sessionStorage');
+            }
+            
+            // ✅ Verificar que se guardó correctamente
+            const savedToken = sessionStorage.getItem('token');
+            const savedUser = sessionStorage.getItem('usuario');
+            console.log('📝 Token guardado:', savedToken ? '✅ SI' : '❌ NO');
+            console.log('📝 Usuario guardado:', savedUser ? '✅ SI' : '❌ NO');
+            
+            // Guardar en cookie (para el interceptor)
+            cookies.set('jwt-auth', token, { path: '/' });
+            
             return response.data;
         }
     } catch (error) {
+        console.error('❌ Error en login:', error);
         return error.response?.data || { message: 'Error al conectar con el servidor' };
     }
 }

@@ -10,6 +10,10 @@ import ventaRoutes from "./venta.routes.js";
 import reservaRoutes from "./reserva.routes.js";
 import vehiculoRoutes from "./vehiculo.routes.js";
 import asistenciaRoutes from "./asistencia.routes.js";
+
+import registroEsperaRoutes from "./registroEspera.routes.js";
+import dashboardRoutes from "./dashboard.routes.js";
+
 const router = new Router();
 
 router.use("/auth", authRoutes);
@@ -24,5 +28,8 @@ router.use("/ventas", ventaRoutes);
 router.use("/reservas", reservaRoutes);
 router.use("/vehiculos", vehiculoRoutes);
 router.use("/asistencia", asistenciaRoutes);
+
+router.use("/registro-espera", registroEsperaRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;
