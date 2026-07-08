@@ -1,11 +1,20 @@
 import { SidebarItem } from "./SidebarItem.jsx";
-import { MdHouse, MdSchool, MdAttachMoney, MdShoppingCart, MdAdminPanelSettings, MdDirectionsCar, MdLogout } from "react-icons/md";
+import { 
+  MdHouse, 
+  MdSchool, 
+  MdAttachMoney, 
+  MdShoppingCart, 
+  MdAdminPanelSettings,
+  MdDirectionsCar,
+  MdLogout
+} from "react-icons/md";
 import { useAuth } from '@context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const SidebarBase = ({ pageContent }) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const role = String(user?.rol || "").toLowerCase();
 
     const handleLogout = async () => {
         try {
@@ -29,9 +38,6 @@ export const SidebarBase = ({ pageContent }) => {
         return user.nombre.substring(0, 2).toUpperCase();
     };
 
-export const SidebarBase = ({pageContent}) => {
-    const { user } = useAuth();
-    const role = String(user?.rol || "").toLowerCase();
     return (
         <div className="drawer lg:drawer-open">
             <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -47,7 +53,7 @@ export const SidebarBase = ({pageContent}) => {
                             </svg>
                         </label>
                         <div className="flex items-center gap-2">
-                            <span className="text-xl font-bold text-gradient">🚗 Conduce</span>
+                            <span className="text-xl font-bold text-gradient"> Conduce</span>
                         </div>
                     </div>
                     <div className="flex-none">
@@ -71,67 +77,40 @@ export const SidebarBase = ({pageContent}) => {
                 </div>
             </div>
 
-        <div className="drawer-side is-drawer-close:overflow-visible">
-            <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
-            <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
-            {/* Sidebar content here */}
-            <ul className="menu w-full grow">
-                <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
-                <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                <SidebarItem label="Material Descargable" destination="/mis-clases" icon={MdSchool} />
-                {(role === 'profesor' || role === 'secretario') && (
-                    <>
-                        <SidebarItem label="Generar QR Asistencia" destination="/generar-qr-clase" icon={MdSchool} />
-                        <SidebarItem label="Ver Asistencias" destination="/ver-asistencia" icon={MdSchool} />
-                    </>
-                )}
-                <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
-                <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                {role === 'estudiante' && (
-                    <>
-                        <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
-                        <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} />
-                    </>
-                )}
-                {role === 'secretario' && (
-                    <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
-                )}
-                {role === 'secretario' && (
-                    <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
-                )}
-                <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
-                {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
-            </ul>
             <div className="drawer-side is-drawer-close:overflow-visible">
                 <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
                 <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
                     <ul className="menu w-full grow">
-                        {/* Items del menú */}
+                        {/* ===== ITEMS DEL MENÚ ===== */}
                         <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
                         <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                        {(user?.rol === 'secretario' || user?.rol === 'profesor') && (
-                           <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                        ) 
-                        } 
-                        {user?.rol === 'profesor' && (
-                            <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
+                        
+                        {/* Material Descargable - visible para todos */}
+                        <SidebarItem label="Material Descargable" destination="/mis-clases" icon={MdSchool} />
+                        
+                        {/* QR Asistencia - Profesor y Secretario */}
+                        {(role === 'profesor' || role === 'secretario') && (
+                            <>
+                                <SidebarItem label="Generar QR Asistencia" destination="/generar-qr-clase" icon={MdSchool} />
+                                <SidebarItem label="Ver Asistencias" destination="/ver-asistencia" icon={MdSchool} />
+                            </>
                         )}
                         
                         <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                         <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                        <SidebarItem label="Generar QR Asistencia" destination="/generar-qr-clase" icon={MdSchool} />
-                        <SidebarItem label="Ver Asistencias" destination="/ver-asistencia" icon={MdSchool} />
-
                         
-                        {user?.rol === 'estudiante' && (
+                        {/* Estudiante */}
+                        {role === 'estudiante' && (
                             <>
                                 <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
                                 <SidebarItem label="Agendar Clase" destination="/agendar-clase" icon={MdSchool} />
-                                 <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} />
+                                <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} />
+                                <SidebarItem label="Próximas Clases" destination="/calendario-clases" icon={MdSchool} />
                             </>
                         )}
                         
-                        {user?.rol === 'secretario' && (
+                        {/* Secretario */}
+                        {role === 'secretario' && (
                             <>
                                 <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
                                 <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
@@ -139,13 +118,14 @@ export const SidebarBase = ({pageContent}) => {
                             </>
                         )}
                         
-                        <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
-                        
-                        {user?.rol === 'estudiante' && (
-                            <SidebarItem label="Próximas Clases" destination="/calendario-clases" icon={MdSchool} />
+                        {/* Profesor - Mis Clases */}
+                        {role === 'profesor' && (
+                            <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
                         )}
+                        
+                        <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
 
-                        {/* Botón Logout */}
+                        {/* BOTÓN LOGOUT  */}
                         <li className="mt-auto pt-4 border-t border-base-300">
                             <button 
                                 onClick={handleLogout}
@@ -160,6 +140,6 @@ export const SidebarBase = ({pageContent}) => {
             </div>
         </div>
     );
-}
+};
 
 export default SidebarBase;

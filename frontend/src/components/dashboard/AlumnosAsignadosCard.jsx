@@ -44,7 +44,7 @@ export const AlumnosAsignadosCard = ({ alumnos, loading }) => {
                 <p className="font-medium text-gray-800">{alumno.nombre}</p>
                 <div className="flex items-center gap-3 mt-1">
                   <span className="text-xs text-gray-600">RUT: {alumno.rut}</span>
-                  <span className="text-xs text-gray-600">📱 {alumno.telefono}</span>
+                  <span className="text-xs text-gray-600"> {alumno.telefono}</span>
                 </div>
                 <div className="flex items-center gap-3 mt-1">
                   <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full flex items-center gap-1">

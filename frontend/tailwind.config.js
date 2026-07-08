@@ -5,9 +5,6 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
-  },
-  plugins: [],
     extend: {
       colors: {
         // Colores personalizados (compatibles con DaisyUI)
@@ -85,8 +82,8 @@ export default {
           "error": "#EF4444",
         },
       },
-      'light', // Tema light por defecto
-      'dark',  // Tema dark por defecto
+      'light', 
+      'dark',  
     ],
     darkTheme: 'dark',
     base: true,

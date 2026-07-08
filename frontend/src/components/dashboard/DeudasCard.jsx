@@ -97,7 +97,6 @@ export const DeudasCard = ({ deudas, loading, onPagar, rol, alumnosEspera }) => 
           <h3 className="text-lg font-semibold text-gray-800">¡Sin Deudas!</h3>
         </div>
         <p className="text-gray-600 text-sm">Estás al día con tus pagos.</p>
-        <div className="text-3xl mt-2">🎉</div>
       </div>
     );
   }

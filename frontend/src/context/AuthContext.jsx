@@ -64,7 +64,7 @@ export function AuthProvider({ children }) {
     }, [isAuthenticated, navigate, loading, user]);
 
     const logout = () => {
-        console.log('🔴 Cerrando sesión...');
+        console.log(' Cerrando sesión...');
         sessionStorage.removeItem('usuario');
         sessionStorage.removeItem('token');
         localStorage.removeItem('usuario');

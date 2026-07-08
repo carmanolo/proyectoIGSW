@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { login } from '@services/auth.service.js';
 import useLogin from '@hooks/useLogin.jsx';
 import { Eye, EyeOff } from 'lucide-react';
+// ✅ Importar el logo
+import logoConduce from '@assets/logoConduce.png';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -82,22 +84,21 @@ const Login = () => {
         }
 
         try {
-            console.log('🔍 Intentando login con:', formData.email);
+            console.log('Intentando login con:', formData.email);
             const response = await login(formData);
-            console.log('📝 Login response:', response);
+            console.log(' Login response:', response);
             
             if (response.status === 'Success') {
-                console.log('✅ Login exitoso, redirigiendo a /home');
-                // ✅ Verificar que el usuario se guardó en sessionStorage
+                console.log(' Login exitoso, redirigiendo a /home');
                 const user = sessionStorage.getItem('usuario');
-                console.log('📝 Usuario guardado en sessionStorage:', user);
+                console.log(' Usuario guardado en sessionStorage:', user);
                 navigate('/home');
             } else if (response.status === 'Client error') {
                 errorData(response.details);
-                console.log('❌ Error en login:', response.details);
+                console.log(' Error en login:', response.details);
             }
         } catch (error) {
-            console.log('❌ Error en login:', error);
+            console.log(' Error en login:', error);
         } finally {
             setIsLoading(false);
         }
@@ -114,14 +115,22 @@ const Login = () => {
                 <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white bg-opacity-20 rounded-full"></div>
 
                 <div className="text-gray-800 max-w-md z-10">
-                    <h1 className="text-4xl font-bold mb-6">
+                    {/*  LOGO */}
+                    <div className="flex justify-center mb-6">
+                        <img 
+                            src={logoConduce} 
+                            alt="Logo Conduce" 
+                            className="w-100 h-100 object-contain"
+                        />
+                    </div>
+                    <h1 className="text-4xl font-bold mb-6 text-center">
                         Bienvenido de nuevo!
                     </h1>
                     <div 
-                        className="h-1 mb-6"
-                        style={{ backgroundColor: '#7aff00' }}
+                        className="h-1 mb-6 mx-auto"
+                        style={{ backgroundColor: '#7aff00', width: '80px' }}
                     ></div>
-                    <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                    <p className="text-gray-600 text-lg leading-relaxed mb-8 text-center">
                         Curso de conducción para licencia tipo A, B
                     </p>
                 </div>
@@ -134,6 +143,12 @@ const Login = () => {
 
                 <div className="w-full max-w-md">
                     <div className="text-center mb-8">
+                        {/*LOGO EN FORMULARIO */}
+                        <img 
+                            src={logoConduce} 
+                            alt="Logo Conduce" 
+                            className="w-16 h-16 mx-auto mb-4 object-contain"
+                        />
                         <h2 className="text-3xl font-bold text-gray-800 mb-2">Iniciar Sesión</h2>
                         <div 
                             className="w-12 h-1 mx-auto"

@@ -15,7 +15,7 @@ import { ListaEsperaCard } from '@components/dashboard/ListaEsperaCard';
 import { useContratarPlan } from '@hooks/Planes/useContratarPlan';
 import { usePagarDeuda } from '@hooks/Inscripciones/usePagarDeuda';
 import { 
-  Clock, Bell, Calendar, ChevronRight, Sparkles, 
+  Clock, Calendar, ChevronRight, Sparkles, 
   GraduationCap, DollarSign, Users, UserCheck 
 } from 'lucide-react';
 
@@ -338,10 +338,6 @@ export default function Home() {
                 </p>
               </div>
               <div className="relative">
-                <Bell className="w-6 h-6 text-gray-400 hover:text-yellow-500 cursor-pointer transition-colors" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {esSecretaria ? alumnosEspera.length : 3}
-                </span>
               </div>
             </div>
           </div>
