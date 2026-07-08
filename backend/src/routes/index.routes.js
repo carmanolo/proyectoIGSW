@@ -11,6 +11,7 @@ import reservaRoutes from "./reserva.routes.js";
 import vehiculoRoutes from "./vehiculo.routes.js";
 import registroEsperaRoutes from "./registroEspera.routes.js";
 import asistenciaRoutes from "./asistencia.routes.js";
+import archivoRoutes from "./archivo.routes.js";
 import dashboardRoutes from "./dashboard.routes.js";
 
 const router = new Router();
@@ -26,7 +27,8 @@ router.use("/users", userRoutes)
 router.use("/ventas", ventaRoutes);
 router.use("/reservas", reservaRoutes);
 router.use("/vehiculos", vehiculoRoutes);
-router.use("/asistencias", asistenciaRoutes);
+router.use("/asistencia", asistenciaRoutes);
+router.use("/archivos-descargables", archivoRoutes);
 router.use("/registro-espera", registroEsperaRoutes);
 router.use("/dashboard", dashboardRoutes);
 

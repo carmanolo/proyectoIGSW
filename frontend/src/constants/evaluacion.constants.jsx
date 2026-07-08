@@ -2,6 +2,7 @@
 export const EVALUACION_CAMPOS = {
     ALUMNO: 'alumno',
     CALIFICACION_TEORICA: 'calificacion_teorica',
+    TIPO_EVALUACION: 'tipo_evaluacion',
     RESULTADO: 'Resultado',
     COMENTARIO: 'comentario',
     COMPROBACION_DOCUMENTOS: 'comprobacion_documentos',
@@ -63,6 +64,11 @@ export const RESULTADOS_EVALUACION = [
     { value: 'evaluando', label: 'Pendiente' },
     { value: 'aprobado', label: 'Aprobado' },
     { value: 'reprobado', label: 'Reprobado' },
+];
+
+export const EVALUACION_TIPOS = [
+    { value: 'practica', label: 'Práctica' },
+    { value: 'teorica', label: 'Teórica' },
 ];
 
 export const EVALUACION_SECCIONES = [
@@ -163,7 +169,9 @@ export const EVALUACION_SECCIONES = [
     },
 ];
 
-export const NUMERIC_EVALUATION_FIELDS = EVALUACION_SECCIONES.flatMap((section) => section.fields.map((field) => field.name));
+export const NUMERIC_EVALUATION_FIELDS = [
+    ...EVALUACION_SECCIONES.flatMap((section) => section.fields.map((field) => field.name)),
+];
 
 // Rangos de calificación teórica
 export const MIN_CALIFICACION_TEORICA = 0;

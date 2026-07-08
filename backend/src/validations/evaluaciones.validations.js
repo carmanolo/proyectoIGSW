@@ -26,11 +26,10 @@ export const integrityValidation = Joi.object({
     "number.min": CALIFICACION_TEORICA_INVALIDA,
     "number.max": CALIFICACION_TEORICA_INVALIDA,
   }),
-  resultado_manejo_1: resultadoManejoNumber,
-  resultado_manejo_2: resultadoManejoNumber,
-  resultado_manejo_3: resultadoManejoNumber,
-  resultado_manejo_4: resultadoManejoNumber,
-  resultado_manejo_5: resultadoManejoNumber,
+  tipo_evaluacion: Joi.string().trim().valid('practica', 'teorica').required().messages({
+    "any.only": "Tipo de evaluación debe ser 'practica' o 'teorica'",
+    "any.required": "El tipo de evaluación es obligatorio",
+  }),
   comprobacion_documentos: resultadoManejoNumber,
   comprobacion_ajuste_espejo_asiento: resultadoManejoNumber,
   comprobacion_sin_cinturon: resultadoManejoNumber,
@@ -92,11 +91,6 @@ export const assignationValidation = Joi.object({
     "any.required": ALUMNO_OBLIGATORIO,
   }),
   calificacion_teorica: Joi.any(),
-  resultado_manejo_1: Joi.any(),
-  resultado_manejo_2: Joi.any(),
-  resultado_manejo_3: Joi.any(),
-  resultado_manejo_4: Joi.any(),
-  resultado_manejo_5: Joi.any(),
   comprobacion_documentos: Joi.any(),
   comprobacion_ajuste_espejo_asiento: Joi.any(),
   comprobacion_sin_cinturon: Joi.any(),
@@ -149,6 +143,8 @@ export const assignationValidation = Joi.object({
   comentario: Joi.any().required().messages({
     "any.required": COMENTARIO_OBLIGATORIO,
   }),
+  tipo_evaluacion: Joi.any(),
+  tipo_evaluacion: Joi.any(),
 })
   .unknown(false)
   .messages({
@@ -158,11 +154,6 @@ export const assignationValidation = Joi.object({
 export const updateValidation = Joi.object({
   alumno: Joi.any(),
   calificacion_teorica: Joi.any(),
-  resultado_manejo_1: Joi.any(),
-  resultado_manejo_2: Joi.any(),
-  resultado_manejo_3: Joi.any(),
-  resultado_manejo_4: Joi.any(),
-  resultado_manejo_5: Joi.any(),
   comprobacion_documentos: Joi.any(),
   comprobacion_ajuste_espejo_asiento: Joi.any(),
   comprobacion_sin_cinturon: Joi.any(),
@@ -209,6 +200,7 @@ export const updateValidation = Joi.object({
   preferencias_peatones_ciclista_otros: Joi.any(),
   mandos_usar_bocina_sin_motivo: Joi.any(),
   mandos_no_identificar_mandos: Joi.any(),
+  tipo_evaluacion: Joi.any(),
   Resultado: Joi.any(),
   comentario: Joi.any(),
 })

@@ -3,6 +3,7 @@ import {
     EVALUACION_CAMPOS,
     RESULTADOS_MANEJO,
     RESULTADOS_EVALUACION,
+    EVALUACION_TIPOS,
     MAX_CALIFICACION_TEORICA,
     MIN_CALIFICACION_TEORICA,
     EVALUACION_SECCIONES,
@@ -13,6 +14,7 @@ const getInitialFormData = (evaluacion) => {
     const base = {
         [EVALUACION_CAMPOS.ALUMNO]: "",
         [EVALUACION_CAMPOS.CALIFICACION_TEORICA]: 0,
+        [EVALUACION_CAMPOS.TIPO_EVALUACION]: "practica",
         [EVALUACION_CAMPOS.RESULTADO]: "evaluando",
         [EVALUACION_CAMPOS.COMENTARIO]: "",
     };
@@ -80,55 +82,89 @@ export const EvaluacionForm = ({ evaluacion, onSubmit, onCancel, isLoading = fal
                     />
                 </div>
 
-                {/* Calificación Teórica */}
+                {/* Tipo de evaluación */}
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">
-                            Calificación Teórica (0-{MAX_CALIFICACION_TEORICA}) *
-                        </span>
+                        <span className="label-text">Tipo de evaluación *</span>
                     </label>
-                    <input
-                        type="number"
-                        name={EVALUACION_CAMPOS.CALIFICACION_TEORICA}
-                        value={formData[EVALUACION_CAMPOS.CALIFICACION_TEORICA]}
+                    <select
+                        name={EVALUACION_CAMPOS.TIPO_EVALUACION}
+                        value={formData[EVALUACION_CAMPOS.TIPO_EVALUACION]}
                         onChange={handleChange}
-                        min={MIN_CALIFICACION_TEORICA}
-                        max={MAX_CALIFICACION_TEORICA}
-                        className="input input-bordered"
+                        className="select select-bordered"
                         required
-                    />
+                    >
+                        {EVALUACION_TIPOS.map((tipo) => (
+                            <option key={tipo.value} value={tipo.value}>
+                                {tipo.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
+                {formData[EVALUACION_CAMPOS.TIPO_EVALUACION] === "teorica" && (
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text">
+                                Calificación Teórica (0-{MAX_CALIFICACION_TEORICA}) *
+                            </span>
+                        </label>
+                        <input
+                            type="number"
+                            name={EVALUACION_CAMPOS.CALIFICACION_TEORICA}
+                            value={formData[EVALUACION_CAMPOS.CALIFICACION_TEORICA]}
+                            onChange={handleChange}
+                            min={MIN_CALIFICACION_TEORICA}
+                            max={MAX_CALIFICACION_TEORICA}
+                            className="input input-bordered"
+                            required
+                        />
+                    </div>
+                )}
 
                 {/* Campos de evaluación */}
                 <div className="space-y-4">
-                    {EVALUACION_SECCIONES.map((section) => (
-                        <div key={section.title} className="form-control">
-                            <label className="label">
-                                <span className="label-text font-semibold">{section.title}</span>
-                            </label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {section.fields.map((field) => (
-                                    <div key={field.name}>
-                                        <label className="label py-1">
-                                            <span className="label-text-alt">{field.label}</span>
-                                        </label>
-                                        <select
-                                            name={field.name}
-                                            value={formData[field.name] ?? 0}
-                                            onChange={handleChange}
-                                            className="select select-bordered select-sm w-full"
-                                        >
-                                            {RESULTADOS_MANEJO.map((resultado) => (
-                                                <option key={resultado.value} value={resultado.value}>
-                                                    {resultado.label}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                ))}
+                    {EVALUACION_SECCIONES.map((section) => {
+                        const visibleFields = section.fields.filter((field) => {
+                            const isPracticeField = field.name.startsWith("comprobacion_") || field.name.startsWith("ingreso_") || field.name.startsWith("circulacion_") || field.name.startsWith("cambio_") || field.name.startsWith("viraje_") || field.name.startsWith("interseccion_") || field.name.startsWith("adelantamiento_") || field.name.startsWith("estacionamiento_") || field.name.startsWith("demarcaciones_") || field.name.startsWith("manejo_") || field.name.startsWith("observacion_") || field.name.startsWith("senal_") || field.name.startsWith("luces_") || field.name.startsWith("preferencias_") || field.name.startsWith("mandos_");
+                            return formData[EVALUACION_CAMPOS.TIPO_EVALUACION] === "practica"
+                                ? isPracticeField
+                                : !isPracticeField;
+                        });
+
+                        if (!visibleFields.length) {
+                            return null;
+                        }
+
+                        return (
+                            <div key={section.title} className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-semibold">{section.title}</span>
+                                </label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {visibleFields.map((field) => (
+                                        <div key={field.name}>
+                                            <label className="label py-1">
+                                                <span className="label-text-alt">{field.label}</span>
+                                            </label>
+                                            <select
+                                                name={field.name}
+                                                value={formData[field.name] ?? 0}
+                                                onChange={handleChange}
+                                                className="select select-bordered select-sm w-full"
+                                            >
+                                                {RESULTADOS_MANEJO.map((resultado) => (
+                                                    <option key={resultado.value} value={resultado.value}>
+                                                        {resultado.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Estado de la evaluación */}

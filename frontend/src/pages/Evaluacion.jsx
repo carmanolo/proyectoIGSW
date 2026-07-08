@@ -11,6 +11,7 @@ import { getUserRole } from "@services/profile.service.js";
 const Evaluacion = () => {
     const userRole = getUserRole();
     const isTeacher = userRole === "profesor";
+    const isStudent = userRole === "estudiante";
 
     const [evaluacionData, setEvaluacionData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -34,7 +35,7 @@ const Evaluacion = () => {
     // Filtrado de evaluaciones
     const filteredEvaluaciones = Array.isArray(Evaluaciones)
         ? Evaluaciones.filter((e) =>
-            e.alumno.toLowerCase().includes(buscar.toLowerCase())
+            String(e?.alumno ?? "").toLowerCase().includes(buscar.toLowerCase())
         )
         : [];
 
@@ -95,10 +96,10 @@ const Evaluacion = () => {
         }
     };
 
-    if (!isTeacher) {
+    if (!isTeacher && !isStudent) {
         return (
             <div className="alert alert-warning m-4">
-                <span>Acceso denegado. Solo los profesores pueden acceder a esta página.</span>
+                <span>Acceso denegado. No tienes permisos para ver esta página.</span>
             </div>
         );
     }
@@ -106,19 +107,22 @@ const Evaluacion = () => {
     return (
         <div className="evaluacion-page p-4 text-black">
             <div className="mb-4">
-                <h1 className="text-3xl font-bold mb-4 text-black">Gestión de Evaluaciones</h1>
+                <h1 className="text-3xl font-bold mb-4 text-black">
+                    {isTeacher ? "Gestión de Evaluaciones" : "Mis Evaluaciones"}
+                </h1>
             </div>
 
             <div className="bg-white rounded-3xl shadow-lg p-6 mb-6 text-black">
                 <div className="flex gap-2 mb-4 flex-wrap">
-                    {/* Botón crear evaluación */}
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => handleOpenForm()}
-                        disabled={isLoading}
-                    >
-                        + Nueva Evaluación
-                    </button>
+                    {isTeacher && (
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => handleOpenForm()}
+                            disabled={isLoading}
+                        >
+                            + Nueva Evaluación
+                        </button>
+                    )}
 
                     {/* Buscador */}
                     <input
@@ -144,8 +148,8 @@ const Evaluacion = () => {
                 <div>
                     <EvaluacionTable
                         data={currentPageContent}
-                        onEdit={handleOpenForm}
-                        onDelete={handleDeleteClick}
+                        onEdit={isTeacher ? handleOpenForm : undefined}
+                        onDelete={isTeacher ? handleDeleteClick : undefined}
                         isLoading={isLoading}
                     />
                 </div>
@@ -158,18 +162,19 @@ const Evaluacion = () => {
                 pageAmount={pageAmount}
             />
 
-            {/* Modal del formulario */}
-            <dialog ref={modalRef} className="modal">
-                <EvaluacionForm
-                    evaluacion={selectedEvaluacion}
-                    onSubmit={handleFormSubmit}
-                    onCancel={handleCloseForm}
-                    isLoading={isLoading}
-                />
-                <form method="dialog" className="modal-backdrop">
-                    <button onClick={handleCloseForm} />
-                </form>
-            </dialog>
+            {isTeacher && (
+                <dialog ref={modalRef} className="modal">
+                    <EvaluacionForm
+                        evaluacion={selectedEvaluacion}
+                        onSubmit={handleFormSubmit}
+                        onCancel={handleCloseForm}
+                        isLoading={isLoading}
+                    />
+                    <form method="dialog" className="modal-backdrop">
+                        <button onClick={handleCloseForm} />
+                    </form>
+                </dialog>
+            )}
         </div>
     );
 };

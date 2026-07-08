@@ -21,8 +21,6 @@ export const AppDataSource = new DataSource({
   database: `${DATABASE}`,
   entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo, Asistencia],
   synchronize: true,
-  entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Boleta, Reserva, Vehiculo],
-  synchronize: true, 
   logging: false,
 });
 
