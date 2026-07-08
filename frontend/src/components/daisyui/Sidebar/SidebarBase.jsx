@@ -68,39 +68,59 @@ export const SidebarBase = ({ pageContent }) => {
                 </div>
             </div>
 
-        <div className="drawer-side is-drawer-close:overflow-visible">
-            <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
-            <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
-            {/* Sidebar content here */}
-            <ul className="menu w-full grow">
-                <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
-                <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
-                {user?.rol === 'profesor' && (
-                    <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
-                )}
-                <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
-                <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
-                {user?.rol === 'alumnos' && (
-                    <>
-                        <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
-                        <SidebarItem label="Agendar Clase" destination="/agendar-clase" icon={MdSchool} />
-                    </>
-                )}
-                {user?.rol === 'secretario' && (
-                    <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
-                )}
-                {user?.rol === 'secretario' && (
-                    <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
-                )}
-                {user?.rol === 'secretario' && (
-                    <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
-                )}
-                <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
-                {/* <SidebarItem label="Deudas" destination="/class" icon={MdAttachMoney} />*/}
-            </ul>
+            <div className="drawer-side is-drawer-close:overflow-visible">
+                <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
+                <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
+                    <ul className="menu w-full grow">
+                        {/* Items del menú */}
+                        <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
+                        <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                        {(user?.rol === 'secretario' || user?.rol === 'profesor') && (
+                           <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                        ) 
+                        } 
+                        {user?.rol === 'profesor' && (
+                            <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
+                        )}
+                        
+                        <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
+                        <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                        
+                        {user?.rol === 'estudiante' && (
+                            <>
+                                <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
+                                <SidebarItem label="Agendar Clase" destination="/agendar-clase" icon={MdSchool} />
+                            </>
+                        )}
+                        
+                        {user?.rol === 'secretario' && (
+                            <>
+                                <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
+                                <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
+                                <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                            </>
+                        )}
+                        
+                        <SidebarItem label="Evaluaciones" destination="/evaluaciones" icon={MdSchool} />
+                        
+                        {user?.rol === 'estudiante' && (
+                            <SidebarItem label="Próximas Clases" destination="/calendario-clases" icon={MdSchool} />
+                        )}
+
+                        {/* Botón Logout */}
+                        <li className="mt-auto pt-4 border-t border-base-300">
+                            <button 
+                                onClick={handleLogout}
+                                className="flex items-center gap-3 px-4 py-3 w-full text-left hover:bg-red-50 hover:text-red-600 transition-colors rounded-lg"
+                            >
+                                <MdLogout className="w-5 h-5" />
+                                <span className="font-medium">Cerrar Sesión</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
     );
 }
 
