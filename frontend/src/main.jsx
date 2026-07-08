@@ -14,6 +14,11 @@ import Evaluacion from '@pages/Evaluacion';
 import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
 
+import { RegistroBoleta } from '@pages/RegistroBoleta'; 
+import '@styles/styles.css';
+
+document.documentElement.setAttribute('data-theme', 'azul-amarillo-gris');
+
 import HistorialClasesAlumno from '@pages/HistorialClasesAlumno';
 import AgendarClaseAlumno from '@pages/AgendarClaseAlumno';
 import GestionClasesSecretaria from '@pages/GestionClasesSecretaria';
@@ -86,6 +91,10 @@ const router = createBrowserRouter([
   {
     path: '/auth',
     element: <Login />
+  },
+   {
+    path: '/registro',
+    element: <RegistroBoleta />
   },
 ]);
 

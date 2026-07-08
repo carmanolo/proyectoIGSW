@@ -7,11 +7,25 @@ import {
   MdAdminPanelSettings,
   MdDirectionsCar
 } from "react-icons/md";
+import { MdHouse, MdSchool, MdAttachMoney, MdShoppingCart, MdAdminPanelSettings, MdDirectionsCar, MdLogout } from "react-icons/md";
 
 import { useAuth } from '@context/AuthContext';
 
 export const SidebarBase = ({pageContent}) => {
     const { user } = useAuth();
+    const { user, logout } = useAuth(); 
+
+    const handleLogout = () => {
+        if (logout) {
+            logout(); 
+        } else {
+            console.warn('Logout no disponible, limpiando manualmente');
+            sessionStorage.removeItem('usuario');
+            sessionStorage.removeItem('token');
+            window.location.href = '/auth';
+        }
+    };
+
     return (
     <div className="drawer lg:drawer-open">
         <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -63,6 +77,17 @@ export const SidebarBase = ({pageContent}) => {
                 {user?.rol === 'estudiante' && (
                     <SidebarItem label="Proximas clases" destination="/calendario-clases" icon={MdSchool}/>
                 )}
+
+                {/*Boton logout */}
+                <li className="mt-auto pt-4 border-t border-base-300">
+                    <button 
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-4 py-3 w-full text-left hover:bg-red-50 hover:text-red-600 transition-colors rounded-lg"
+                    >
+                        <MdLogout className="w-5 h-5" />
+                        <span className="font-medium">Cerrar Sesión</span>
+                    </button>
+                </li>
             </ul>
             </div>
         </div>
