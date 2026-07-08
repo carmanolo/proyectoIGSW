@@ -36,8 +36,11 @@ export const SidebarBase = ({pageContent}) => {
             <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
             {/* Sidebar content here */}
             <ul className="menu w-full grow">
-                <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />            
-                <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                <SidebarItem label="Inicio" destination="/home" icon={MdHouse} />
+                {(user?.rol === 'secretario' || user?.rol === 'profesor') && (
+                    <SidebarItem label="Clases" destination="/clase" icon={MdSchool} />
+                ) 
+                }            
                 {user?.rol === 'profesor' && (
                     <SidebarItem label="Mis Clases" destination="/mis-clases" icon={MdSchool} />
                 )}

@@ -11,7 +11,11 @@ export const DropdownList = (className, data, label, id) => {
     );
 }
 
-export const StaticDropdownList = (data, label, id, className, disabled) => {
+export const StaticDropdownList = (data, label, id, className, disabled, shallBePrinted = true) => {
+    if (!shallBePrinted) {
+        return "";
+    }
+    
     return `
         <select class="select ${className}" id=${id}>
             <option ${disabled ? "disabled" : ""} selected>${label}</option>

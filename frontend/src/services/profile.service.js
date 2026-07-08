@@ -32,6 +32,19 @@ export const getUserRole = () => {
     }
 }
 
+export const getUserEmail = () => {
+   try {
+        const user = JSON.parse(sessionStorage.getItem('usuario'));
+        // console.log(user);
+        const email = String(user?.email || ""); 
+        // // console.log("ROL ACTUAL: " + rol);
+        return email;
+    } catch (error) {
+        console.error(error);
+        return STUDENT_ROLE;
+    }    
+}
+
 export const getTeacherList = async () => {
     try {
         const response = await axios.get(`/users/frontend/getTeacherList`);

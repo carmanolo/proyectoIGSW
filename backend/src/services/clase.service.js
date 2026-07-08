@@ -174,7 +174,12 @@ export async function getClasesSer(userId, userRole) {
         if(userRole === "alumnos" || userRole === "estudiante"){
           clases = await claseRepository.find({where: { users:{id: userId}}});
 
-        }else{
+        }else if (userRole === "profesor") {
+          clases = await claseRepository.find({where: { profesores: { id: userId }}});
+          // clases = await claseRepository.find({where: {id_profesor: userId}, relations: true});
+          // console.log(clases);
+        }
+        else{
           clases = await claseRepository.find({relations: { users: true }});
         }
 

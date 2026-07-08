@@ -15,7 +15,7 @@ import { useGetStudentList } from "../hooks/Listas/useGetStudentList.jsx";
 import { DUClaseTable } from "../components/daisyui/table/DUClase.jsx";
 import { getUserRole } from "../services/profile.service.js";
 import { DUPageBrowser } from "../components/daisyui/DUPageBrowser.jsx";
-import { ACCESO_CLASES } from "../constants/permissions.constants.admin.jsx";
+import { ACCESO_CLASES, ACCESO_EVALUACIONES } from "../constants/permissions.constants.admin.jsx";
 
 const Clase = () => {
     const [profesores, setProfesores] = useState([]);
@@ -29,13 +29,14 @@ const Clase = () => {
     const userRole = getUserRole();
     //// console.log(`EL ROL DEL USIARIO = ${userRole}`);
     const canCrudClases = ACCESO_CLASES.includes(userRole);
+    const isTeacher = ACCESO_EVALUACIONES.includes(userRole);
 
     const [claseData, setClaseData] = useState([]);
 
     const [Clases, fetchClase] = useGetClase(claseData, setClaseData);
 
     const { handleCreateClase } = useCreateClase(fetchClase, profesores, vehiculoList);
-    const { handleEditClase } = editClase(fetchClase, profesores, vehiculos);
+    const { handleEditClase } = editClase(fetchClase, profesores, vehiculos, isTeacher);
     const { handleDeleteClase } = DeleteClase(fetchClase);
 
     const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
@@ -104,7 +105,9 @@ const Clase = () => {
                     loadingAsignarUsuarioIndividual={loadingAsignarUsuarioIndividual}
                     canCrudClases={canCrudClases} 
                     teacherList={teacherList} 
-                    vehiculoList={vehiculoList}/>
+                    vehiculoList={vehiculoList}
+                    isTeacher={isTeacher}
+                />
             </div>
             <DUPageBrowser setCurrentPageNumber={setCurrentPage} currentPageNumber={currentPage} pageAmount={pageAmount}></DUPageBrowser>
         </div>

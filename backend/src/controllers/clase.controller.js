@@ -7,6 +7,7 @@ import { idValidation } from "../validations/modules/id.validation.js";
 import { SHOW_ERRORS } from "../constants/settings.constants.js";
 import { findTeacherByEmail, findUserByEmail } from "../services/user.service.js";
 import { obtenerVehiculoPorPatente } from "../services/vehiculo.service.js";
+import { TEACHER_ROLE } from "../constants/user.constants.js";
 
 const timeValidationHelper = (hora_inicio, hora_termino) => {
   let result = validacionHoraIntegridad(hora_inicio);
@@ -184,6 +185,9 @@ export async function patchClase(req, res) {
         Object.assign(claseUpdate, req.body);
         if (vehiculoEncontrado && vehiculoEncontrado.patente) {
             Object.assign(claseUpdate, {vehiculos: vehiculoEncontrado});
+        }
+        if ((req?.user?.rol === TEACHER_ROLE) && (claseUpdate.id_profesor !== (req?.user?.id || req?.user?.sub))) {
+            return handleErrorClient(res, 400, "No puede actualizar a otro profesor");
         }
 
         const updatedClase = await updateClaseSer(claseUpdate);

@@ -5,8 +5,9 @@ import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE } from "../../constants/clase.constants.jsx";
 import { getTeacherEmail, processCars, processTeachers, isFechaValida } from "../../utils/ClaseUtils.js";
+import { getUserEmail } from "../../services/profile.service.js";
 
-async function editClaseTeoricaInfo(clase, profesores) {
+async function editClaseTeoricaInfo(clase, profesores, isTeacher) {
     // console.log(JSON.stringify(clase));
     const { value: formValues } = await Swal.fire({
         title: 'Editar clase',
@@ -18,7 +19,7 @@ async function editClaseTeoricaInfo(clase, profesores) {
             ${createSwalField(5, "Hora de Término", clase.hora_fin)}
             ${StaticDropdownList(DIAS_SEMANA, clase.dia, "swal2-input6", "m-1", false)}
             ${StaticDropdownList(ESTADO_CLASE, clase.estado_clase, "swal2-input7", "m-1", false)}
-            ${StaticDropdownList(profesores, `${clase?.teacherObject?.name} (${clase?.teacherObject?.email})`, "swal2-input8", "m-1", false)}
+            ${StaticDropdownList(profesores, `${clase?.teacherObject?.name} (${clase?.teacherObject?.email})`, "swal2-input8", "m-1", false, !isTeacher)}
             `,
 
 
@@ -36,7 +37,7 @@ async function editClaseTeoricaInfo(clase, profesores) {
             const hora_fin = document.getElementById('swal2-input5').value;
             const dia = document.getElementById('swal2-input6').value;
             const estado_clase = document.getElementById('swal2-input7').value;
-            const email_profesor = getTeacherEmail(String(document.getElementById('swal2-input8')?.value));
+            const email_profesor = getTeacherEmail(String(document.getElementById('swal2-input8')?.value || (isTeacher && getUserEmail())));
             const id_auto = null;
 
             if (!tipo || !descripcion || !fecha_clase || !hora_inicio || !hora_fin || !dia || !estado_clase || !email_profesor) {
@@ -67,7 +68,7 @@ async function editClaseTeoricaInfo(clase, profesores) {
     }
 }
 
-async function editClasePracticaInfo(clase, profesores, vehiculos) {
+async function editClasePracticaInfo(clase, profesores, vehiculos, isTeacher) {
     // console.log(JSON.stringify(clase));
     const { value: formValues } = await Swal.fire({
         title: 'Editar clase',
@@ -79,7 +80,7 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
             ${createSwalField(5, "Hora de Término", clase.hora_fin)}
             ${StaticDropdownList(DIAS_SEMANA, clase.dia, "swal2-input6", "m-1", false)}
             ${StaticDropdownList(ESTADO_CLASE, clase.estado_clase, "swal2-input7", "m-1", false)}
-            ${StaticDropdownList(profesores, `${clase?.teacherObject?.name} (${clase?.teacherObject?.email})`, "swal2-input8", "m-1", false)}
+            ${StaticDropdownList(profesores, `${clase?.teacherObject?.name} (${clase?.teacherObject?.email})`, "swal2-input8", "m-1", false, !isTeacher)}
             ${StaticDropdownList(vehiculos, `${clase?.carObject?.patente}`, "swal2-input9", "m-1", false)}
             `,
 
@@ -97,7 +98,7 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
             const hora_fin = document.getElementById('swal2-input5').value;
             const dia = document.getElementById('swal2-input6').value;
             const estado_clase = document.getElementById('swal2-input7').value;
-            const email_profesor = getTeacherEmail(String(document.getElementById('swal2-input8')?.value));
+            const email_profesor = getTeacherEmail(String(document.getElementById('swal2-input8')?.value || (isTeacher && getUserEmail())));
             const patente_auto = document.getElementById('swal2-input9').value;
 
             if (!tipo || !descripcion || !fecha_clase || !hora_inicio || !hora_fin || !dia || !estado_clase || !email_profesor || !patente_auto) {
@@ -129,7 +130,7 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
     }
 }
 
-export const editClase = (fetchClase, profesores, vehiculos) => {
+export const editClase = (fetchClase, profesores, vehiculos, isTeacher) => {
     profesores = processTeachers(profesores);
     vehiculos = processCars(vehiculos);
 
@@ -141,10 +142,10 @@ export const editClase = (fetchClase, profesores, vehiculos) => {
 
             if (clase.tipo === "practica") {
                 // console.log("Clase practica");
-                formValues = await editClasePracticaInfo(clase, profesores, vehiculos);
+                formValues = await editClasePracticaInfo(clase, profesores, vehiculos, isTeacher);
             } else if (clase.tipo === "teorica") {
                 // console.log("CLASE TEÓRICA");
-                formValues = await editClaseTeoricaInfo(clase, profesores);
+                formValues = await editClaseTeoricaInfo(clase, profesores, isTeacher);
             } else {
                 return;
             }
