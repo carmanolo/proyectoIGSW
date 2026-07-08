@@ -1,5 +1,5 @@
 import { AppDataSource } from "../config/configDb.js";
-import { Plan } from "../entities/plan.entity.js";
+import { Plan } from "../entities/Plan.entity.js";
 
 const planRepository = AppDataSource.getRepository(Plan);
 

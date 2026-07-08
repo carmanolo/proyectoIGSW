@@ -27,7 +27,7 @@ export function authorizeRoles(...rolesPermitidos){
             req.user.rol = rolActual;
             next();
         } catch (error) {
-            return handleErrorServer(res, 500, "Error en verificación de rol", error.message);
+            return handleErrorServer(res, 500, "Error en verificación de rol", error.message, error);
         }
     };
 }

@@ -5,12 +5,15 @@ import Home from '@pages/Home';
 import Error404 from '@pages/Error404';
 import Root from '@pages/Root';
 import Clase from '@pages/Clase';
+import CalendarioClasesAlumno from '@pages/CalendarioClasesAlumno';
 import ComprarClases from '@pages/ComprarClases';
 import GestionarVentas from '@pages/GestionarVentas';
 import ProtectedRoute from '@components/ProtectedRoute';
 import Plan from '@pages/Plan';
 import Evaluacion from '@pages/Evaluacion';
 import MisClases from '@pages/MisClases';
+import '@styles/styles.css';
+
 import { RegistroBoleta } from '@pages/RegistroBoleta'; 
 import '@styles/styles.css';
 
@@ -69,6 +72,10 @@ const router = createBrowserRouter([
       {
         path: '/gestion-vehiculos',
         element: <GestionVehiculosSecretaria />
+      },
+      {
+        path: '/calendario-clases',
+        element: <CalendarioClasesAlumno />
       },
       /*{
         path: '/planes',

@@ -9,6 +9,9 @@ export async function contratarPlanService(data) {
   }
 }
 
+/*
+Debo  cambiar cosas en el backend pero lo dejare por mientras un pensamiento me dice que tengo hacer unas cosas de otra forma
+
 import axios from './root.service.js';
 export async function pagarDeudaService(id_inscripcion, monto_pago) {
   try {
@@ -54,3 +57,4 @@ export async function cancelarInscripcionService(id_inscripcion) {
     throw error.response?.data || error;
   }
 }
+ */ 

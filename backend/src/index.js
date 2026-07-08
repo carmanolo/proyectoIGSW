@@ -4,15 +4,26 @@ import morgan from "morgan";
 import connectDB from "../src/config/configDb.js";
 import routerApi from "../src/routes/index.routes.js";
 import { PORT,HOST } from "./config/configEnv.js";
-import { iniciarUsuarios } from "./config/initialSetup.js";
+import { iniciarUsuarios, iniciarVehiculos } from "./config/initialSetup.js";
+import cors from "cors";
 
 async function setupServer() {
   //Crea la instancia de express
   const app = express();
   app.disable("x-powered-by");
 
+  app.use(
+    cors({
+      credentials: true,
+      origin: true,
+    })
+  );
+
   //Avisa a express que use JSON
   app.use(express.json());
+
+  // Servir archivos estáticos de la carpeta uploads
+  app.use("/uploads", express.static("uploads"));
 
   // Configura el middleware de morgan para registrar las peticiones HTTP
   app.use(morgan("dev"));
@@ -31,6 +42,7 @@ async function setupAPI() {
     await connectDB();
     //Crea los usuarios iniciales
     await iniciarUsuarios();
+    await iniciarVehiculos();
     //Configura el srvidor
     await setupServer();
   } catch (error) {
@@ -42,6 +54,7 @@ async function setupAPI() {
 setupAPI()
   .then(() => console.log("=> API Iniciada exitosamente"))
   .catch((error) => console.log("Error en index.js -> setupAPI(): ", error));
+  
 /*const app = express();
 app.use(express.json());
 app.use(morgan("dev"));
@@ -59,10 +72,10 @@ await connectDB()
     // Levanta el servidor Express
     const PORT = process.env.PORT ;
     app.listen(PORT, () => {
-      console.log(`Servidor iniciado en http://localhost:${PORT}`);
+      // console.log(`Servidor iniciado en http://localhost:${PORT}`);
     });
   })
   .catch((error) => {
-    console.log("Error al conectar con la base de datos:", error);
+    // console.log("Error al conectar con la base de datos:", error);
     process.exit(1);
   });*/

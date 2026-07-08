@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getPlanesService } from "@services/plan.service.js";
 import { getPlanesService } from "../../services/plan.service.js";
 
 export const useGetPlanes = (planesData, setPlanesData) => {
@@ -10,6 +11,7 @@ export const useGetPlanes = (planesData, setPlanesData) => {
         setError(null);
         try {
             const response = await getPlanesService();
+            // console.log("Respuesta de getAllPlanesService:", response);
             console.log("Respuesta de getAllPlanesService:", response);
             
             if (response.status === 200 && response.data?.success) {

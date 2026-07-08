@@ -1,3 +1,5 @@
+import { Outlet } from 'react-router-dom';
+import { AuthProvider } from '@context/AuthContext';
 import { Outlet, useNavigate } from 'react-router-dom'; 
 import { AuthProvider, useAuth } from '@context/AuthContext'; 
 import SidebarBase from '../components/daisyui/Sidebar/SidebarBase.jsx';
@@ -47,6 +49,7 @@ function PageRoot() {
 
   return (
     <div className="page-root">
+      <SidebarBase pageContent={PageContent}/>
       <SidebarBase 
         pageContent={PageContent}
         onLogout={handleLogout} 
