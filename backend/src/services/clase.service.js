@@ -98,6 +98,14 @@ export async function asignacionIndividualService(id_clase, id_usuario) {
       return { data: null, message: "Clase práctica no encontrada", error: true };
     }
 
+    if (clase.users.length >= 1) {
+      const yaAsignado = clase.users.some((u) => u.id === Number(id_usuario));
+      if (yaAsignado) {
+        return { data: null, message: "El estudiante está asignado a esta clase", error: true };
+      }
+      return { data: null, message: "Esta clase práctica ya tiene un alumno asignado", error: true };
+    }
+
     const estudiante = await userRepository.findOne({
       where: { id: id_usuario, rol: "estudiante" },
     });
@@ -346,6 +354,7 @@ export async function desasignacionIndividualService(id_clase, id_usuario) {
  
     const claseRepository = AppDataSource.getRepository(Clase);
     const userRepository = AppDataSource.getRepository(User);
+
  
     const clase = await claseRepository.findOne({
       where: { id_clase, tipo: "practica" },
