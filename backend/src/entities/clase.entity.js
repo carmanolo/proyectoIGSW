@@ -42,12 +42,13 @@ export const Clase = new EntitySchema({
       type: "varchar",
       length: 255,
       nullable: false,
+      default: "programada"
     },
     id_profesor:{
       type: Number,
       primary: false,
       generated: false,
-      nullable:false
+      nullable: true
     },
     id_auto: {
       type: Number,

@@ -1,26 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     EVALUACION_CAMPOS,
     RESULTADOS_MANEJO,
     RESULTADOS_EVALUACION,
     MAX_CALIFICACION_TEORICA,
     MIN_CALIFICACION_TEORICA,
+    EVALUACION_SECCIONES,
+    NUMERIC_EVALUATION_FIELDS,
 } from "../../constants/evaluacion.constants.jsx";
 
+const getInitialFormData = (evaluacion) => {
+    const base = {
+        [EVALUACION_CAMPOS.ALUMNO]: "",
+        [EVALUACION_CAMPOS.CALIFICACION_TEORICA]: 0,
+        [EVALUACION_CAMPOS.RESULTADO]: "evaluando",
+        [EVALUACION_CAMPOS.COMENTARIO]: "",
+    };
+
+    NUMERIC_EVALUATION_FIELDS.forEach((field) => {
+        base[field] = 0;
+    });
+
+    if (!evaluacion) {
+        return base;
+    }
+
+    return {
+        ...base,
+        ...evaluacion,
+        [EVALUACION_CAMPOS.RESULTADO]: evaluacion.Resultado ?? evaluacion.resultado ?? "evaluando",
+    };
+};
+
 export const EvaluacionForm = ({ evaluacion, onSubmit, onCancel, isLoading = false }) => {
-    const [formData, setFormData] = useState(
-        evaluacion || {
-            [EVALUACION_CAMPOS.ALUMNO]: "",
-            [EVALUACION_CAMPOS.CALIFICACION_TEORICA]: 0,
-            [EVALUACION_CAMPOS.RESULTADO_MANEJO_1]: 0,
-            [EVALUACION_CAMPOS.RESULTADO_MANEJO_2]: 0,
-            [EVALUACION_CAMPOS.RESULTADO_MANEJO_3]: 0,
-            [EVALUACION_CAMPOS.RESULTADO_MANEJO_4]: 0,
-            [EVALUACION_CAMPOS.RESULTADO_MANEJO_5]: 0,
-            [EVALUACION_CAMPOS.RESULTADO]: "evaluando",
-            [EVALUACION_CAMPOS.COMENTARIO]: "",
-        }
-    );
+    const [formData, setFormData] = useState(getInitialFormData(evaluacion));
+
+    useEffect(() => {
+        setFormData(getInitialFormData(evaluacion));
+    }, [evaluacion]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,7 +45,7 @@ export const EvaluacionForm = ({ evaluacion, onSubmit, onCancel, isLoading = fal
             ...formData,
             [name]: name === EVALUACION_CAMPOS.CALIFICACION_TEORICA
                 ? parseInt(value)
-                : name.includes("resultado_manejo")
+                : NUMERIC_EVALUATION_FIELDS.includes(name)
                     ? parseInt(value)
                     : value,
         });
@@ -82,36 +99,42 @@ export const EvaluacionForm = ({ evaluacion, onSubmit, onCancel, isLoading = fal
                     />
                 </div>
 
-                {/* Resultados de Manejo */}
-                <div className="form-control">
-                    <label className="label">
-                        <span className="label-text">Resultados de Manejo</span>
-                    </label>
-                    {[1, 2, 3, 4, 5].map((num) => (
-                        <div key={num} className="mb-3">
+                {/* Campos de evaluación */}
+                <div className="space-y-4">
+                    {EVALUACION_SECCIONES.map((section) => (
+                        <div key={section.title} className="form-control">
                             <label className="label">
-                                <span className="label-text-alt">Manejo {num}</span>
+                                <span className="label-text font-semibold">{section.title}</span>
                             </label>
-                            <select
-                                name={`resultado_manejo_${num}`}
-                                value={formData[`resultado_manejo_${num}`]}
-                                onChange={handleChange}
-                                className="select select-bordered select-sm"
-                            >
-                                {RESULTADOS_MANEJO.map((resultado) => (
-                                    <option key={resultado.value} value={resultado.value}>
-                                        {resultado.label}
-                                    </option>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {section.fields.map((field) => (
+                                    <div key={field.name}>
+                                        <label className="label py-1">
+                                            <span className="label-text-alt">{field.label}</span>
+                                        </label>
+                                        <select
+                                            name={field.name}
+                                            value={formData[field.name] ?? 0}
+                                            onChange={handleChange}
+                                            className="select select-bordered select-sm w-full"
+                                        >
+                                            {RESULTADOS_MANEJO.map((resultado) => (
+                                                <option key={resultado.value} value={resultado.value}>
+                                                    {resultado.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 ))}
-                            </select>
+                            </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Resultado General */}
+                {/* Estado de la evaluación */}
                 <div className="form-control">
                     <label className="label">
-                        <span className="label-text">Resultado General *</span>
+                        <span className="label-text">Estado de la evaluación *</span>
                     </label>
                     <select
                         name={EVALUACION_CAMPOS.RESULTADO}

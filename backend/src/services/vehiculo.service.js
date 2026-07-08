@@ -7,6 +7,15 @@ export async function createVehiculoSer(data) {
     if (data) {
       data.es_nulo = false;
     }
+
+    if (data && data.patente) {
+      data.patente = data.patente.toUpperCase();
+      const patenteRegex = /^([A-Z]{2}-?[0-9]{4}|[A-Z]{4}-?[0-9]{2})$/;
+      if (!patenteRegex.test(data.patente)) {
+        return [null, "La patente no tiene un formato chileno válido (ej: AB1234, ABCD12)"];
+      }
+    }
+
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
     
     const existe = await vehiculoRepository.findOneBy({ patente: data.patente });
@@ -87,7 +96,7 @@ export async function crearVehiculoNulo() {
       throw Error("Solo puede haber un solo vehículo nulo");
     }
     if (cantidadVehiculosNulos < 1) {
-      const vehiculo = vehiculoRepository.create({id_auto: 0, patente: "", transmision: "", estado: "", es_nulo: true});
+      const vehiculo = vehiculoRepository.create({id: 0, patente: "", transmision: "", estado: "", es_nulo: true});
       await vehiculoRepository.save(vehiculo);
     }
     if (cantidadVehiculosNulos === 1) {
@@ -104,7 +113,7 @@ export async function obtenerIdVehiculoNulo() {
     if (vehiculoNulo === null) {
       throw Error("No existe el vehículo nulo");
     }
-    return Number(vehiculoNulo.id_auto);
+    return Number(vehiculoNulo.id);
   } catch (error) {
     throw Error("Error al obtener ID del vehículo nulo: ", error);
   }
@@ -114,7 +123,7 @@ export async function obtenerListaVehiculos() {
   const LISTA_POR_DEFECTO = [];
   try {
     const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
-    const vehiculos = await vehiculoRepository.find({where: {es_nulo: false}});
+    const vehiculos = await vehiculoRepository.find({where: {es_nulo: false, estado: "disponible"}});
     return vehiculos;
   } catch (error) {
     console.error(error);
@@ -139,5 +148,41 @@ export async function obtenerVehiculoPorPatente(patente) {
   } catch (error) {
     console.error(error);
     return null;
+  }
+}
+
+export async function updateVehiculoSer(id, data) {
+  try {
+    const vehiculoRepository = AppDataSource.getRepository(Vehiculo);
+    const vehiculo = await vehiculoRepository.findOneBy({ id: Number(id) });
+    
+    if (!vehiculo) {
+      return [null, "Vehículo no encontrado"];
+    }
+
+    if (data.patente) {
+      data.patente = data.patente.toUpperCase();
+      const patenteRegex = /^([A-Z]{2}-?[0-9]{4}|[A-Z]{4}-?[0-9]{2})$/;
+      if (!patenteRegex.test(data.patente)) {
+        return [null, "La patente no tiene un formato chileno válido (ej: AB1234, ABCD12)"];
+      }
+    }
+
+    if (data.patente && data.patente !== vehiculo.patente) {
+      const existe = await vehiculoRepository.findOneBy({ patente: data.patente });
+      if (existe) {
+        return [null, "La patente ya está registrada en otro vehículo"];
+      }
+    }
+
+    if (data.patente) vehiculo.patente = data.patente;
+    if (data.transmision) vehiculo.transmision = data.transmision;
+    if (data.estado) vehiculo.estado = data.estado;
+
+    await vehiculoRepository.save(vehiculo);
+    return [vehiculo, null];
+  } catch (error) {
+    console.error("Error al actualizar vehículo:", error);
+    return [null, "Error interno del servidor al actualizar vehículo"];
   }
 }

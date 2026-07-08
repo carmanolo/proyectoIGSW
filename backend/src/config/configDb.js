@@ -9,6 +9,7 @@ import Inscripcion from "../entities/Inscripcion.entity.js";
 import Reserva from "../entities/reserva.entity.js";
 import Vehiculo from "../entities/vehiculo.entity.js";
 import Venta from "../entities/venta.entity.js";
+import Asistencia from "../entities/asistencia.entity.js";
 import Boleta from "../entities/Boleta.entity.js";
 
 export const AppDataSource = new DataSource({
@@ -18,6 +19,8 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${DB_PASSWORD}`,
   database: `${DATABASE}`,
+  entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo, Asistencia],
+  synchronize: true,
   entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Boleta, Reserva, Vehiculo],
   synchronize: true, 
   logging: false,

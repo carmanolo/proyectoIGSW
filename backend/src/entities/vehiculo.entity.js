@@ -4,7 +4,7 @@ export const Vehiculo = new EntitySchema({
   name: "Vehiculo",
   tableName: "vehiculos",
   columns: {
-    id_auto: {
+    id: {
       primary: true,
       type: "int",
       generated: "increment",

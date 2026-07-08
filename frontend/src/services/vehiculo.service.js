@@ -27,6 +27,15 @@ export async function deleteVehiculo(id) {
     }
 }
 
+export async function updateVehiculo(id, vehiculoData) {
+    try {
+        const response = await axios.patch(`/vehiculos/${id}`, vehiculoData);
+        return response.data;
+    } catch (error) {
+        return error.response?.data || { message: 'Error al actualizar vehiculo' };
+    }
+}
+
 export const getVehiculoList = async () => {
     try {
         const response = await axios.get(`/vehiculos/frontend/getVehiculoList`);

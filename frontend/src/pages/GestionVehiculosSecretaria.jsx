@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
-import { getVehiculos, createVehiculo, deleteVehiculo } from '@services/vehiculo.service';
+import { getVehiculos, createVehiculo, deleteVehiculo, updateVehiculo } from '@services/vehiculo.service';
 import { getReservas } from '@services/reserva.service';
 
 export default function GestionVehiculosSecretaria() {
@@ -12,9 +12,13 @@ export default function GestionVehiculosSecretaria() {
 
 
   const [showModal, setShowModal] = useState(false);
+  const [editingVehiculo, setEditingVehiculo] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterEstado, setFilterEstado] = useState('todos');
   const [formData, setFormData] = useState({
     patente: '',
-    transmision: 'mecanico'
+    transmision: 'mecanico',
+    estado: 'disponible'
   });
 
   useEffect(() => {
@@ -50,18 +54,39 @@ export default function GestionVehiculosSecretaria() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Regex para formato chileno: 2 letras 4 números (AB1234) o 4 letras 2 números (ABCD12), con o sin guion
+    const patenteRegex = /^([A-Z]{2}-?[0-9]{4}|[A-Z]{4}-?[0-9]{2})$/;
+    if (!patenteRegex.test(formData.patente)) {
+      alert("La patente debe tener el formato chileno válido (ej: AB1234, ABCD12, AB-1234 o ABCD-12).");
+      return;
+    }
+
     try {
-      const res = await createVehiculo(formData);
-      if (res?.data) {
-        alert("Vehículo registrado exitosamente");
-        setShowModal(false);
-        setFormData({ patente: '', transmision: 'mecanico' });
-        cargarVehiculos(); // Recargar lista
+      if (editingVehiculo) {
+        const res = await updateVehiculo(editingVehiculo.id, formData);
+        if (res?.data || res?.status === "Success" || res?.message) {
+          alert("Vehículo actualizado exitosamente");
+          setShowModal(false);
+          setEditingVehiculo(null);
+          setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' });
+          cargarVehiculos();
+        } else {
+          alert(res?.message || "Error al actualizar vehículo");
+        }
       } else {
-        alert(res?.message || "Error al registrar vehículo");
+        const res = await createVehiculo(formData);
+        if (res?.data) {
+          alert("Vehículo registrado exitosamente");
+          setShowModal(false);
+          setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' });
+          cargarVehiculos();
+        } else {
+          alert(res?.message || "Error al registrar vehículo");
+        }
       }
     } catch (err) {
-      alert("Error al registrar vehículo");
+      alert(editingVehiculo ? "Error al actualizar vehículo" : "Error al registrar vehículo");
     }
   };
 
@@ -91,13 +116,39 @@ export default function GestionVehiculosSecretaria() {
     );
   }
 
+  const vehiculosFiltrados = vehiculos.filter(v => {
+    const matchesSearch = v.patente.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesEstado = filterEstado === 'todos' || (v.estado || 'disponible') === filterEstado;
+    return matchesSearch && matchesEstado;
+  });
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Gestión de Vehículos</h1>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={() => { setEditingVehiculo(null); setFormData({ patente: '', transmision: 'mecanico', estado: 'disponible' }); setShowModal(true); }}>
           + Agregar Vehículo
         </button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <input 
+          type="text" 
+          placeholder="Buscar por patente..." 
+          className="input input-bordered w-full sm:max-w-xs"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <select 
+          className="select select-bordered w-full sm:max-w-xs"
+          value={filterEstado}
+          onChange={(e) => setFilterEstado(e.target.value)}
+        >
+          <option value="todos">Todos los estados</option>
+          <option value="disponible">Disponible</option>
+          <option value="en_taller">En Taller</option>
+          <option value="inactivo">Inactivo</option>
+        </select>
       </div>
       
       {loading ? (
@@ -118,7 +169,7 @@ export default function GestionVehiculosSecretaria() {
                 </tr>
               </thead>
               <tbody>
-                {vehiculos.map((vehiculo) => (
+                {vehiculosFiltrados.map((vehiculo) => (
                   <tr key={vehiculo.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm text-gray-500">{vehiculo.id}</td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{vehiculo.patente}</td>
@@ -128,7 +179,21 @@ export default function GestionVehiculosSecretaria() {
                         {vehiculo.estado || 'DISPONIBLE'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right space-x-2">
+                      <button 
+                        className="btn btn-sm btn-info text-white"
+                        onClick={() => {
+                          setEditingVehiculo(vehiculo);
+                          setFormData({ 
+                            patente: vehiculo.patente, 
+                            transmision: vehiculo.transmision,
+                            estado: vehiculo.estado || 'disponible'
+                          });
+                          setShowModal(true);
+                        }}
+                      >
+                        Editar
+                      </button>
                       <button 
                         className="btn btn-sm btn-error text-white"
                         onClick={() => handleDelete(vehiculo.id)}
@@ -140,8 +205,8 @@ export default function GestionVehiculosSecretaria() {
                 ))}
               </tbody>
             </table>
-            {vehiculos.length === 0 && (
-              <div className="text-center py-6 text-gray-500">No hay vehículos registrados en la flota.</div>
+            {vehiculosFiltrados.length === 0 && (
+              <div className="text-center py-6 text-gray-500">No hay vehículos que coincidan con los filtros.</div>
             )}
           </div>
         </div>
@@ -199,7 +264,7 @@ export default function GestionVehiculosSecretaria() {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Agregar Nuevo Vehículo</h2>
+            <h2 className="text-2xl font-bold mb-4">{editingVehiculo ? "Editar Vehículo" : "Agregar Nuevo Vehículo"}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Patente</label>
@@ -224,6 +289,21 @@ export default function GestionVehiculosSecretaria() {
                   <option value="automatico">Automático</option>
                 </select>
               </div>
+
+              {editingVehiculo && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Estado</label>
+                  <select 
+                    className="select select-bordered w-full mt-1" 
+                    value={formData.estado} 
+                    onChange={e => setFormData({...formData, estado: e.target.value})}
+                  >
+                    <option value="disponible">Disponible</option>
+                    <option value="en_taller">En Taller</option>
+                    <option value="inactivo">Inactivo</option>
+                  </select>
+                </div>
+              )}
 
               <div className="flex justify-end gap-2 mt-6">
                 <button type="button" className="btn btn-ghost" onClick={() => setShowModal(false)}>Cancelar</button>

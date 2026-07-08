@@ -20,28 +20,10 @@ export async function createEvaluacion(req, res) {
       return handleErrorClient(res, 400, "Faltan parámetros", result.error.message);
     }
 
-    const {
-      alumno,
-      calificacion_teorica,
-      resultado_manejo_1,
-      resultado_manejo_2,
-      resultado_manejo_3,
-      resultado_manejo_4,
-      resultado_manejo_5,
-      Resultado,
-      comentario,
-    } = req.body;
+    const files = req.files || {};
 
     const newEvaluacion = await createEvaluacionSer({
-      alumno,
-      calificacion_teorica,
-      resultado_manejo_1,
-      resultado_manejo_2,
-      resultado_manejo_3,
-      resultado_manejo_4,
-      resultado_manejo_5,
-      Resultado,
-      comentario,
+      ...req.body,
     });
 
     if (newEvaluacion) {
@@ -97,6 +79,8 @@ export async function patchEvaluacion(req, res) {
     if (!evaluacionUpdate) {
       return handleErrorClient(res, 404, "Evaluacion no encontrada");
     }
+
+    const files = req.files || {};
 
     Object.assign(evaluacionUpdate, req.body);
     const updatedEvaluacion = await updateEvaluacionSer(evaluacionUpdate);

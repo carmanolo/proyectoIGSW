@@ -8,7 +8,7 @@ export default function ComprarClases() {
   
   const [clasesDisponibles, setClasesDisponibles] = useState(0);
   const [historial, setHistorial] = useState([]);
-  const [cantidad, setCantidad] = useState(1);
+  const [cantidad, setCantidad] = useState(2);
   const [comprobanteFile, setComprobanteFile] = useState(null);
   const [mensaje, setMensaje] = useState(null);
 
@@ -47,7 +47,7 @@ export default function ComprarClases() {
       await comprarPack(formData);
       
       setMensaje({ type: 'success', text: 'Solicitud enviada correctamente. Pendiente de aprobación.' });
-      setCantidad(1);
+      setCantidad(2);
       setComprobanteFile(null);
       // Resetear el input de archivo
       document.getElementById('comprobante-input').value = '';
@@ -91,19 +91,35 @@ export default function ComprarClases() {
               </div>
             )}
 
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+              <p className="text-sm text-blue-700">
+                <strong>Importante:</strong> Para poder comprar packs de clases extras, debes haber completado al menos <strong>6 clases prácticas</strong> previamente.
+              </p>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Cantidad de clases
                 </label>
-                <input
-                  type="number"
-                  min="1"
+                <select
                   value={cantidad}
                   onChange={(e) => setCantidad(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
                   required
-                />
+                >
+                  <option value="2">Pack de 2 clases</option>
+                  <option value="4">Pack de 4 clases</option>
+                  <option value="6">Pack de 6 clases</option>
+                  <option value="8">Pack de 8 clases</option>
+                </select>
+              </div>
+
+              <div className="bg-gray-50 border border-gray-200 p-3 rounded-lg flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Monto a transferir:</span>
+                <span className="text-xl font-bold text-gray-800">
+                  {(Number(cantidad) * 15000).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                </span>
               </div>
 
               <div>
@@ -149,9 +165,9 @@ export default function ComprarClases() {
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-200">
                       <th className="px-4 py-3 text-sm font-medium text-gray-600">Fecha</th>
-                      <th className="px-4 py-3 text-sm font-medium text-gray-600">Cantidad</th>
+                      <th className="px-4 py-3 text-sm font-medium text-gray-600">Cant. / Restantes</th>
                       <th className="px-4 py-3 text-sm font-medium text-gray-600">Comprobante</th>
-                      <th className="px-4 py-3 text-sm font-medium text-gray-600">Estado</th>
+                      <th className="px-4 py-3 text-sm font-medium text-gray-600">Estado / Vence</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -160,7 +176,12 @@ export default function ComprarClases() {
                         <td className="px-4 py-3 text-sm text-gray-700">
                           {new Date(venta.fecha_venta).toLocaleDateString()}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-700">{venta.cantidad}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">
+                          {venta.cantidad} 
+                          {venta.estado === 'aprobada' && (
+                            <span className="text-xs text-gray-500 block">Quedan: {venta.clases_restantes}</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-sm text-gray-700">
                           <a 
                             href={`http://localhost:3000${venta.comprobante_url}`} 
@@ -173,12 +194,18 @@ export default function ComprarClases() {
                         </td>
                         <td className="px-4 py-3 text-sm">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            venta.estado === 'aprobado' ? 'bg-green-100 text-green-800' : 
+                            venta.estado === 'aprobada' ? 'bg-green-100 text-green-800' : 
+                            venta.estado === 'vencida' ? 'bg-gray-200 text-gray-600' :
                             venta.estado === 'pendiente' ? 'bg-yellow-100 text-yellow-800' : 
                             'bg-red-100 text-red-800'
                           }`}>
-                            {venta.estado.charAt(0).toUpperCase() + venta.estado.slice(1)}
+                            {venta.estado ? venta.estado.charAt(0).toUpperCase() + venta.estado.slice(1) : 'Desconocido'}
                           </span>
+                          {venta.estado === 'aprobada' && venta.fecha_vencimiento && (
+                            <span className="text-xs text-red-500 block mt-1 font-medium">
+                              Vence: {new Date(venta.fecha_vencimiento).toLocaleDateString()}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}

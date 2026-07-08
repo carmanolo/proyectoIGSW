@@ -20,9 +20,10 @@ import '@styles/styles.css';
 document.documentElement.setAttribute('data-theme', 'azul-amarillo-gris');
 
 import HistorialClasesAlumno from '@pages/HistorialClasesAlumno';
-import AgendarClaseAlumno from '@pages/AgendarClaseAlumno';
-import GestionClasesSecretaria from '@pages/GestionClasesSecretaria';
 import GestionVehiculosSecretaria from '@pages/GestionVehiculosSecretaria';
+import GenerarQRProfesor from '@pages/GenerarQRProfesor';
+import EscanearQRAlumno from '@pages/EscanearQRAlumno';
+import VerAsistenciaProfesor from '@pages/VerAsistenciaProfesor';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -62,16 +63,20 @@ const router = createBrowserRouter([
         element: <HistorialClasesAlumno />
       },
       {
-        path: '/agendar-clase',
-        element: <AgendarClaseAlumno />
-      },
-      {
-        path: '/gestion-clases-alumnos',
-        element: <GestionClasesSecretaria />
-      },
-      {
         path: '/gestion-vehiculos',
         element: <GestionVehiculosSecretaria />
+      },
+      {
+        path: '/generar-qr-clase',
+        element: <GenerarQRProfesor />
+      },
+      {
+        path: '/escanear-asistencia',
+        element: <EscanearQRAlumno />
+      },
+      {
+        path: '/ver-asistencia',
+        element: <VerAsistenciaProfesor />
       },
       {
         path: '/calendario-clases',

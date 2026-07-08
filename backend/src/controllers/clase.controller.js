@@ -37,7 +37,14 @@ export async function createClase(req, res) {
             delete req.body.email_profesor;
         }
         if (req?.body?.patente_auto) {
-            req.body.id_auto = ((await obtenerVehiculoPorPatente(req.body.patente_auto)) || {id: 0})?.id_auto;
+            const vehiculo = await obtenerVehiculoPorPatente(req.body.patente_auto);
+            if (!vehiculo) {
+                return handleErrorClient(res, 400, "Vehículo no encontrado");
+            }
+            if (vehiculo.estado !== 'disponible') {
+                return handleErrorClient(res, 400, `El vehículo ${req.body.patente_auto} no está disponible (Estado: ${vehiculo.estado})`);
+            }
+            req.body.id_auto = vehiculo.id;
             delete req.body.patente_auto;
         }
 

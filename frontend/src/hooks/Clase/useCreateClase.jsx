@@ -168,7 +168,7 @@ export const useCreateClase = (fetchClases, profesores, vehiculos) => {
                 // TODO: Crear nuevo Swal para clases prácticas
                 // console.log("CLASE PRÁCTICA");
                 formValues = await CreateClasePractica(profesores, vehiculos);
-                //formValues = null;
+
             } else if (tipoClase === TEORICA) {
                 // TODO: Crear nuevo Swal para clases teóricas
                 // console.log("CLASE TEÓRICA");
