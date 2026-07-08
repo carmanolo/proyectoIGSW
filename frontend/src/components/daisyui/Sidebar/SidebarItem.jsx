@@ -1,19 +1,13 @@
-export const SidebarItem = ({label, destination, icon}) => {
+import { Link } from 'react-router-dom';
+
+export const SidebarItem = ({label, destination, icon: Icon}) => {
     return (
-        <>
-            <li>
-                <a href={destination}>
-                    <button className="is-drawer-close:tooltip is-drawer-close:tooltip-right" 
-                        data-tip={label}
-                    >
-                        <div className="flex flex-row align-middle items-center-safe">
-                        {icon()}
-                        <span className="ml-1 is-drawer-close:hidden">{label}</span>
-                        </div>
-                    </button>
-                </a>
-            </li>
-        </>
+        <li>
+            <Link to={destination} className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-blue-50 hover:text-blue-600">
+                <Icon className="w-5 h-5" />
+                <span className="is-drawer-close:hidden">{label}</span>
+            </Link>
+        </li>
     );
 }
 

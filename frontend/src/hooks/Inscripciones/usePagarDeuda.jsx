@@ -55,6 +55,7 @@ export const usePagarDeuda = (onSuccess) => {
       setLoading(true);
       try {
         const response = await pagarDeudaService(deuda.id_inscripcion, montoPago);
+        console.log('Pago response:', response);
         
         if (response.success) {
           await Swal.fire({

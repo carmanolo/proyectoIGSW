@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { getPlanesService } from "@services/plan.service.js";
 import { getPlanesService } from "../../services/plan.service.js";
 
 export const useGetPlanes = (planesData, setPlanesData) => {

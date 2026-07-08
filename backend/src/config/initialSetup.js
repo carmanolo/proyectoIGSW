@@ -15,21 +15,21 @@ async function iniciarUsuarios() {
     await Promise.all([
       userRepository.save(userRepository.create({
         nombre:"ignacio perez",
-        email: "ignacio.@gmail.com",
+        email: "ignacio@gmail.com",
         password: await encryptPassword("secre2026"),
         rol: "secretario",
       })),
       userRepository.save(userRepository.create({
         nombre:"Martina Fuentealba",
-        email: "martina.@gmail.com",
+        email: "martina@gmail.com",
         password: await encryptPassword("profe2026"),
         rol: "profesor",
       })),
       userRepository.save(userRepository.create({
         nombre:"Leonardo Araya",
-        email: "leo.@gmail.com",
+        email: "leo@gmail.com",
         password: await encryptPassword("alum2026"),
-        rol: "alumnos",
+        rol: "estudiante",
       })),
     ]);
 

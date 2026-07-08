@@ -52,7 +52,7 @@ export default function GestionClasesSecretaria() {
       } else if (resUsuarios?.data && Array.isArray(resUsuarios.data)) {
         usuariosArr = resUsuarios.data;
       }
-      setUsuarios(usuariosArr.filter(u => u.rol === 'alumnos'));
+      setUsuarios(usuariosArr.filter(u => u.rol === 'estudiante'));
 
       if (resVehiculos?.data) setVehiculos(resVehiculos.data);
 

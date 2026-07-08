@@ -1,7 +1,5 @@
-import { Outlet } from 'react-router-dom';
-import { AuthProvider } from '@context/AuthContext';
-import { Outlet, useNavigate } from 'react-router-dom'; 
-import { AuthProvider, useAuth } from '@context/AuthContext'; 
+import { Outlet, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from '@context/AuthContext';
 import SidebarBase from '../components/daisyui/Sidebar/SidebarBase.jsx';
 import escuelaConductoresImg from '@assets/Escuela-de-Conductores-Conduce.jpg';
 
@@ -30,29 +28,28 @@ function Root() {
 
 function PageRoot() {
   const navigate = useNavigate();
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/auth'); 
+      navigate('/auth');
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
   };
- 
+
   const PageContent = (
-      <div className="page-content">
-        <Outlet />
-      </div>
+    <div className="page-content">
+      <Outlet />
+    </div>
   );
 
   return (
     <div className="page-root">
-      <SidebarBase pageContent={PageContent}/>
       <SidebarBase 
         pageContent={PageContent}
-        onLogout={handleLogout} 
+        onLogout={handleLogout}
       />
     </div>
   );

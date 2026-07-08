@@ -14,7 +14,7 @@ export async function createReserva(req, res) {
             return handleErrorClient(res, 400, "Faltan parámetros obligatorios (userId, vehiculoId, claseId, fecha)");
         }
 
-        if (req.user && req.user.rol === "alumnos") {
+        if (req.user && req.user.rol === "estudiante") {
             if (Number(userId) !== Number(req.user.id)) {
                 return handleErrorClient(res, 403, "No tienes permisos para agendar a otro usuario");
             }

@@ -21,8 +21,8 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
       return [null, "El estudiante no existe"];
     }
 
-    if (user.rol !== "alumnos") {
-      return [null, "Solo los usuarios con rol 'alumnos' pueden recibir packs"];
+    if (user.rol !== "estudiante") {
+      return [null, "Solo los usuarios con rol 'estudiante' pueden recibir packs"];
     }
 
     const reservaRepository = AppDataSource.getRepository(Reserva);

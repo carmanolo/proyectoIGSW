@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getProximaClaseService } from '../../services/dashboard.service.js';
 
-// DATOS DE EJEMPLO
-const CLASE_EJEMPLO = {
-  nombre: 'Clase Práctica de Conducción',
-  fecha: '2024-07-08',
-  hora_inicio: '10:00',
-  hora_fin: '11:30',
-  ubicacion: 'Sala 101 - Pista de Conducción',
-  instructor: 'Juan Pérez',
-  estado: 'pendiente'
-};
-
 export const useProximaClase = () => {
-  const [proximaClase, setProximaClase] = useState(CLASE_EJEMPLO);
-  const [loading, setLoading] = useState(false);
+  const [proximaClase, setProximaClase] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchProximaClase = async () => {
@@ -23,19 +12,19 @@ export const useProximaClase = () => {
     
     try {
       const response = await getProximaClaseService();
-      console.log('Próxima clase response:', response);
+      console.log(' Próxima clase response:', response);
       
-      if (response && response.success && response.data) {
-        setProximaClase(response.data);
+
+      if (response && response.status === 'Success') {
+        setProximaClase(response.data || null);
+        console.log(' Próxima clase:', response.data || 'No hay clase');
       } else {
-     
-        setProximaClase(CLASE_EJEMPLO);
+        setProximaClase(null);
       }
     } catch (err) {
-      console.error('Error en fetchProximaClase:', err);
+      console.error(' Error en fetchProximaClase:', err);
       setError(err.message);
-     
-      setProximaClase(CLASE_EJEMPLO);
+      setProximaClase(null);
     } finally {
       setLoading(false);
     }

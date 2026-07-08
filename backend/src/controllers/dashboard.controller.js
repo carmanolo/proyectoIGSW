@@ -7,45 +7,99 @@ import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers
 
 const inscripcionRepository = AppDataSource.getRepository(Inscripcion);
 const claseRepository = AppDataSource.getRepository(Clase);
+const userRepository = AppDataSource.getRepository(User);
 
 export async function getDashboardEstudiante(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return handleErrorClient(res, 401, "Usuario no autenticado");
+    }
 
-    // Para obtener inscripciones del estudiante
-    const inscripciones = await inscripcionRepository.find({
-      where: { alumno: { id: userId }, estado_inscripcion: "activa" },
-      relations: ["plan", "alumno"],
-      order: { fecha_contratacion: "DESC" }
+    const user = await userRepository.findOne({
+      where: { id: userId }
     });
 
-    // Para calcular estadísticas
-    const totalCursos = inscripciones.length;
-    const deudasPendientes = inscripciones.filter(i => i.estado_pago === "pendiente");
-    const totalDeuda = deudasPendientes.reduce((sum, i) => sum + parseFloat(i.monto_total || 0), 0);
+    if (!user) {
+      return handleErrorClient(res, 404, "Usuario no encontrado");
+    }
 
-    // Obtener próxima clase
+    const inscripciones = await inscripcionRepository.find({
+      where: { 
+        alumno: { id: userId },
+        estado_inscripcion: "activa"
+      },
+      relations: {
+        plan: true,
+        alumno: true
+      },
+      order: {
+        fecha_contratacion: "DESC"
+      }
+    });
+
+    const totalCursos = inscripciones.length;
+    const deudasPendientes = inscripciones.filter(i => 
+      i.estado_pago === "pendiente" || i.estado_pago === "parcial"
+    );
+    const totalDeuda = deudasPendientes.reduce((sum, i) => 
+      sum + (parseFloat(i.monto_total || 0) - parseFloat(i.monto_pagado || 0)), 0
+    );
+
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const manana = new Date(hoy);
-    manana.setDate(manana.getDate() + 1);
 
     const proximaClase = await claseRepository.findOne({
       where: {
-        usuario: { id: userId },
-        fecha: hoy,
-        hora_inicio: hoy
+        users: { id: userId },  
+        fecha_clase: hoy       
       },
-      order: { hora_inicio: "ASC" }
+      relations: {
+        users: true,
+        profesores: true,
+        vehiculos: true
+      },
+      order: {
+        hora_inicio: "ASC"
+      }
     });
 
     const dashboardData = {
-      cursos: inscripciones,
-      deudas: deudasPendientes,
-      proximaClase: proximaClase || null,
+      cursos: inscripciones.map(inscripcion => ({
+        id_inscripcion: inscripcion.id_inscripcion,
+        plan: inscripcion.plan,
+        fecha_inicio: inscripcion.fecha_inicio,
+        fecha_fin: inscripcion.fecha_fin,
+        estado_pago: inscripcion.estado_pago,
+        estado_inscripcion: inscripcion.estado_inscripcion,
+        monto_total: inscripcion.monto_total,
+        monto_pagado: inscripcion.monto_pagado,
+        clases_restantes: (inscripcion.clases_totales || 0) - (inscripcion.clases_tomadas || 0),
+        fecha_vencimiento_pago: inscripcion.fecha_vencimiento_pago
+      })),
+      deudas: deudasPendientes.map(deuda => ({
+        id_inscripcion: deuda.id_inscripcion,
+        plan: deuda.plan,
+        monto_total: deuda.monto_total,
+        monto_pagado: deuda.monto_pagado || 0,
+        saldo_restante: parseFloat(deuda.monto_total) - parseFloat(deuda.monto_pagado || 0),
+        fecha_vencimiento_pago: deuda.fecha_vencimiento_pago,
+        estado_pago: deuda.estado_pago
+      })),
+      proximaClase: proximaClase ? {
+        id: proximaClase.id_clase,
+        nombre: 'Clase de Conducción',
+        fecha: proximaClase.fecha_clase,
+        hora_inicio: proximaClase.hora_inicio,
+        hora_fin: proximaClase.hora_fin,
+        ubicacion: 'Sala Principal',
+        instructor: proximaClase.profesores?.nombre || 'Por asignar',
+        estado: proximaClase.estado_clase || 'pendiente'
+      } : null,
       estadisticas: {
         totalCursos,
-        clasesCompletadas: 0, 
+        clasesCompletadas: 0,
         deudasPendientes: deudasPendientes.length,
         totalDeuda,
         proximaClase: proximaClase ? `${proximaClase.hora_inicio}` : 'Sin clases'
@@ -61,23 +115,45 @@ export async function getDashboardEstudiante(req, res) {
 
 export async function getProximaClase(req, res) {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return handleErrorClient(res, 401, "Usuario no autenticado");
+    }
+
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-
     const clase = await claseRepository.findOne({
       where: {
-        usuario: { id: userId },
-        fecha: hoy
+        users: { id: userId },
+        fecha_clase: hoy
       },
-      order: { hora_inicio: "ASC" }
+      relations: {
+        users: true,
+        profesores: true,
+        vehiculos: true
+      },
+      order: {
+        hora_inicio: "ASC"
+      }
     });
 
     if (!clase) {
       return handleSuccess(res, 200, "No hay clases programadas para hoy", null);
     }
 
-    return handleSuccess(res, 200, "Próxima clase encontrada", clase);
+    const claseData = {
+      id: clase.id_clase,
+      nombre: 'Clase de Conducción',
+      fecha: clase.fecha_clase,
+      hora_inicio: clase.hora_inicio,
+      hora_fin: clase.hora_fin,
+      ubicacion: 'Sala Principal',
+      instructor: clase.profesores?.nombre || 'Por asignar',
+      estado: clase.estado_clase || 'pendiente'
+    };
+
+    return handleSuccess(res, 200, "Próxima clase encontrada", claseData);
   } catch (error) {
     console.error("Error en getProximaClase:", error);
     return handleErrorServer(res, 500, "Error al obtener la próxima clase", error.message);

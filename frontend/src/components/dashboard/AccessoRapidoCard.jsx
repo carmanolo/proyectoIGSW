@@ -1,33 +1,39 @@
 import { TrendingUp, BookOpen, Calendar, DollarSign, Users, Clock, Award, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const AccesoRapidoCard = ({ rol }) => {
-  // Diferentes accesos según el rol
+  const navigate = useNavigate();
+
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
+
   const getAccesos = () => {
     const accesosComunes = [
-      { icono: <Calendar className="w-6 h-6 mx-auto mb-1" />, label: 'Horario', color: 'blue' },
-      { icono: <BookOpen className="w-6 h-6 mx-auto mb-1" />, label: 'Material', color: 'yellow' },
+      { icono: <Calendar className="w-6 h-6 mx-auto mb-1" />, label: 'Horario', color: 'blue', path: '/clase' },
+      { icono: <BookOpen className="w-6 h-6 mx-auto mb-1" />, label: 'Material', color: 'yellow', path: '/planes' },
     ];
 
     const accesosPorRol = {
       estudiante: [
         ...accesosComunes,
-        { icono: <TrendingUp className="w-6 h-6 mx-auto mb-1" />, label: 'Progreso', color: 'blue' },
-        { icono: <DollarSign className="w-6 h-6 mx-auto mb-1" />, label: 'Pagos', color: 'yellow' },
+        { icono: <TrendingUp className="w-6 h-6 mx-auto mb-1" />, label: 'Progreso', color: 'blue', path: '/mis-clases' },
+        { icono: <DollarSign className="w-6 h-6 mx-auto mb-1" />, label: 'Pagos', color: 'yellow', path: '/comprar-clases' },
       ],
       profesor: [
         ...accesosComunes,
-        { icono: <Users className="w-6 h-6 mx-auto mb-1" />, label: 'Alumnos', color: 'blue' },
-        { icono: <Award className="w-6 h-6 mx-auto mb-1" />, label: 'Evaluaciones', color: 'green' },
+        { icono: <Users className="w-6 h-6 mx-auto mb-1" />, label: 'Alumnos', color: 'blue', path: '/clase' },
+        { icono: <Award className="w-6 h-6 mx-auto mb-1" />, label: 'Evaluaciones', color: 'green', path: '/evaluaciones' },
       ],
       secretaria: [
         ...accesosComunes,
-        { icono: <Users className="w-6 h-6 mx-auto mb-1" />, label: 'Lista Espera', color: 'yellow' },
-        { icono: <FileText className="w-6 h-6 mx-auto mb-1" />, label: 'Reportes', color: 'blue' },
+        { icono: <Users className="w-6 h-6 mx-auto mb-1" />, label: 'Lista Espera', color: 'yellow', path: '/gestion-clases-alumnos' },
+        { icono: <FileText className="w-6 h-6 mx-auto mb-1" />, label: 'Reportes', color: 'blue', path: '/gestion-vehiculos' },
       ],
       ADMINISTRADOR: [
         ...accesosComunes,
-        { icono: <Users className="w-6 h-6 mx-auto mb-1" />, label: 'Usuarios', color: 'blue' },
-        { icono: <DollarSign className="w-6 h-6 mx-auto mb-1" />, label: 'Finanzas', color: 'yellow' },
+        { icono: <Users className="w-6 h-6 mx-auto mb-1" />, label: 'Usuarios', color: 'blue', path: '/gestionar-ventas' },
+        { icono: <DollarSign className="w-6 h-6 mx-auto mb-1" />, label: 'Finanzas', color: 'yellow', path: '/comprar-clases' },
       ],
     };
 
@@ -63,6 +69,7 @@ export const AccesoRapidoCard = ({ rol }) => {
         {accesos.map((acceso, index) => (
           <button
             key={index}
+            onClick={() => handleNavigate(acceso.path)}
             className={`${getColorClass(acceso.color)} rounded-lg p-3 text-center transition-colors border`}
           >
             <div className={getIconColor(acceso.color)}>
