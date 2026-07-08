@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getPlanesService } from "@services/plan.service.js";
+import { getPlanesService } from "../../services/plan.service.js";
 
 export const useGetPlanes = (planesData, setPlanesData) => {
     const [loading, setLoading] = useState(false);
@@ -11,6 +11,7 @@ export const useGetPlanes = (planesData, setPlanesData) => {
         try {
             const response = await getPlanesService();
             // console.log("Respuesta de getAllPlanesService:", response);
+            console.log("Respuesta de getAllPlanesService:", response);
             
             if (response.status === 200 && response.data?.success) {
                 const planes = response.data.data || [];

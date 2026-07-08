@@ -96,3 +96,15 @@ export const processCars = (cars) => {
 
     return newCars;
 }
+
+export const isFechaValida = (fecha) => {
+    if (!fecha) return false;
+    
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); 
+    
+    const fechaIngresada = new Date(fecha);
+    fechaIngresada.setHours(0, 0, 0, 0);
+    
+    return fechaIngresada >= hoy;
+};

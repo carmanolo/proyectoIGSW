@@ -5,7 +5,7 @@ import { gebi } from "../utils/getElementById.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
 import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE, CLASE_TEORICA, CLASE_PRACTICA } from "../../constants/clase.constants.jsx";
-import { getTeacherEmail, processCars, processTeachers } from "../../utils/ClaseUtils.js";
+import { getTeacherEmail, processCars, processTeachers, isFechaValida } from "../../utils/ClaseUtils.js";
 
 const PRACTICA = 1;
 const TEORICA = 0;
@@ -98,6 +98,11 @@ async function CreateClaseTeorica(profesores) {
         const estado_clase = String(gebi('swal2-input7')?.value);
         const email_profesor = getTeacherEmail(String(gebi('swal2-input8')?.value));
         const id_auto = null;
+
+        if (!isFechaValida(fecha_clase)) {
+            Swal.showValidationMessage('La fecha no puede ser anterior a hoy');
+            return false; 
+        }
         return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, email_profesor, id_auto};
     },
     theme: "light",
@@ -135,6 +140,11 @@ async function CreateClasePractica(profesores, vehiculos) {
         const estado_clase = String(gebi('swal2-input7')?.value);
         const email_profesor = getTeacherEmail(String(gebi('swal2-input8')?.value));
         const patente_auto = String(gebi('swal2-input9')?.value);
+
+        if (!isFechaValida(fecha_clase)) {
+            Swal.showValidationMessage('La fecha no puede ser anterior a hoy');
+            return false; 
+        }
         return {tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, email_profesor, patente_auto};
     },
     theme: "light",
