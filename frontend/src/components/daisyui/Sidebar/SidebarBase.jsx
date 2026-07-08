@@ -85,11 +85,15 @@ export const SidebarBase = ({ pageContent }) => {
                         
                         <SidebarItem label="Planes" destination="/planes" icon={MdAdminPanelSettings} />
                         <SidebarItem label="Comprar Clases" destination="/comprar-clases" icon={MdShoppingCart} />
+                        <SidebarItem label="Generar QR Asistencia" destination="/generar-qr-clase" icon={MdSchool} />
+                        <SidebarItem label="Ver Asistencias" destination="/ver-asistencia" icon={MdSchool} />
+
                         
                         {user?.rol === 'estudiante' && (
                             <>
                                 <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} />
                                 <SidebarItem label="Agendar Clase" destination="/agendar-clase" icon={MdSchool} />
+                                 <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} />
                             </>
                         )}
                         
