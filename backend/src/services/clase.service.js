@@ -3,6 +3,7 @@ import { Clase } from "../entities/clase.entity.js";
 import { User } from "../entities/user.entity.js";
 import { obtenerIdVehiculoNulo } from "./vehiculo.service.js";
 
+//conseguir una clase
 export async function getClaseSer(id_clase) {
     try{
         const claseRepository = AppDataSource.getRepository(Clase);
@@ -16,6 +17,7 @@ export async function getClaseSer(id_clase) {
     }
 }
 
+//asignacion por lote
 export async function asignarPorLoteService() {
   try {
     const useRepository = AppDataSource.getRepository(User);
@@ -76,6 +78,7 @@ export async function asignarPorLoteService() {
   }
 }
 
+//asignacion individual a clases prácticas
 export async function asignacionIndividualService(id_clase, id_usuario) {
   try {
     if(!id_clase || !id_usuario){
@@ -133,6 +136,7 @@ export async function asignacionIndividualService(id_clase, id_usuario) {
   }
 }
 
+//apratado usarios asignados a clases teoricas
 export async function getClasesConUsuarioSer(){
   try {
     const claseRepository = AppDataSource.getRepository(Clase);
@@ -202,7 +206,6 @@ export async function createClaseSer( tipo, descripcion ,fecha_clase, hora_inici
 
   try {
     if (!tipo||!descripcion||!fecha_clase||!hora_inicio || !hora_fin || !dia || !estado_clase || (id_auto !== null && !id_auto) || !id_profesor) {
-      //// console.log( hora_inicio,hora_fin, dia);
       throw Error("Función mal llamada", { tipo, descripcion, fecha_clase, hora_inicio, hora_fin, dia, estado_clase, id_profesor, id_auto });
     }
 
@@ -333,6 +336,62 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
     console.error("Error al editar asignación por lote:", error);
     return { data: null, message: "Error interno del servidor", error: true };
   };
+}
+
+export async function desasignacionIndividualService(id_clase, id_usuario) {
+  try {
+    if (!id_clase || !id_usuario) {
+      return { data: null, message: "los id de clase y usuario son requeridos", error: true };
+    }
+ 
+    const claseRepository = AppDataSource.getRepository(Clase);
+    const userRepository = AppDataSource.getRepository(User);
+ 
+    const clase = await claseRepository.findOne({
+      where: { id_clase, tipo: "practica" },
+      relations: { users: true },
+    });
+ 
+    if (!clase) {
+      return { data: null, message: "Clase práctica no encontrada", error: true };
+    }
+ 
+    const estudiante = await userRepository.findOne({
+      where: { id: id_usuario, rol: "estudiante" },
+    });
+ 
+    if (!estudiante) {
+      return { data: null, message: "Estudiante no encontrado", error: true };
+    }
+ 
+    //comprobar que el estudiante efectivamente esté asignado a la clase
+    const estaAsignado = clase.users.some((u) => u.id === estudiante.id);
+    if (!estaAsignado) {
+      return { data: null, message: "El estudiante no está asignado a esa clase", error: true };
+    }
+ 
+    //quitar al estudiante de la clase práctica
+    clase.users = clase.users.filter((u) => u.id !== estudiante.id);
+    const guardar = await claseRepository.save(clase);
+ 
+    return {
+      data: {
+        id_clase: guardar.id_clase,
+        tipo: guardar.tipo,
+        descripcion: guardar.descripcion,
+        usuario_asignado: guardar.users.map((u) => ({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email,
+        })),
+      },
+      message: "Estudiante desasignado de la clase práctica exitosamente",
+      error: false,
+    };
+  } catch (error) {
+    console.error("Error al desasignar usuario de clase práctica:", error);
+    return { data: null, message: "Error interno del servidor", error: true };
+  }
 }
 
 /*

@@ -42,7 +42,7 @@ const Clase = () => {
     const { loading: loadingUsuarios, fetchClasesConUsuarios} = useClasesConUsuarios();
     const { loading: loadingLote, asignarPorLote} =useAsignarPorLote();
     const {loading: loadingEditarAsignacion, editarAsignacion} = useEditAsignacion();
-    const {loading: loadingAsignarUsuarioIndividual, asignarUsuarioIndividual } = useAsignarClasePractica();
+    const {loading: loadingAsignarUsuarioIndividual, asignarUsuarioIndividual, desasignarUsuarioIndividual  } = useAsignarClasePractica();
     const [buscar, setBuscar] = useState("");
 
     useEffect(() => {
@@ -103,6 +103,8 @@ const Clase = () => {
                     loadingEditarAsignacion={loadingEditarAsignacion} 
                     handleAsignarUsuarioIndividual={(id_clase) => asignarUsuarioIndividual(id_clase, studentList)}
                     loadingAsignarUsuarioIndividual={loadingAsignarUsuarioIndividual}
+                    handleDesasignarUsuarioIndividual={(id_clase) =>desasignarUsuarioIndividual(id_clase,studentList)}
+                    loadingDesasignarUsuarioIndividual={loadingAsignarUsuarioIndividual}
                     canCrudClases={canCrudClases} 
                     teacherList={teacherList} 
                     vehiculoList={vehiculoList}

@@ -1,6 +1,6 @@
 "use strict";
 import { handleSuccess, handleErrorClient, handleErrorServer } from "../Handlers/responseHandlers.js";
-import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer, asignacionIndividualService } from "../services/clase.service.js";
+import { editarAsignacionLoteSer, createClaseSer,getClaseSer, getClasesSer, updateClaseSer, deleteClaseSer, asignarPorLoteService, getClasesConUsuarioSer, asignacionIndividualService, desasignacionIndividualService } from "../services/clase.service.js";
 import { CLASE_NO_ENCONTRADA} from "../constants/clase.constants.js";
 import { assignationValidation, integrityValidation, updateValidation, validacionHoraIntegridad, validateHoraNegocio} from "../validations/clase.validation.js";
 import { idValidation } from "../validations/modules/id.validation.js";
@@ -305,6 +305,34 @@ export async function asignacionIndividual(req, res) {
         }
 
         return handleSuccess(res, 200, "asignacion individual a clase practica exitosa", result.data);
+    } catch (error) {
+        console.error(error);
+        return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);
+    }
+}
+
+export async function desasignacionIndividual(req, res) {
+    try {
+        const { id } = req.params;
+        const { id_usuario } = req.body;
+
+        const validatedId = idValidation.validate({ id });
+        if (validatedId.error) {
+            return handleErrorClient(res, 400, "id de clase inválido", validatedId.error.message);
+        }
+
+        const validatedUserId = idValidation.validate({ id: id_usuario });
+        if (validatedUserId.error) {
+            return handleErrorClient(res, 400, "id_usuario inválido", validatedUserId.error.message);
+        }
+
+        const result = await desasignacionIndividualService(id, id_usuario);
+
+        if (result.error) {
+            return handleErrorClient(res, 400, result.message);
+        }
+
+        return handleSuccess(res, 200, "desasignacion individual de clase practica exitosa", result.data);
     } catch (error) {
         console.error(error);
         return handleErrorServer(res, 500, "Error interno del servidor", error.message, error);

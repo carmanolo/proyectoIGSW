@@ -9,7 +9,8 @@ import { getClases,
         asignarPorLote, 
         getClasesConUsuarios, 
         editarAsignacionPorLote,
-        asignacionIndividual } from "../controllers/clase.controller.js";
+        asignacionIndividual,
+        desasignacionIndividual } from "../controllers/clase.controller.js";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.post("/asignar",authorizeRoles("secretario"), asignarPorLote);
 router.patch("/asignar_practica/:id", authorizeRoles("secretario"), asignacionIndividual);
 router.patch("/asignar/:id",authorizeRoles("secretario"), editarAsignacionPorLote);
 router.patch("/editar/:id", authorizeRoles("secretario","profesor"), patchClase);
+router.patch("/desasignar/:id", authorizeRoles("secretario"),desasignacionIndividual)
 router.delete("/:id", authorizeRoles("secretario"), deleteClase);
 
 
