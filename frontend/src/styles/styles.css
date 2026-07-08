@@ -1,0 +1,125 @@
+
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* FONDO GLOBAL*/
+body {
+  background: linear-gradient(135deg, #EFF6FF 0%, #F9FAFB 50%, #FFFBEB 100%);
+  min-height: 100vh;
+}
+
+/* colores de botones */
+.btn-primary {
+  background-color: #2563EB !important;
+  border-color: #2563EB !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background-color: #1D4ED8 !important;
+  border-color: #1D4ED8 !important;
+}
+
+.btn-secondary {
+  background-color: #F59E0B !important;
+  border-color: #F59E0B !important;
+  color: white !important;
+}
+
+.btn-secondary:hover {
+  background-color: #D97706 !important;
+  border-color: #D97706 !important;
+}
+
+.btn-accent {
+  background-color: #6B7280 !important;
+  border-color: #6B7280 !important;
+  color: white !important;
+}
+
+.btn-accent:hover {
+  background-color: #4B5563 !important;
+  border-color: #4B5563 !important;
+}
+
+.badge-primary {
+  background-color: #DBEAFE !important;
+  color: #1E40AF !important;
+  border: none !important;
+}
+
+.badge-secondary {
+  background-color: #FEF3C7 !important;
+  color: #92400E !important;
+  border: none !important;
+}
+
+.badge-accent {
+  background-color: #E5E7EB !important;
+  color: #1F2937 !important;
+  border: none !important;
+}
+
+.card {
+  background-color: white !important;
+  border: 1px solid #E5E7EB !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-primary {
+  background-color: #EFF6FF !important;
+  border-color: #BFDBFE !important;
+}
+
+.card-secondary {
+  background-color: #FFFBEB !important;
+  border-color: #FDE68A !important;
+}
+
+.card-accent {
+  background-color: #F9FAFB !important;
+  border-color: #E5E7EB !important;
+}
+
+.table thead {
+  background-color: #F3F4F6 !important;
+  color: #1F2937 !important;
+}
+
+.table tbody tr:hover {
+  background-color: #EFF6FF !important;
+}
+
+.input:focus {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  outline: none !important;
+}
+
+.select:focus {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  outline: none !important;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-r from-blue-600 to-yellow-600 bg-clip-text text-transparent;
+}
+
+.bg-gradient-custom {
+  background: linear-gradient(135deg, #EFF6FF 0%, #F9FAFB 50%, #FFFBEB 100%);
+}
+
+/*
+@import "tailwindcss";
+@plugin "daisyui";
+*/
+
+/* ===== ESTILOS EXISTENTES ===== */
+/*.actual-page-background {
+   background-image: url(../assets/Escuela-de-Conductores-Conduce.jpg);
+   background-repeat: no-repeat;
+   background-size: cover;
+}
+*/

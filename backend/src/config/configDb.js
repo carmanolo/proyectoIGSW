@@ -4,6 +4,7 @@ import { DATABASE, DB_USERNAME, HOST, DB_PASSWORD, DB_PORT, DB_HOST, PORT } from
 import User from "../entities/user.entity.js";
 import Horario from "../entities/clase.entity.js";
 import Deuda from "../entities/Plan.entity.js";
+import Boleta from "../entities/Boleta.entity.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${DB_PASSWORD}`,
   database: `${DATABASE}`,
-  entities: [User, Horario, Deuda],
+  entities: [User, Horario, Deuda, Boleta],
   synchronize: true, 
   logging: false,
 });
