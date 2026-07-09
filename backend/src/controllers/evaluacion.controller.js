@@ -10,7 +10,8 @@ export async function createEvaluacion(req, res) {
       return res.status(400).json({ message: "Datos no proporcionados" });
     }
 
-    const { error } = integrityValidation.validate(req.body);
+    // Validate field shapes but do not enforce required presence during updates
+    const { error } = integrityValidation.validate(req.body, { presence: 'optional' });
     if (error) {
       return handleErrorClient(res, 400, "Parámetros inválidos", error.message);
     }

@@ -139,24 +139,19 @@ export async function getEvaluacionSer(id = null, alumnoId = null) {
   try {
     const evaluacionRepository = AppDataSource.getRepository(Evaluacion);
     if (id) {
-      const evaluacion = await evaluacionRepository.findOne({ where: { id_evaluacion: Number(id) }, relations: ["alumno_relacion"] });
+      const evaluacion = await evaluacionRepository.findOne({ where: { id_evaluacion: Number(id) }, relations: { alumno_relacion: true } });
       return evaluacion || null;
     }
 
     if (alumnoId) {
       const evaluaciones = await evaluacionRepository.find({
         where: { alumno_relacion: { id: Number(alumnoId) } },
-        relations: ["alumno_relacion"],
+        relations: { alumno_relacion: true },
       });
       return evaluaciones;
     }
 
-    const evaluaciones = await evaluacionRepo.find({
-  relations: { 
-    alumno: true, 
-    otraRelacion: true 
-  }
-  });
+    const evaluaciones = await evaluacionRepository.find({ relations: { alumno_relacion: true } });
     return evaluaciones;
   } catch (error) {
     console.error("Error al obtener los evaluacions", error);
