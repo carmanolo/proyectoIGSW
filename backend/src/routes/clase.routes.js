@@ -1,15 +1,7 @@
 import { Router } from "express";
 import { authorizeRoles } from "../middleware/authorization.middleware.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
-
-import { getClases, 
-        createClase, 
-        patchClase, 
-        deleteClase, 
-        asignarPorLote, 
-        getClasesConUsuarios, 
-        editarAsignacionPorLote,
-        asignacionIndividual } from "../controllers/clase.controller.js";
+import { getClases, createClase, patchClase, deleteClase, asignarPorLote, getClasesConUsuarios, editarAsignacionPorLote, asignacionIndividual, desasignacionIndividual } from "../controllers/clase.controller.js";
 
 const router = Router();
 
@@ -22,7 +14,7 @@ router.patch("/asignar_practica/:id", authorizeRoles("secretario"), asignacionIn
 router.patch("/asignar/:id",authorizeRoles("secretario"), editarAsignacionPorLote);
 router.patch("/editar/:id", authorizeRoles("secretario","profesor"), patchClase);
 router.delete("/:id", authorizeRoles("secretario"), deleteClase);
-
+router.patch("/desasignar/:id", authorizeRoles("secretario"),desasignacionIndividual);
 
 export default router;
 

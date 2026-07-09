@@ -334,65 +334,59 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
   };
 }
 
-/*
-export async function eliminarAsignacionUsuarioSer(id_usuario) {
+export async function desasignacionIndividualService(id_clase, id_usuario) {
   try {
-    if(!id_usuario){
-      return {data: null, message: "id_usuario es requerido", error: true};
+    if (!id_clase || !id_usuario) {
+      return { data: null, message: "los id de clase y usuario son requeridos", error: true };
     }
-
-    const usuarioId = Number(id_usuario);
+ 
     const claseRepository = AppDataSource.getRepository(Clase);
+    const userRepository = AppDataSource.getRepository(User);
 
-    const clases = await claseRepository.find({
-      where: {users: {id: usuarioId}},
-      relations: {users: true},
+ 
+    const clase = await claseRepository.findOne({
+      where: { id_clase, tipo: "practica" },
+      relations: { users: true },
     });
-
-    // // console.log(JSON.stringify(clases));
-
-    if(!clases || clases.length === 0){
-      return {data: null, message:"El usuario no esta asignado a ninguna clase ", error:true }
-
+ 
+    if (!clase) {
+      return { data: null, message: "Clase práctica no encontrada", error: true };
     }
-
-    const desasignaciones = [];
-
-    /*
-    for(const clase of clases){
-      clase.users = clase.users.filter((u) => u.id !== usuarioId);
-      const guardar = await claseRepository.save(clase);
-
-      desasignaciones.push({
+ 
+    const estudiante = await userRepository.findOne({
+      where: { id: id_usuario, rol: "estudiante" },
+    });
+ 
+    if (!estudiante) {
+      return { data: null, message: "Estudiante no encontrado", error: true };
+    }
+ 
+    //comprobar que el estudiante efectivamente esté asignado a la clase
+    const estaAsignado = clase.users.some((u) => u.id === estudiante.id);
+    if (!estaAsignado) {
+      return { data: null, message: "El estudiante no está asignado a esa clase", error: true };
+    }
+ 
+    //quitar al estudiante de la clase práctica
+    clase.users = clase.users.filter((u) => u.id !== estudiante.id);
+    const guardar = await claseRepository.save(clase);
+ 
+    return {
+      data: {
         id_clase: guardar.id_clase,
         tipo: guardar.tipo,
         descripcion: guardar.descripcion,
-        usuario_asignados: guardar.users.map((u) =>({
-        id: u.id,
-        nombre: u.nombre,
-        email: u.email,
+        usuario_asignado: guardar.users.map((u) => ({
+          id: u.id,
+          nombre: u.nombre,
+          email: u.email,
         })),
-      });
-    }
-    for (const clase of clases) {
-      const claseCompleta = await claseRepository.findOne({where: { id_clase: clase.id_clase }, relations: {users: true}});
-      claseCompleta.users = claseCompleta.users.filter((u) => Number(u?.id || 0) !== usuarioId);
-      try {
-        const nuevaClaseCompleta = await claseRepository.save(claseCompleta);
-        desasignaciones.push(nuevaClaseCompleta);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-
-    return { data:desasignaciones, message: `Usuario desasignado de ${desasignaciones.length} clase(s) exitosamente`, error: false };
-
+      },
+      message: "Estudiante desasignado de la clase práctica exitosamente",
+      error: false,
+    };
   } catch (error) {
-    console.error("Error al desasignar usuario: ", error);
-    return { data: null, message: "Error interno del servidor", error:true}
+    console.error("Error al desasignar usuario de clase práctica:", error);
+    return { data: null, message: "Error interno del servidor", error: true };
   }
 }
-
-*/
-
