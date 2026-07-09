@@ -1,36 +1,46 @@
+import { AppDataSource } from "../config/configDb.js";
+import { User } from "../entities/user.entity.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail } from "./user.service.js";
 import { getServiceResult } from "./utils/utils.service.js";
 
-
-//logear usaurio
-
 export async function loginUser(email, password) {
-  const user = await findUserByEmail(email);
+    console.log('🔍 Intentando login con:', email);
+  const userRepository = AppDataSource.getRepository(User);
+  const user = await userRepository.findOne({ where: { email } });
+  console.log('👤 Usuario encontrado:', user ? user.email : 'NO ENCONTRADO');
   if (!user) {
     throw new Error("Credenciales incorrectas");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
+   console.log('🔑 Contraseña válida:', isMatch);
   if (!isMatch) {
     throw new Error("Credenciales incorrectas");
   }
 
-  const payload = { sub: user.id, email: user.email, rol: user.rol };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "5h" });
+  const payload = { 
+    id: user.id, 
+    email: user.email, 
+    rol: user.rol,
+    nombre: user.nombre || email.split('@')[0]
+  };
+  
+  const token = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: "5h" });
 
-  delete user.password;
-  return { user, token };
+  const userData = { ...user };
+  delete userData.password;
+  
+  return { user: userData, token };
 }
 
-//cerrar sesion
 export async function logoutUserFromService(clearCookieFunction) {
   try {
     clearCookieFunction("jwt", { httpOnly: true });
     return getServiceResult(false, null, "Sesión cerrada exitosamente", 0);
+    console.log('✅ Login exitoso:', userData.email);
   } catch (error) {
-    // console.error("Error en auth.controller.js -> login(): ", error);
     return getServiceResult(true, null, "Error al cerrar sesión", 0);
+    console.error('❌ Error en loginUser:', error);
   }
 }

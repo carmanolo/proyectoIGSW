@@ -6,7 +6,7 @@ export const procesarVehiculos = (vehiculos) => {
         return VEHICULOS_POR_DEFECTO;
     }
     const vehiculosProcesados = vehiculos.map((vehiculo) => {
-        return String(`${vehiculo?.id_auto || 0}. ${vehiculo?.patente || DEFAULT_PATENTE}` || DEFAULT_PATENTE); 
+        return String(`${vehiculo?.id || 0}. ${vehiculo?.patente || DEFAULT_PATENTE}` || DEFAULT_PATENTE); 
     });
     return vehiculosProcesados;    
 }

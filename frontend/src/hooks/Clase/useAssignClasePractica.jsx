@@ -70,6 +70,7 @@ export function useAsignarClasePractica(){
         if(!result.isConfirmed) return;
 
         const id_usuario = result.value;
+        console.log(id_usuario);
         setLoading(true);
 
         try {

@@ -1,0 +1,161 @@
+/* styles/pages/home.css */
+@import '../variables.css';
+@import '../components.css';
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.home-container {
+  @apply min-h-screen p-4 md:p-6;
+  background: linear-gradient(135deg, var(--blue-50) 0%, var(--gray-50) 50%, var(--yellow-50) 100%);
+}
+
+.home-wrapper {
+  @apply max-w-7xl mx-auto;
+}
+
+/* ===== HEADER ===== */
+.home-header {
+  @apply bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-200;
+}
+
+.home-header-content {
+  @apply flex flex-col md:flex-row md:items-center md:justify-between;
+}
+
+.home-greeting {
+  @apply text-2xl md:text-3xl font-bold text-gray-800;
+}
+
+.home-user-name {
+  @apply font-semibold text-blue-600;
+}
+
+.home-user-info {
+  @apply text-gray-600 mt-1;
+}
+
+.home-user-role {
+  @apply inline-block bg-blue-100 text-blue-700 text-sm px-2 py-0.5 rounded-full capitalize ml-2;
+}
+
+.home-header-right {
+  @apply flex items-center gap-4 mt-3 md:mt-0;
+}
+
+.home-time-container {
+  @apply text-right;
+}
+
+.home-time-display {
+  @apply flex items-center gap-2 text-gray-600;
+}
+
+.home-clock-icon {
+  @apply w-4 h-4 text-yellow-500;
+}
+
+.home-time-text {
+  @apply font-mono text-lg font-bold text-gray-700;
+}
+
+.home-date-text {
+  @apply text-xs text-gray-500;
+}
+
+.home-notification {
+  @apply relative cursor-pointer text-gray-400 hover:text-yellow-500 transition-colors;
+}
+
+.home-notification-badge {
+  @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center;
+}
+
+/* ===== STATS GRID ===== */
+.home-stats-grid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-3 mb-6;
+}
+
+/* ===== MAIN GRID ===== */
+.home-main-grid {
+  @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+}
+
+.home-left-column {
+  @apply lg:col-span-2 space-y-6;
+}
+
+.home-right-column {
+  @apply space-y-6;
+}
+
+/* ===== ACCESO RÁPIDO ===== */
+.home-quick-access {
+  @apply bg-white rounded-xl p-6 border border-gray-200;
+}
+
+.home-quick-access-title {
+  @apply font-semibold text-gray-800 mb-4;
+}
+
+.home-quick-access-grid {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.home-quick-item {
+  @apply bg-blue-50 hover:bg-blue-100 rounded-lg p-3 text-center transition-colors border border-blue-100 cursor-pointer;
+}
+
+.home-quick-item-yellow {
+  @apply bg-yellow-50 hover:bg-yellow-100 border-yellow-200;
+}
+
+.home-quick-item-gray {
+  @apply bg-gray-50 hover:bg-gray-100 border-gray-200;
+}
+
+.home-quick-icon {
+  @apply w-6 h-6 mx-auto mb-1;
+}
+
+.home-quick-icon-blue {
+  @apply text-blue-500;
+}
+
+.home-quick-icon-yellow {
+  @apply text-yellow-500;
+}
+
+.home-quick-icon-gray {
+  @apply text-gray-500;
+}
+
+.home-quick-label {
+  @apply text-xs text-gray-600;
+}
+
+/* ===== FRASE MOTIVACIONAL ===== */
+.home-motivational {
+  @apply bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-4 text-white text-center border border-blue-400;
+}
+
+.home-motivational-icon {
+  @apply w-5 h-5 mx-auto mb-2 opacity-75;
+}
+
+.home-motivational-quote {
+  @apply text-sm italic;
+}
+
+.home-motivational-author {
+  @apply text-xs mt-2 opacity-75;
+}
+
+/* ===== SKELETON ===== */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.skeleton {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  @apply bg-gray-200 rounded-lg;
+}

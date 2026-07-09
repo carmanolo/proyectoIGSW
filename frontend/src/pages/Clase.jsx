@@ -79,15 +79,6 @@ const Clase = () => {
         <div className="Clase-page">
             <div>
                 {canCrudClases && (<button className="btn btn-primary" onClick={() => handleCreateClase(profesores, setProfesores)}>Crear Clase</button>)}
-                {canCrudClases && (
-                    <button
-                        className="btn btn-secondary"
-                        onClick={asignarPorLote}
-                        disabled={loadingLote}
-                    >
-                        {loadingLote ? 'Asignando...' : 'Asignar por lote'}
-                    </button>
-                )}
                 {canCrudClases &&(
                     <button
                         className="btn btn-accent"

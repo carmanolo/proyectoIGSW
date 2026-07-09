@@ -68,6 +68,16 @@ export const Inscripcion = new EntitySchema({
       onDelete: "CASCADE",
       nullable: false,
     },
+    plan: { 
+    type: "many-to-one",
+    target: "Plan",
+    joinColumn: {
+      name: "plan_id",
+      referencedColumnName: "id_plan",
+    },
+    onDelete: "CASCADE",
+    nullable: false,
+  }
   },
 });
 

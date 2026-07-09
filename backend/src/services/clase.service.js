@@ -171,7 +171,7 @@ export async function getClasesSer(userId, userRole) {
 
         //filtra por id usuarios asignados
 
-        if(userRole === "alumnos" || userRole === "estudiante"){
+        if(userRole === "estudiante" || userRole === "estudiante"){
           clases = await claseRepository.find({where: { users:{id: userId}}});
 
         }else{

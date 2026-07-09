@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { getUsersClase, editAssignsClase } from '../../services/clase.service.js';
+import { getUsersClase, editAssignsClase, assignsClaseService } from '../../services/clase.service.js';
 import { fireDynamicSwal } from '../utils/dynamicSwal.jsx';
 import Swal from 'sweetalert2';
 
@@ -54,6 +54,32 @@ export function useClasesConUsuarios() {
         confirmButtonText: 'Actualizar asignaciones',
         cancelButtonText: 'Cerrar',
         theme: 'light',
+
+        didOpen: () => {
+          const actions = document.querySelector('.swal2-actions');
+          if (actions && !document.getElementById('btn-asignar-lote')) {
+            const btn = document.createElement('button');
+            btn.id = 'btn-asignar-lote';
+            btn.textContent = 'Asignar por lote';
+            btn.className = 'swal2-confirm swal2-styled';
+            btn.style.backgroundColor = '#dc2626'; 
+            btn.addEventListener('click', async () => {
+              Swal.close();
+              try {
+                const res = await assignsClaseService({});
+                await fireDynamicSwal(res?.status, null, res?.message);
+              } catch (err) {
+                const status  = err?.status  || 500;
+                const mensaje = err?.data?.message || err?.message || 'Error al asignar por lote';
+                await fireDynamicSwal(status, 'Error', mensaje);
+              }
+            });
+            // Insertar antes del botón "Cerrar"
+            const cancelBtn = document.querySelector('.swal2-cancel');
+            actions.insertBefore(btn, cancelBtn);
+          }
+        },
+
         preConfirm: () => {
           //agrupar los ids que se desmarquen
           const exclusionesPorClase = {}
