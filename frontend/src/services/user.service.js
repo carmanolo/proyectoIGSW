@@ -27,15 +27,6 @@ export async function getUser() {
   }
 }
 
-export async function GetUserById(id) {
-  try {
-    const response = await axios.get(`/usuarios/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error en GetUserById:', error);
-    throw error.response?.data || { message: 'Error al obtener usuario' };
-  }
-}
 
 export async function UpdateUser(id, data) {
   try {

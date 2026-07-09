@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import {  User, Mail, Phone, MapPin, FileText, Upload, CreditCard, DollarSign, CheckCircle, AlertCircle, ArrowLeft, Building, Calendar } from 'lucide-react';
+import { User, Mail, Phone, MapPin, FileText, Upload, CreditCard, DollarSign, CheckCircle, AlertCircle, ArrowLeft, Building, Calendar, Lock, Eye, EyeOff } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { solicitarRegistroConBoleta, getSedesService, validarRut, formatearRut,formatearRutBackend } from '../services/registro.service.js';
+import { solicitarRegistroConBoleta, getSedesService, validarRut, formatearRut, formatearRutBackend } from '../services/registro.service.js';
 import { getPlanesService } from '../services/plan.service.js';
 
 export const RegistroBoleta = () => {
@@ -12,6 +12,8 @@ export const RegistroBoleta = () => {
   const [sedes, setSedes] = useState([]);
   const [boletaFile, setBoletaFile] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Estado del formulario
   const [formData, setFormData] = useState({
@@ -19,6 +21,8 @@ export const RegistroBoleta = () => {
     rut: '',
     telefono: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     sede: '',
     plan_id: '',
     metodo_pago: 'transferencia',
@@ -94,6 +98,37 @@ export const RegistroBoleta = () => {
       return;
     }
 
+    //  Validar contraseña en tiempo real
+    if (name === 'password') {
+      setFormData(prev => ({ ...prev, [name]: value }));
+      if (value && value.length < 8) {
+        setErrors(prev => ({ ...prev, password: 'La contraseña debe tener al menos 8 caracteres' }));
+      } else if (value && value.length > 0) {
+        setErrors(prev => ({ ...prev, password: '' }));
+        // Validar que coincida con confirmPassword
+        if (formData.confirmPassword && value !== formData.confirmPassword) {
+          setErrors(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden' }));
+        } else if (formData.confirmPassword) {
+          setErrors(prev => ({ ...prev, confirmPassword: '' }));
+        }
+      } else {
+        setErrors(prev => ({ ...prev, password: '' }));
+      }
+      return;
+    }
+
+    if (name === 'confirmPassword') {
+      setFormData(prev => ({ ...prev, [name]: value }));
+      if (value && value !== formData.password) {
+        setErrors(prev => ({ ...prev, confirmPassword: 'Las contraseñas no coinciden' }));
+      } else if (value) {
+        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+      } else {
+        setErrors(prev => ({ ...prev, confirmPassword: '' }));
+      }
+      return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
     // Limpiar error del campo
     if (errors[name]) {
@@ -143,6 +178,16 @@ export const RegistroBoleta = () => {
       newErrors.rut = 'RUT inválido';
     }
     if (!formData.telefono.trim()) newErrors.telefono = 'El teléfono es obligatorio';
+    if (!formData.password) {
+      newErrors.password = 'La contraseña es obligatoria';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+    }
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Debes confirmar la contraseña';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
+    }
     if (!formData.sede) newErrors.sede = 'La sede es obligatoria';
     if (!formData.plan_id) newErrors.plan_id = 'Debes seleccionar un plan';
     if (!boletaFile) newErrors.boleta = 'Debes subir la boleta de pago';
@@ -158,13 +203,11 @@ export const RegistroBoleta = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
-       console.log(' Errores de validación:', errors);
+      console.log(' Errores de validación:', errors);
       Swal.fire({
         title: 'Error',
         text: 'Por favor, completa todos los campos requeridos',
@@ -179,43 +222,40 @@ export const RegistroBoleta = () => {
     try {
       const formDataToSend = new FormData();
       
-     const rutLimpio = formData.rut
-      .replace(/\./g, '')      
-      .replace(/-/g, '-');     
-    
-    if (!/^[0-9]{1,8}-[0-9kK]{1}$/.test(rutLimpio)) {
-      console.error(' RUT inválido:', rutLimpio);
-      Swal.fire({
-        title: 'Error',
-        text: 'El RUT debe tener formato válido (ej: 12345678-9)',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      setLoading(false);
-      return;
-    }
-    
-   
-    const telefonoLimpio = formData.telefono.replace(/\s/g, '');
-    if (!/^[0-9]{9,15}$/.test(telefonoLimpio)) {
-      console.error(' Teléfono inválido:', telefonoLimpio);
-      Swal.fire({
-        title: 'Error',
-        text: 'El teléfono debe tener entre 9 y 15 dígitos',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      setLoading(false);
-      return;
-    }
+      const rutLimpio = formData.rut.replace(/\./g, '');
+      
+      if (!/^[0-9]{1,8}-[0-9kK]{1}$/.test(rutLimpio)) {
+        console.error(' RUT inválido:', rutLimpio);
+        Swal.fire({
+          title: 'Error',
+          text: 'El RUT debe tener formato válido (ej: 12345678-9)',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        setLoading(false);
+        return;
+      }
+      
+      const telefonoLimpio = formData.telefono.replace(/\s/g, '');
+      if (!/^[0-9]{9,15}$/.test(telefonoLimpio)) {
+        console.error(' Teléfono inválido:', telefonoLimpio);
+        Swal.fire({
+          title: 'Error',
+          text: 'El teléfono debe tener entre 9 y 15 dígitos',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        setLoading(false);
+        return;
+      }
       
       formDataToSend.append('nombre', formData.nombre);
       formDataToSend.append('rut', rutLimpio);
-      formDataToSend.append('telefono', formData.telefono);
+      formDataToSend.append('telefono', telefonoLimpio);
       formDataToSend.append('sede', formData.sede);
       formDataToSend.append('plan_id', formData.plan_id);
       formDataToSend.append('metodo_pago', formData.metodo_pago);
-      
+      formDataToSend.append('password', formData.password);
       if (formData.email) formDataToSend.append('email', formData.email);
       if (formData.metodo_pago === 'transferencia') {
         formDataToSend.append('banco_origen', formData.banco_origen);
@@ -229,6 +269,7 @@ export const RegistroBoleta = () => {
       formDataToSend.append('boleta', boletaFile);
 
       const response = await solicitarRegistroConBoleta(formDataToSend);
+      console.log(' Respuesta del servidor:', response);
 
       await Swal.fire({
         title: '¡Registro Exitoso!',
@@ -238,7 +279,12 @@ export const RegistroBoleta = () => {
             <p class="text-gray-600 mt-2">Quedarás en lista de espera para verificación de secretaría.</p>
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-3">
               <p class="text-sm text-yellow-800">
-                ⏳ Tiempo estimado de verificación: 24-48 horas hábiles
+                 Tiempo estimado de verificación: 24-48 horas hábiles
+              </p>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
+              <p class="text-sm text-blue-800">
+                 Puedes iniciar sesión con tu correo y la contraseña que elegiste después de la verificación.
               </p>
             </div>
           </div>
@@ -250,7 +296,7 @@ export const RegistroBoleta = () => {
       navigate('/auth');
 
     } catch (error) {
-      console.error('Error al registrar:', error);
+      console.error(' Error al registrar:', error);
       await Swal.fire({
         title: 'Error',
         text: error.message || 'Ocurrió un error al procesar tu solicitud',
@@ -279,7 +325,7 @@ export const RegistroBoleta = () => {
         {/* Título */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gradient">
-             Inscripción de Plan
+            📝 Inscripción de Plan
           </h1>
           <p className="text-gray-600 mt-2">
             Completa el formulario para inscribirte en un plan de conducción
@@ -359,7 +405,7 @@ export const RegistroBoleta = () => {
               )}
             </div>
 
-            {/* Email (opcional) */}
+            {/* Email  */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email <span className="text-gray-400 text-xs">(opcional)</span>
@@ -375,6 +421,66 @@ export const RegistroBoleta = () => {
                   placeholder="correo@ejemplo.com"
                 />
               </div>
+            </div>
+
+            {/* Contraseña */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Contraseña <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full pl-10 pr-12 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                    errors.password ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Confirmar Contraseña */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Confirmar Contraseña <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`w-full pl-10 pr-12 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                    errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="Repite la contraseña"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Sede */}
@@ -667,7 +773,7 @@ export const RegistroBoleta = () => {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-4">
-             Al enviar esta solicitud, aceptas quedar en lista de espera para verificación de secretaría
+            ⏳ Al enviar esta solicitud, aceptas quedar en lista de espera para verificación de secretaría
           </p>
         </form>
 

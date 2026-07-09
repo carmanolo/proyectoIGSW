@@ -1,6 +1,23 @@
-import { Users, Clock, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Users, Clock, CheckCircle, XCircle, Eye, FileText } from 'lucide-react';
 
 export const ListaEsperaCard = ({ usuarios, loading, onVerificar }) => {
+  
+  const verBoleta = (usuario) => {
+    if (!usuario || !usuario.boletas || usuario.boletas.length === 0) {
+      alert('Este usuario no tiene una boleta asociada');
+      return;
+    }
+    
+    const boleta = usuario.boletas[0];
+    if (!boleta.url_comprobante) {
+      alert('No hay archivo de boleta disponible');
+      return;
+    }
+    
+    const url = `http://localhost:3000/${boleta.url_comprobante}`;
+    window.open(url, '_blank');
+  };
+
   if (loading) {
     return (
       <div className="animate-pulse">
@@ -24,6 +41,8 @@ export const ListaEsperaCard = ({ usuarios, loading, onVerificar }) => {
     );
   }
 
+  const usuariosMostrar = usuarios.slice(0, 3);
+
   return (
     <div className="bg-white rounded-xl p-6 border border-gray-200">
       <div className="flex items-center justify-between mb-4">
@@ -37,7 +56,7 @@ export const ListaEsperaCard = ({ usuarios, loading, onVerificar }) => {
       </div>
 
       <div className="space-y-3 max-h-64 overflow-y-auto">
-        {usuarios.map((usuario) => (
+        {usuariosMostrar.map((usuario) => (
           <div key={usuario.id} className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
             <div className="flex items-center justify-between">
               <div>
@@ -55,9 +74,30 @@ export const ListaEsperaCard = ({ usuarios, loading, onVerificar }) => {
                     <Clock className="w-3 h-3" />
                     {new Date(usuario.fecha_registro_espera).toLocaleDateString('es-CL')}
                   </span>
+                  {/*  estado de la boleta */}
+                  {usuario.boletas && usuario.boletas.length > 0 && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      usuario.boletas[0].estado === 'verificada' ? 'bg-green-100 text-green-700' :
+                      usuario.boletas[0].estado === 'rechazada' ? 'bg-red-100 text-red-700' :
+                      'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      Boleta: {usuario.boletas[0].estado || 'pendiente'}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {/*  Botón ver boleta PDF */}
+                {usuario.boletas && usuario.boletas.length > 0 && (
+                  <button
+                    onClick={() => verBoleta(usuario)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1.5 rounded-lg transition-colors flex items-center gap-1"
+                    title="Ver boleta de pago"
+                  >
+                    <FileText className="w-3 h-3" />
+                    Boleta
+                  </button>
+                )}
                 <button
                   onClick={() => onVerificar(usuario.id, 'verificado')}
                   className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
@@ -83,6 +123,13 @@ export const ListaEsperaCard = ({ usuarios, loading, onVerificar }) => {
           </div>
         ))}
       </div>
+      {usuarios.length > 3 && (
+        <div className="mt-4 pt-3 border-t border-yellow-200 text-center">
+          <a href="/lista-espera" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+            Ver todas las solicitudes ({usuarios.length - 3} más)
+          </a>
+        </div>
+      )}
     </div>
   );
 };

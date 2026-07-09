@@ -18,15 +18,26 @@ export const useDeleteUser = (fetchUsers) => {
 
     let response = null;
     try {
-      response = await deleteUser(id_user);
+      response = await DeleteUser(id_user);
+      console.log(' Respuesta de DeleteUser:', response);
+
+      if (response && response.status === 'Success') {
+        await fireDynamicSwal(200, null, response.message || "Usuario eliminado exitosamente");
+      } else {
+        await fireDynamicSwal(response?.status || 400, null, response?.message || "Error al eliminar usuario");
+      }
+      
       if (typeof fetchUsers === "function") {
         fetchUsers();
       }
     } catch (error) {
-      console.error(error);
+      console.error(' Error en handleDeleteUser:', error);
+      console.error(' Detalles del error:', error.response?.data);
+      
+      const errorMsg = error.message || error.response?.data?.message || "Error desconocido";
+      await fireDynamicSwal(400, null, errorMsg);
       response = error?.response || { status: 500, message: "Error desconocido" };
     }
-    fireDynamicSwal(response.status, null, response?.data?.message || response?.message);
   };
 
   return {

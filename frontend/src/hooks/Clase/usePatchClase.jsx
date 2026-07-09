@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { createSwalField, createSwalDateField } from "../utils/swalField.jsx";
 import { fireDynamicSwal } from "../utils/dynamicSwal.jsx";
 import { StaticDropdownList } from "../utils/DropdownList.jsx";
-import { DIAS_SEMANA, TIPO_CLASE, ESTADO_CLASE } from "../../constants/clase.constants.jsx";
+import { DIAS_SEMANA, ESTADO_CLASE, CLASE_TEORICA, CLASE_PRACTICA } from "../../constants/clase.constants.jsx";
 import { getTeacherEmail, processCars, processTeachers, isFechaValida } from "../../utils/ClaseUtils.js";
 
 async function editClaseTeoricaInfo(clase, profesores) {
@@ -11,7 +11,6 @@ async function editClaseTeoricaInfo(clase, profesores) {
     const { value: formValues } = await Swal.fire({
         title: 'Editar clase',
         html: `
-            ${StaticDropdownList(TIPO_CLASE, clase.tipo, "swal2-input1", "m-1", false)}
             ${createSwalField(2, "Descripcion", clase.descripcion)}
             ${createSwalDateField(3, "fecha", clase.fecha_clase)} 
             ${createSwalField(4, "Hora de Inicio", clase.hora_inicio)}
@@ -27,7 +26,7 @@ async function editClaseTeoricaInfo(clase, profesores) {
         confirmButtonText: 'Editar',
         preConfirm: () => {
 
-            const tipo = document.getElementById('swal2-input1').value;
+            const tipo = CLASE_TEORICA;
             const descripcion = document.getElementById('swal2-input2').value;
             const fecha_clase = document.getElementById('swal2-input3').value;
 
@@ -72,7 +71,6 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
     const { value: formValues } = await Swal.fire({
         title: 'Editar clase',
         html: `
-            ${StaticDropdownList(TIPO_CLASE, clase.tipo, "swal2-input1", "m-1", false)}
             ${createSwalField(2, "Descripcion", clase.descripcion)}
             ${createSwalDateField(3, "fecha", clase.fecha_clase)} 
             ${createSwalField(4, "Hora de Inicio", clase.hora_inicio)}
@@ -88,7 +86,7 @@ async function editClasePracticaInfo(clase, profesores, vehiculos) {
         confirmButtonText: 'Editar',
         preConfirm: () => {
 
-            const tipo = document.getElementById('swal2-input1').value;
+            const tipo = CLASE_PRACTICA;
             const descripcion = document.getElementById('swal2-input2').value;
             const fecha_clase = document.getElementById('swal2-input3').value;
 

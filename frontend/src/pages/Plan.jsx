@@ -70,7 +70,6 @@ const Plan = () => {
                             ) : (
                                 planes?.map((plan) => (
                                     <tr key={plan.id_plan}>
-                                        <td>{plan.id_plan}</td>
                                         <td>{plan.nombre}</td>
                                         <td>${plan.costo}</td>
                                         <td>{plan.duracion_semanas} semanas</td>

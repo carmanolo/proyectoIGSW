@@ -15,7 +15,7 @@ async function EditUserModal(user) {
       ${createSwalField(3, "Email", user.email || '')}
       ${StaticDropdownList(VALID_ROLES, user.rol || "Rol", "swal2-input5", "m-1", true)}
       <div class="mt-3 text-sm text-gray-500">
-        <p> Deja la contraseña vacía si no quieres cambiarla</p>
+        <p>Deja la contraseña vacía si no quieres cambiarla</p>
         ${createSwalField(4, "Nueva Contraseña (opcional)", "", "password")}
       </div>
     `,
@@ -54,8 +54,7 @@ async function EditUserModal(user) {
         Swal.showValidationMessage(`Rol inválido. Debe ser: ${VALID_ROLES.join(', ')}`);
         return false;
       }
-      const dataToSend = { nombre, rut, email, rol };
-
+      const dataToSend = { nombre,  rut, email, rol };
       if (password && password.length > 0) {
         if (password.length < 8) {
           Swal.showValidationMessage("La contraseña debe tener al menos 8 caracteres");
@@ -84,7 +83,14 @@ export const useEditUser = (fetchUsers) => {
       console.log(' Datos a enviar al backend:', formValues);
       
       response = await UpdateUser(user.id, formValues);
-      console.log(' Respuesta del backend:', response);
+      console.log('Respuesta del backend:', response);
+      
+
+      if (response && response.status === 'Success') {
+        await fireDynamicSwal(200, null, response.message || "Usuario actualizado exitosamente");
+      } else {
+        await fireDynamicSwal(response?.status || 400, null, response?.message || "Error al actualizar usuario");
+      }
       
       if (typeof fetchUsers === "function") {
         fetchUsers();
@@ -92,9 +98,11 @@ export const useEditUser = (fetchUsers) => {
     } catch (error) {
       console.error(' Error en handleEditUser:', error);
       console.error(' Detalles del error:', error.response?.data);
+      
+      const errorMsg = error.message || error.response?.data?.message || "Error desconocido";
+      await fireDynamicSwal(400, null, errorMsg);
       response = error?.response || { status: 500, message: "Error desconocido" };
     }
-    fireDynamicSwal(response.status, null, response?.message || response?.data?.message || "Usuario actualizado exitosamente");
   };
 
   return {
