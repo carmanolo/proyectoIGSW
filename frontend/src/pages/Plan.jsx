@@ -3,6 +3,7 @@ import { useGetPlanes } from "../hooks/Planes/useGetPlanes.jsx";
 import useCreatePlan from "../hooks/Planes/useCreatePlan.jsx";
 import useEditPlan from "../hooks/Planes/useEditPlan.jsx";
 import useDeletePlan from "../hooks/Planes/useDeletePlan.jsx";
+import { useAuth } from "@context/AuthContext";
 
 const Plan = () => {
     const [planesData, setPlanesData] = useState([]);
@@ -13,6 +14,10 @@ const Plan = () => {
     const { handleEditPlan } = useEditPlan(fetchPlanes);
     const { handleDeletePlan } = useDeletePlan(fetchPlanes);
     const [buscar, setBuscar] = useState("");
+    
+    const { user } = useAuth();
+    const role = String(user?.rol || "").toLowerCase();
+    const isStudent = role === 'estudiante' || role === 'alumno';
 
     useEffect(() => {
         if (typeof fetchPlanes === 'function') {
@@ -26,12 +31,14 @@ const Plan = () => {
 
     return (
         <div className="Plan-page">
-            <button 
-                className="create btn btn-primary ml-3 mt-3 mb-0" 
-                onClick={() => handleCreatePlan(fetchPlanes)}
-            >
-                Crear Plan
-            </button>
+            {!isStudent && (
+                <button 
+                    className="create btn btn-primary ml-3 mt-3 mb-0" 
+                    onClick={() => handleCreatePlan(fetchPlanes)}
+                >
+                    Crear Plan
+                </button>
+            )}
             
             {buscar && (
                 <button className="solicitud-limpiar-btn btn ml-5" onClick={limpiarFiltros}>
@@ -50,7 +57,7 @@ const Plan = () => {
                                 <th>Clases</th>
                                 <th>Tipo</th>
                                 <th>Estado</th>
-                                <th>Acciones</th>
+                                {!isStudent && <th>Acciones</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -84,22 +91,24 @@ const Plan = () => {
                                                 {plan.estado}
                                             </span>
                                         </td>
-                                        <td>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    className="btn btn-xs btn-info"
-                                                    onClick={() => handleEditPlan(plan)}
-                                                >
-                                                    Editar
-                                                </button>
-                                                <button
-                                                    className="btn btn-xs btn-error"
-                                                    onClick={() => handleDeletePlan(plan.id_plan, plan.nombre)}
-                                                >
-                                                    Eliminar
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {!isStudent && (
+                                            <td>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        className="btn btn-xs btn-info"
+                                                        onClick={() => handleEditPlan(plan)}
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-xs btn-error"
+                                                        onClick={() => handleDeletePlan(plan.id_plan, plan.nombre)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}
