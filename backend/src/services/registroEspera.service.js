@@ -5,6 +5,8 @@ import { Boleta } from "../entities/Boleta.entity.js";
 import { REGISTRO_ESTADOS } from "../constants/user.constants.js";
 import { getServiceResult } from "./utils/utils.service.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+import { sendSecretaryNotificationEmail } from "./email.service.js";
+import { SECRETARIA_EMAIL } from "../config/configEnv.js";
 
 const userRepository = AppDataSource.getRepository(User);
 const planRepository = AppDataSource.getRepository(Plan);
@@ -62,6 +64,15 @@ export async function registrarUsuarioConBoletaService(datos, archivo) {
 
     await boletaRepository.save(nuevaBoleta);
     delete usuarioGuardado.password;
+
+    // Notificar a la secretaria
+    try {
+      if (SECRETARIA_EMAIL) {
+        await sendSecretaryNotificationEmail(SECRETARIA_EMAIL, datos.nombre, datos.rut);
+      }
+    } catch (emailErr) {
+      console.error("Error enviando notificación a la secretaria:", emailErr.message);
+    }
 
     return getServiceResult(
       false,

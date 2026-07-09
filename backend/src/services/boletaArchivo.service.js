@@ -7,6 +7,8 @@ import { getServiceResult } from "./utils/utils.service.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 import fs from 'fs';
 import path from 'path';
+import { sendSecretaryNotificationEmail } from "./email.service.js";
+import { SECRETARIA_EMAIL } from "../config/configEnv.js";
 
 const userRepository = AppDataSource.getRepository(User);
 const planRepository = AppDataSource.getRepository(Plan);
@@ -80,6 +82,15 @@ export async function registrarBoletaConArchivoService(datos, archivo) {
 
     // Quitar datos sensibles
     delete usuarioGuardado.password;
+
+    // Notificar a la secretaria
+    try {
+      if (SECRETARIA_EMAIL) {
+        await sendSecretaryNotificationEmail(SECRETARIA_EMAIL, datos.nombre, datos.rut);
+      }
+    } catch (emailErr) {
+      console.error("Error enviando notificación a la secretaria:", emailErr.message);
+    }
 
     return getServiceResult(
       false,

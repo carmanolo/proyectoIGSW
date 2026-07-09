@@ -7,6 +7,7 @@ import { idValidation } from "../validations/modules/id.validation.js";
 import { SHOW_ERRORS } from "../constants/settings.constants.js";
 import { findTeacherByEmail, findUserByEmail } from "../services/user.service.js";
 import { obtenerVehiculoPorPatente } from "../services/vehiculo.service.js";
+import { sendClassCancellationEmail } from "../services/email.service.js";
 
 const timeValidationHelper = (hora_inicio, hora_termino) => {
   let result = validacionHoraIntegridad(hora_inicio);
@@ -204,6 +205,25 @@ export async function patchClase(req, res) {
             }
             return handleErrorClient(res, 400, updatedClase.message);
         }
+
+        // Si el estado de la clase cambió a 'cancelada', notificar a los estudiantes
+        if (req.body.estado_clase === 'cancelada' && claseUpdate.users && claseUpdate.users.length > 0) {
+            for (const user of claseUpdate.users) {
+                if (user.email && user.rol === 'estudiante') {
+                    try {
+                        await sendClassCancellationEmail(
+                            user.email,
+                            claseUpdate.tipo || 'Clase',
+                            claseUpdate.fecha_clase,
+                            claseUpdate.hora_inicio
+                        );
+                    } catch (emailErr) {
+                        console.error("Error enviando email de cancelación:", emailErr.message);
+                    }
+                }
+            }
+        }
+
         return handleSuccess(res, 200, "Clase actualizada con éxito", updatedClase.data);
 
     } catch (error) {
@@ -219,8 +239,29 @@ export async function deleteClase(req, res) {
             return res.status(400).json({message: "El ID de la clase es obligatorio"});
         }
 
+        // Obtener la clase antes de borrar para notificar
+        const claseAnterior = await getClaseSer(id);
+
         const result = await deleteClaseSer(id);
         if(result && result.result && result.result.affected >=1){
+            // Notificar a los estudiantes de la cancelación por eliminación
+            if (claseAnterior && claseAnterior.users && claseAnterior.users.length > 0) {
+                for (const user of claseAnterior.users) {
+                    if (user.email && user.rol === 'estudiante') {
+                        try {
+                            await sendClassCancellationEmail(
+                                user.email,
+                                claseAnterior.tipo || 'Clase',
+                                claseAnterior.fecha_clase,
+                                claseAnterior.hora_inicio
+                            );
+                        } catch (emailErr) {
+                            console.error("Error enviando email de eliminación de clase:", emailErr.message);
+                        }
+                    }
+                }
+            }
+
             return handleSuccess(res, 200, "Clase eliminado exitosamente")
         }
 
