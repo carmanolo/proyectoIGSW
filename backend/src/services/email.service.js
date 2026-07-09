@@ -50,3 +50,71 @@ export const sendEmail = async (to, subject, text, html) => {
     throw new Error("Error enviando el correo: " + error.message);
   }
 };
+
+/**
+ * Enviar recordatorio de clase
+ */
+export const sendClassReminderEmail = async (to, className, date, time) => {
+  const subject = `Recordatorio de Clase: ${className}`;
+  const text = `Hola,\n\nEste es un recordatorio automático de que tienes una clase (${className}) agendada para el día ${date} a las ${time}.\n\nPor favor, no llegues tarde.\n\nSaludos,\nEscuela de Conductores`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+      <h2 style="color: #4F46E5;">Recordatorio de Clase</h2>
+      <p>Hola,</p>
+      <p>Este es un recordatorio automático de que tienes una clase agendada:</p>
+      <ul>
+        <li><strong>Tipo de clase:</strong> ${className}</li>
+        <li><strong>Fecha:</strong> ${date}</li>
+        <li><strong>Hora:</strong> ${time}</li>
+      </ul>
+      <p>Por favor, llega con 10 minutos de anticipación.</p>
+      <p>Saludos,<br/><strong>Escuela de Conductores</strong></p>
+    </div>
+  `;
+  return sendEmail(to, subject, text, html);
+};
+
+/**
+ * Enviar aviso de cancelación de clase
+ */
+export const sendClassCancellationEmail = async (to, className, date, time) => {
+  const subject = `Aviso de Cancelación de Clase: ${className}`;
+  const text = `Hola,\n\nTe informamos que tu clase (${className}) agendada para el día ${date} a las ${time} ha sido cancelada.\n\nPor favor, contáctanos para re-agendar.\n\nSaludos,\nEscuela de Conductores`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+      <h2 style="color: #E11D48;">Clase Cancelada</h2>
+      <p>Hola,</p>
+      <p>Te informamos que la siguiente clase ha sido <strong>cancelada</strong>:</p>
+      <ul>
+        <li><strong>Tipo de clase:</strong> ${className}</li>
+        <li><strong>Fecha:</strong> ${date}</li>
+        <li><strong>Hora:</strong> ${time}</li>
+      </ul>
+      <p>Por favor, revisa el portal o contáctanos para volver a agendar.</p>
+      <p>Saludos,<br/><strong>Escuela de Conductores</strong></p>
+    </div>
+  `;
+  return sendEmail(to, subject, text, html);
+};
+
+/**
+ * Enviar notificación a la secretaria
+ */
+export const sendSecretaryNotificationEmail = async (secretaryEmail, studentName, rut) => {
+  const subject = `Nuevo Registro en Lista de Espera - ${studentName}`;
+  const text = `Hola,\n\nEl alumno ${studentName} (RUT: ${rut}) se ha registrado en la lista de espera o ha subido una boleta.\n\nPor favor revisa el sistema de gestión.\n\nSaludos,\nSistema`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+      <h2 style="color: #059669;">Nuevo Registro en Lista de Espera</h2>
+      <p>Hola,</p>
+      <p>El sistema ha detectado un nuevo registro o subida de boleta:</p>
+      <ul>
+        <li><strong>Alumno:</strong> ${studentName}</li>
+        <li><strong>RUT:</strong> ${rut}</li>
+      </ul>
+      <p>Por favor, ingresa al panel de administración para validar este registro.</p>
+      <p>Saludos,<br/><strong>Sistema IGSW</strong></p>
+    </div>
+  `;
+  return sendEmail(secretaryEmail, subject, text, html);
+};

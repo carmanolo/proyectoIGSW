@@ -172,7 +172,7 @@ export async function getReservasUsuarioSer(userId) {
     const reservaRepository = AppDataSource.getRepository(Reserva);
     const reservas = await reservaRepository.find({
         where: { user: { id: Number(userId) } },
-        relations: { user: true, vehiculo: true, clase: true },
+        relations: { user: true, vehiculo: true, clase: { profesores: true } },
         order: { fecha: "DESC" }
     });
     return [reservas, null];

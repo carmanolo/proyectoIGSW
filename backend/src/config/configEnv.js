@@ -25,3 +25,4 @@ export const COOKIE_KEY = process.env.COOKIE_KEY;
 // Variables de Email
 export const EMAIL_USER = process.env.EMAIL_USER;
 export const EMAIL_PASS = process.env.EMAIL_PASS;
+export const SECRETARIA_EMAIL = process.env.SECRETARIA_EMAIL || process.env.EMAIL_USER;
