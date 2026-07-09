@@ -24,9 +24,9 @@ instance.interceptors.request.use(
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('📤 Request con token:', config.method.toUpperCase(), config.url);
+      console.log(' Request con token:', config.method.toUpperCase(), config.url);
     } else {
-      console.warn('⚠️ No hay token disponible para:', config.url);
+      console.warn(' No hay token disponible para:', config.url);
     }
     return config;
   },
@@ -36,15 +36,15 @@ instance.interceptors.request.use(
 // ✅ Interceptor para manejar respuestas
 instance.interceptors.response.use(
   (response) => {
-    console.log('📥 Response:', response.status, response.config.url);
+    console.log(' Response:', response.status, response.config.url);
     return response;
   },
   (error) => {
-    console.error('❌ Error Response:', error.response?.status, error.response?.data);
+    console.error(' Error Response:', error.response?.status, error.response?.data);
     
     // Si es 401, redirigir al login
     if (error.response?.status === 401) {
-      console.log('🔴 Token expirado o inválido, redirigiendo a login');
+      console.log('Token expirado o inválido, redirigiendo a login');
       sessionStorage.removeItem('usuario');
       sessionStorage.removeItem('token');
       cookies.remove('jwt-auth');

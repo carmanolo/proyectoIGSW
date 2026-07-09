@@ -115,6 +115,7 @@ export const SidebarBase = ({ pageContent }) => {
                                 <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
                                 <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
                                 <SidebarItem label="Lista de Espera" destination="/lista-espera" icon={MdAdminPanelSettings} />
+                                <SidebarItem label="Gestionar Usuarios" destination="/Gestion de Usuarios" icon={MdAdminPanelSettings} />
                             </>
                         )}
                         

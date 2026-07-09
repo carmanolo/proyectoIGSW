@@ -49,6 +49,7 @@ export async function getUserById(req, res) {
 
 export async function createUser(req, res) {
   if (!req.body) {
+    
     return res.status(400).json({message: "No se ha proporcionado ningún dato"});
   }
 

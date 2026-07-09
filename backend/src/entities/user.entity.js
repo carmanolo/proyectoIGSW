@@ -37,7 +37,7 @@ export const User = new EntitySchema({
     },
     clases_basicas_completadas: {
       type: "boolean",
-      nullable: false,
+      nullable: true,
       default: false,
     },
     // NUEVOS CAMPOS
@@ -61,7 +61,7 @@ export const User = new EntitySchema({
       type: "varchar",
       length: 50,
       default: "en_espera",
-      nullable: false,
+      nullable: true,
     },
     fecha_registro_espera: {
       type: "timestamp",

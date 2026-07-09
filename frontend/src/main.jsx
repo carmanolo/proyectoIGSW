@@ -10,6 +10,7 @@ import ComprarClases from '@pages/ComprarClases';
 import GestionarVentas from '@pages/GestionarVentas';
 import ProtectedRoute from '@components/ProtectedRoute';
 import Plan from '@pages/Plan';
+import Users from '@pages/GestionarUsuarios';
 import Evaluacion from '@pages/Evaluacion';
 import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
       {
         path: '/lista-espera',
         element: <ListaEspera />
+      },
+      {
+        path: '/Gestion de Usuarios',
+        element: <Users />
       },
       /*{
         path: '/planes',

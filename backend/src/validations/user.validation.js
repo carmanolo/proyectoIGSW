@@ -23,7 +23,12 @@ export const integrityValidation = Joi.object({
         "string.max": `El nombre no puede tener más de ${MAX_FULLNAME} caracteres`,
         "string.pattern.base": "El nombre solo puede tener letras y espacios"
     }),
-
+    rut: Joi.string().pattern(/^[0-9]{1,8}-[0-9kK]{1}$/).required().messages({
+        "string.base": "El rut debe ser un string",
+        "string.empty": "El rut es obligatorio",
+        "string.pattern.base": "El RUT debe tener formato válido (ej: 12345678-9)",
+        "any.required": "El RUT es obligatorio"
+    }),
     email: Joi.string().email().min(1).max(MAX_FULLNAME).custom(emailDomainValidationFunction).messages({
         "string.base": "El correo debe ser un string",
         "string.min": "El correo no puede ser vacío",
@@ -38,11 +43,12 @@ export const integrityValidation = Joi.object({
         "string.max": `La contraseña debe tener menos de ${MAX_FULLNAME} caracteres`,
     }),
 
-    rol: Joi.string().min(1).max(MAX_FULLNAME).valid(...VALID_ROLES).messages({
+      rol: Joi.string().min(1).max(MAX_FULLNAME).valid(...VALID_ROLES).required().messages({
         "string.base": "El rol debe ser un string",
         "string.min": "El rol no puede ser vacío",
         "string.empty": "El rol no puede ser vacío",
         "string.max": `El rol no debe ser de más de ${MAX_FULLNAME} caracteres`,
+        "any.required": "El rol es obligatorio"
     }),
     created_at: Joi.string().min(MIN_DATE_LENGTH).max(MAX_DATE_LENGTH).custom(timestampValidationFunction).messages({
         "string.base": "La fecha de creación debe ser un string",
@@ -65,7 +71,9 @@ export const createValidation = Joi.object({
     nombre: Joi.any().required().messages({
         "any.required": "El nombre completo es obligatorio",
     }),
-
+    rut: Joi.any().required().messages({  
+        "any.required": "El RUT es obligatorio",
+    }),
     email: Joi.any().required().messages({
         "any.required":"El correo electrónico es obligatorio"
     }),
@@ -86,6 +94,7 @@ export const createValidation = Joi.object({
 
 export const updateValidation = Joi.object({
     nombre: Joi.any(),
+    rut: Joi.any(),
     email: Joi.any(),
     password: Joi.any(),
     rol: Joi.any(),    
