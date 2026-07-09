@@ -1,12 +1,21 @@
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-export const SidebarItem = ({label, destination, icon: Icon}) => {
+export const SidebarItem = ({label, destination, icon: Icon, isCollapsed}) => {
     return (
-        <li>
-            <Link to={destination} className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-blue-50 hover:text-blue-600">
-                <Icon className="w-5 h-5" />
-                <span className="is-drawer-close:hidden">{label}</span>
-            </Link>
+        <li title={isCollapsed ? label : ""} className="px-2 mb-1">
+            <NavLink 
+                to={destination} 
+                className={({ isActive }) => 
+                    `flex items-center px-4 py-3 rounded-lg transition-colors ${
+                        isActive 
+                            ? 'bg-[#253b75] text-white font-semibold' 
+                            : 'text-gray-300 hover:bg-[#1e3060] hover:text-white'
+                    } ${isCollapsed ? 'justify-center' : 'gap-3'}`
+                }
+            >
+                <Icon className="w-6 h-6 min-w-[24px]" />
+                {!isCollapsed && <span className="text-sm whitespace-nowrap">{label}</span>}
+            </NavLink>
         </li>
     );
 }

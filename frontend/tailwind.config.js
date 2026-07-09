@@ -7,42 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        
         primary: {
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          200: '#BFDBFE',
-          300: '#93C5FD',
-          400: '#60A5FA',
-          500: '#3B82F6',
-          600: '#2563EB',
-          700: '#1D4ED8',
-          800: '#1E40AF',
-          900: '#1E3A8A',
-        },
-        secondary: {
-          50: '#FFFBEB',
-          100: '#FEF3C7',
-          200: '#FDE68A',
-          300: '#FCD34D',
-          400: '#FBBF24',
-          500: '#F59E0B',
-          600: '#D97706',
-          700: '#B45309',
-          800: '#92400E',
-          900: '#78350F',
-        },
-        accent: {
-          50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
       },
     },
@@ -53,37 +28,36 @@ export default {
   daisyui: {
     themes: [
       {
-       
         'azul-amarillo-gris': {
           "primary": "#2563EB",        // Azul principal
           "primary-focus": "#1D4ED8",  // Azul oscuro
           "primary-content": "#FFFFFF",
 
-          "secondary": "#F59E0B",      // Amarillo principal
-          "secondary-focus": "#D97706",// Amarillo oscuro
+          "secondary": "#64748B",      // Gris pizarra
+          "secondary-focus": "#475569",
           "secondary-content": "#FFFFFF",
 
-          "accent": "#6B7280",         // Gris principal
-          "accent-focus": "#4B5563",   // Gris oscuro
+          "accent": "#94A3B8",         // Gris claro
+          "accent-focus": "#64748B",
           "accent-content": "#FFFFFF",
 
-          "neutral": "#1F2937",        // Gris oscuro
-          "neutral-focus": "#111827",
-          "neutral-content": "#F9FAFB",
+          "neutral": "#1E293B",        
+          "neutral-focus": "#0F172A",
+          "neutral-content": "#F8FAFC",
 
-          "base-100": "#FFFFFF",       // Fondo blanco
-          "base-200": "#F3F4F6",       // Fondo gris claro
-          "base-300": "#E5E7EB",       // Fondo gris
-          "base-content": "#1F2937",   // Texto oscuro
+          "base-100": "#FFFFFF",       // Blanco
+          "base-200": "#F0F9FF",       // Azul muy claro (Sky 50)
+          "base-300": "#E0F2FE",       // Azul claro (Sky 100)
+          "base-content": "#1E293B",   // Texto oscuro
 
-          "info": "#3B82F6",
+          "info": "#0EA5E9",
           "success": "#10B981",
           "warning": "#F59E0B",
           "error": "#EF4444",
         },
       },
-      'light', 
-      'dark',  
+      'light',
+      'dark',
     ],
     darkTheme: 'dark',
     base: true,

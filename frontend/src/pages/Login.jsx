@@ -107,68 +107,71 @@ const Login = () => {
         <div className="min-h-screen flex">
             {/* Panel izquierdo - Bienvenida */}
             <div 
-                className="flex-1 flex items-center justify-start pl-16 pr-12 relative overflow-hidden"
-                style={{ backgroundColor: '#f5f5b8' }}
+                className="hidden md:flex flex-1 flex-col justify-center pl-16 pr-12 relative overflow-hidden bg-[#0d1b3e]"
             >
-                <div className="absolute -right-40 -top-32 w-96 h-96 bg-white bg-opacity-30 rounded-full"></div>
-                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white bg-opacity-20 rounded-full"></div>
+                <div className="absolute -right-40 -top-32 w-96 h-96 bg-white bg-opacity-5 rounded-full"></div>
+                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-white bg-opacity-5 rounded-full"></div>
 
-                <div className="text-gray-800 max-w-md z-10">
-                    {/*  LOGO */}
-                    <div className="flex justify-center mb-6">
-                        <img 
-                            src={logoConduce} 
-                            alt="Logo Conduce" 
-                            className="w-100 h-100 object-contain"
-                        />
+                <div className="w-full flex justify-center mb-12 z-10">
+                    <div className="relative w-56 h-56 rounded-full border-4 border-dashed border-gray-400 flex flex-col items-center justify-center bg-[#15234b]">
+                        <span className="text-white text-xs font-bold mb-4 tracking-widest">SURCENTRAL</span>
+                        <div className="w-20 h-20 rounded-full border-2 border-white flex items-center justify-center mb-2 relative">
+                            <div className="absolute w-full h-0.5 bg-white"></div>
+                            <div className="absolute h-full w-0.5 bg-white"></div>
+                            <div className="w-6 h-6 bg-yellow-500 rounded-full z-10"></div>
+                        </div>
+                        <div className="absolute top-8 right-8 bg-yellow-500 rounded-full w-8 h-8 flex items-center justify-center">
+                            <span className="text-gray-900 font-bold">✓</span>
+                        </div>
+                        <div className="absolute bottom-6 flex space-x-2">
+                            <div className="w-4 h-1 bg-yellow-500"></div>
+                            <div className="w-4 h-1 bg-yellow-500"></div>
+                            <div className="w-4 h-1 bg-yellow-500"></div>
+                            <div className="w-4 h-1 bg-yellow-500"></div>
+                        </div>
                     </div>
-                    <h1 className="text-4xl font-bold mb-6 text-center">
-                        Bienvenido de nuevo!
+                </div>
+
+                <div className="text-white max-w-md z-10">
+                    <h1 className="text-5xl font-extrabold mb-4 leading-tight">
+                        Formando<br/>conductores con<br/><span className="text-blue-300">responsabilidad</span>
                     </h1>
-                    <div 
-                        className="h-1 mb-6 mx-auto"
-                        style={{ backgroundColor: '#7aff00', width: '80px' }}
-                    ></div>
-                    <p className="text-gray-600 text-lg leading-relaxed mb-8 text-center">
-                        Curso de conducción para licencia tipo A, B
+                    <p className="text-gray-300 text-sm leading-relaxed mb-8">
+                        Escuela de conducción profesional Surcentral. Aprende con
+                        instructores calificados y vehículos modernos para obtener
+                        tu licencia con total confianza y seguridad.
+
                     </p>
                 </div>
             </div>
 
             {/* Panel derecho - Formulario */}
-            <div className="flex-1 bg-gray-50 flex items-center justify-center p-12 relative">
-                <div className="absolute top-20 right-20 w-32 h-32 bg-gray-200 rounded-full opacity-60"></div>
-                <div className="absolute bottom-32 left-20 w-24 h-24 bg-gray-300 rounded-full opacity-40"></div>
+            <div className="flex-1 bg-white flex items-center justify-center p-12 relative">
+                <div className="absolute top-20 right-20 w-32 h-32 bg-gray-50 rounded-full opacity-60"></div>
+                <div className="absolute bottom-32 left-20 w-24 h-24 bg-gray-50 rounded-full opacity-40"></div>
 
                 <div className="w-full max-w-md">
-                    <div className="text-center mb-8">
-                        {/*LOGO EN FORMULARIO */}
-                        <img 
-                            src={logoConduce} 
-                            alt="Logo Conduce" 
-                            className="w-16 h-16 mx-auto mb-4 object-contain"
-                        />
-                        <h2 className="text-3xl font-bold text-gray-800 mb-2">Iniciar Sesión</h2>
-                        <div 
-                            className="w-12 h-1 mx-auto"
-                            style={{ backgroundColor: '#7aff00' }}
-                        ></div>
+                    <div className="text-center mb-10">
+                        <h2 className="text-4xl font-extrabold text-gray-900 mb-3">Bienvenido de nuevo</h2>
+                        <p className="text-gray-500 text-sm">
+                            Ingresa tus credenciales para continuar
+                        </p>
+
                     </div>
 
                     <form onSubmit={loginSubmit} className="space-y-6">
                         <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-2 text-left">Correo electrónico</label>
                             <input
                                 type="text"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="ejemplo@gmail.com"
-                                className={`w-full px-4 py-4 bg-white border-2 rounded-lg focus:outline-none transition-colors placeholder-gray-400 ${errors.email || errorEmail
+                                className={`w-full px-4 py-3 bg-white border rounded-lg focus:outline-none transition-colors placeholder-gray-400 ${errors.email || errorEmail
                                         ? 'border-red-300 bg-red-50'
-                                        : 'border-gray-200'
+                                        : 'border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
                                     }`}
-                                style={{ '--tw-border-color': '#7aff00' }}
-                                onFocus={(e) => e.target.style.borderColor = '#7aff00'}
                                 autoComplete="email"
                                 required
                             />
@@ -180,18 +183,18 @@ const Login = () => {
                         </div>
 
                         <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-2 text-left mt-2">Contraseña</label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    placeholder="Ingresa tu contraseña..."
-                                    className={`w-full px-4 py-4 bg-white border-2 rounded-lg focus:outline-none transition-colors placeholder-gray-400 pr-12 ${errors.password || errorPassword
+                                    placeholder="Ingresa tu contraseña"
+                                    className={`w-full px-4 py-3 bg-white border rounded-lg focus:outline-none transition-colors placeholder-gray-400 pr-12 ${errors.password || errorPassword
                                             ? 'border-red-300 bg-red-50'
-                                            : 'border-gray-200'
+                                            : 'border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
                                         }`}
-                                    onFocus={(e) => e.target.style.borderColor = '#7aff00'}
                                     required
                                 />
                                 <button
@@ -212,14 +215,10 @@ const Login = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className={`w-full py-4 rounded-lg font-semibold transition-all duration-200 ${isLoading
-                                    ? 'bg-gray-400 cursor-not-allowed text-gray-200'
-                                    : 'text-gray-900 hover:shadow-lg transform hover:scale-[1.02] active:scale-[0.98]'
+                            className={`w-full py-3 mt-4 rounded-lg font-bold transition-all duration-200 text-white shadow-md hover:shadow-lg ${isLoading
+                                    ? 'bg-blue-400 cursor-not-allowed'
+                                    : 'bg-blue-600 hover:bg-blue-700 active:scale-[0.98]'
                                 }`}
-                            style={{ 
-                                backgroundColor: isLoading ? '' : '#7aff00',
-                                color: isLoading ? '' : '#1a1a1a'
-                            }}
                         >
                             {isLoading ? (
                                 <div className="flex items-center justify-center">
@@ -232,14 +231,14 @@ const Login = () => {
                         </button>
                     </form>
                     
-                    <div className="mt-6 text-center">
+                    <div className="mt-8 text-center">
                         <p className="text-sm text-gray-600">
                             ¿No tienes cuenta?{' '}
                             <Link 
                                 to="/registro" 
-                                className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                                className="text-blue-600 hover:text-blue-800 font-bold transition-colors"
                             >
-                                Regístrate aquí
+                                Preinscríbete aquí
                             </Link>
                         </p>
                     </div>

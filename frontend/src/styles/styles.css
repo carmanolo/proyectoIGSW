@@ -1,110 +1,65 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-.actual-page-background {
-   background-image: url(../assets/Escuela-de-Conductores-Conduce.jpg);
-   background-repeat: no-repeat;
-   background-size: cover;
-};
-
-@import "tailwindcss";
-@plugin "daisyui";
-
 /* FONDO GLOBAL */
 body {
-  background: linear-gradient(135deg, #EFF6FF 0%, #F9FAFB 50%, #FFFBEB 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.actual-page-background {
+  background-color: #f8fafc; /* bg-slate-50 */
   min-height: 100vh;
 }
 
-/* colores de botones */
+
+
+/* Colores de botones corporativos */
 .btn-primary {
   background-color: #2563EB !important;
   border-color: #2563EB !important;
   color: white !important;
+  transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
   background-color: #1D4ED8 !important;
   border-color: #1D4ED8 !important;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.4) !important;
 }
 
 .btn-secondary {
-  background-color: #F59E0B !important;
-  border-color: #F59E0B !important;
+  background-color: #64748B !important;
+  border-color: #64748B !important;
   color: white !important;
+  transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-  background-color: #D97706 !important;
-  border-color: #D97706 !important;
-}
-
-.btn-accent {
-  background-color: #6B7280 !important;
-  border-color: #6B7280 !important;
-  color: white !important;
-}
-
-.btn-accent:hover {
-  background-color: #4B5563 !important;
-  border-color: #4B5563 !important;
-}
-
-.badge-primary {
-  background-color: #DBEAFE !important;
-  color: #1E40AF !important;
-  border: none !important;
-}
-
-.badge-secondary {
-  background-color: #FEF3C7 !important;
-  color: #92400E !important;
-  border: none !important;
-}
-
-.badge-accent {
-  background-color: #E5E7EB !important;
-  color: #1F2937 !important;
-  border: none !important;
+  background-color: #475569 !important;
+  border-color: #475569 !important;
+  box-shadow: 0 4px 6px -1px rgba(100, 116, 139, 0.4) !important;
 }
 
 .card {
   background-color: white !important;
-  border: 1px solid #E5E7EB !important;
-  border-radius: 1rem !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
-}
-
-.card-primary {
-  background-color: #EFF6FF !important;
-  border-color: #BFDBFE !important;
-}
-
-.card-secondary {
-  background-color: #FFFBEB !important;
-  border-color: #FDE68A !important;
-}
-
-.card-accent {
-  background-color: #F9FAFB !important;
-  border-color: #E5E7EB !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
 }
 
 .table thead {
-  background-color: #F3F4F6 !important;
-  color: #1F2937 !important;
+  background-color: #F1F5F9 !important;
+  color: #334155 !important;
+  font-weight: 600;
 }
 
-.table tbody tr:hover {
-  background-color: #EFF6FF !important;
-}
-
-.input:focus {
-  border-color: #2563EB !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+.input:focus, .select:focus {
+  border-color: #3B82F6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
   outline: none !important;
 }
-
 .select:focus {
   border-color: #2563EB !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
@@ -118,5 +73,3 @@ body {
 .bg-gradient-custom {
   background: linear-gradient(135deg, #EFF6FF 0%, #F9FAFB 50%, #FFFBEB 100%);
 }
-
-
