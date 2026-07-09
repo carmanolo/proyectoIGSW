@@ -125,17 +125,17 @@ export const Evaluacion = new EntitySchema({
       enum: [0, 1, 2, 3],
       nullable: true,
     },
-    adelantamiento_sobrepaso_sobrepasar_por_berma: {
+    adel_sobrepaso_sobrepasar_por_berma: {
       type: "enum",
       enum: [0, 1, 2, 3],
       nullable: true,
     },
-    adelantamiento_sobrepaso_paso_peatonal_cruce_no_regulados: {
+    adelSbrepsoPasoPeatonalCruzNoRegldos: {
       type: "enum",
       enum: [0, 1, 2, 3],
       nullable: true,
     },
-    adelantamiento_sobrepaso_riesgo_sentido_contrario: {
+    adelSobrepasoRiesgoSentidoContrario: {
       type: "enum",
       enum: [0, 1, 2, 3],
       nullable: true,
@@ -155,7 +155,7 @@ export const Evaluacion = new EntitySchema({
       enum: [0, 1, 2, 3],
       nullable: true,
     },
-    estacionamiento_no_freno_estacionamiento: {
+    estacionamiento_no_frenoEstacionamiento: {
       type: "enum",
       enum: [0, 1, 2, 3],
       nullable: true,
@@ -274,9 +274,16 @@ export const Evaluacion = new EntitySchema({
       nullable: true,
       eager: false,
     },
+/*    profesor_relacion: {
+      type: "many-to-one",
+      target: "User",
+      joinColumn: { name: "profesor_id" },
+      nullable: true,
+      eager: false,
+    },*/
   },
   checks: [
-    {
+    { 
       expression: "calificacion_teorica >= 0 AND calificacion_teorica <= 38",
     },
   ],
