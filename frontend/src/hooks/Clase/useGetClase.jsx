@@ -5,13 +5,11 @@ export const useGetClase = (claseData, setClaseData) => {
     const fetchClase = async () => {
         try {
             const data = await getClasesService();
-            if (data[1]) {
-                throw Error(data[1], data);
-            }
-            setClaseData(data[0]);
+            // data ya es directamente el arreglo de clases (o un arreglo vacío)
+            setClaseData(data || []);
         } catch (error) {
-            // console.error('Error al conseguir la clase data:', error);
-        } 
+            console.error('Error al conseguir la clase data:', error);
+        }
     };
 
 

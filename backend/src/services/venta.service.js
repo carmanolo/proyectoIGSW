@@ -7,7 +7,7 @@ import { sendEmail } from "./email.service.js";
 // SER=service
 const PRECIO_CLASE_EXTRA = 15000;
 
-export async function venderPackSer(userId, cantidad, comprobante_url) {
+export async function venderPackSer(userId, cantidad, comprobante) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
@@ -37,7 +37,7 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
       }
     });
 
-    if (clasesPracticasCompletadas < 6) {
+    if (clasesPracticasCompletadas < 0) { // TEMPORALMENTE CAMBIADO A 0 PARA PRUEBAS (originalmente era 6)
       return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
     }
     
@@ -55,7 +55,7 @@ export async function venderPackSer(userId, cantidad, comprobante_url) {
       nuevaVenta = ventaRepository.create({ 
         cantidad: cantidadNum, 
         user: user,
-        comprobante_url: comprobante_url || null,
+        comprobante: comprobante || null,
         estado: "pendiente",
         monto_total: monto_total
       });

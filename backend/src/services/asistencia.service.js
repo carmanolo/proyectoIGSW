@@ -8,15 +8,21 @@ const reservaRepository = AppDataSource.getRepository(Reserva);
 
 export async function registrarAsistenciaSer(claseId, userId) {
     try {
-        // Verificar si el alumno tiene una reserva (clase regular) para esa clase y ese día
-        // Aquí podríamos validar el estado de la reserva, pero lo haremos de manera simple:
-        // si existe una reserva para ese userId y claseId.
+        // Verificar si el alumno tiene una reserva o está asignado a la clase
         const reservaExistente = await reservaRepository.findOne({
             where: { user: { id: userId }, clase: { id_clase: claseId } }
         });
 
-        if (!reservaExistente) {
-            return [null, "No tienes una reserva para esta clase."];
+        const claseRepository = AppDataSource.getRepository(Clase);
+        const claseExistente = await claseRepository.findOne({
+            where: { id_clase: claseId },
+            relations: { users: true }
+        });
+
+        const estaAsignado = claseExistente && claseExistente.users.some(u => Number(u.id) === Number(userId));
+
+        if (!reservaExistente && !estaAsignado) {
+            return [null, "No tienes una reserva ni estás asignado a esta clase."];
         }
 
         // Verificar si ya registró asistencia
@@ -36,9 +42,11 @@ export async function registrarAsistenciaSer(claseId, userId) {
 
         await asistenciaRepository.save(nuevaAsistencia);
 
-        // Opcional: Actualizar el estado de la reserva a "completada" si es que así se desea.
-        reservaExistente.estado = "completada";
-        await reservaRepository.save(reservaExistente);
+        // Opcional: Actualizar el estado de la reserva a "completada" si existe
+        if (reservaExistente) {
+            reservaExistente.estado = "completada";
+            await reservaRepository.save(reservaExistente);
+        }
 
         return [nuevaAsistencia, null];
     } catch (error) {
@@ -49,7 +57,12 @@ export async function registrarAsistenciaSer(claseId, userId) {
 
 export async function getAsistenciaPorClaseSer(claseId) {
     try {
-        // Obtener a todos los que tienen reserva para esa clase y ver si están en la tabla de asistencia
+        const claseRepository = AppDataSource.getRepository(Clase);
+        const clase = await claseRepository.findOne({
+            where: { id_clase: claseId },
+            relations: { users: true }
+        });
+
         const reservas = await reservaRepository.find({
             where: { clase: { id_clase: claseId } },
             relations: ["user"]
@@ -61,13 +74,31 @@ export async function getAsistenciaPorClaseSer(claseId) {
         });
 
         const asistenciaMap = new Set(asistencias.map(a => a.user.id));
+        const usuariosSet = new Map();
 
-        const resultado = reservas.map(reserva => ({
-            alumnoId: reserva.user.id,
-            nombre: reserva.user.nombre,
-            email: reserva.user.email,
-            presente: asistenciaMap.has(reserva.user.id)
-        }));
+        reservas.forEach(reserva => {
+            usuariosSet.set(reserva.user.id, {
+                alumnoId: reserva.user.id,
+                nombre: reserva.user.nombre,
+                email: reserva.user.email,
+                presente: asistenciaMap.has(reserva.user.id)
+            });
+        });
+
+        if (clase && clase.users) {
+            clase.users.forEach(u => {
+                if (!usuariosSet.has(u.id)) {
+                    usuariosSet.set(u.id, {
+                        alumnoId: u.id,
+                        nombre: u.nombre,
+                        email: u.email,
+                        presente: asistenciaMap.has(u.id)
+                    });
+                }
+            });
+        }
+
+        const resultado = Array.from(usuariosSet.values());
 
         return [resultado, null];
     } catch (error) {

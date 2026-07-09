@@ -77,7 +77,7 @@ const Clase = () => {
 
     return (
         <div className="Clase-page">
-            <div>
+            <div className="flex gap-4 mb-4">
                 {canCrudClases && (<button className="btn btn-primary" onClick={() => handleCreateClase(profesores, setProfesores)}>Crear Clase</button>)}
                 {canCrudClases &&(
                     <button
@@ -89,7 +89,7 @@ const Clase = () => {
                     </button>
                 )}
                 {(buscar ) && (
-                    <button className="solicitud-limpiar-btn btn ml-5" onClick={limpiarFiltros}>
+                    <button className="solicitud-limpiar-btn btn" onClick={limpiarFiltros}>
                         Limpiar
                     </button>
                 )}

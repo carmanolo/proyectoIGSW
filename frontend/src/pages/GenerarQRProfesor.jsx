@@ -12,13 +12,15 @@ export default function GenerarQRProfesor() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Obtener las clases del profesor
+    // Obtener las clases
     const fetchClases = async () => {
       try {
         const response = await axios.get('/clases');
-        // Asumimos que la API devuelve todas las clases y filtramos las del profesor, 
-        // o que la API ya devuelve solo las suyas.
-        const misClases = response.data.data.filter(c => c.profesores && c.profesores.id === user.id);
+        const esSecretario = user?.rol?.toLowerCase() === 'secretario';
+        const misClases = response.data.data.filter(c => {
+          if (esSecretario) return true;
+          return c.profesores && c.profesores.id === user.id;
+        });
         setClases(misClases);
       } catch (err) {
         console.error('Error fetching clases', err);
@@ -67,9 +69,11 @@ export default function GenerarQRProfesor() {
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="card bg-base-100 shadow-xl p-6 mb-6">
         <h1 className="text-3xl font-bold mb-2">Generar QR de Asistencia</h1>
-        <p className="text-gray-600 mb-4">Profesor: <strong>{user?.nombre}</strong></p>
+        <p className="text-gray-600 mb-4">
+          {user?.rol?.toLowerCase() === 'secretario' ? 'Secretario:' : 'Profesor:'} <strong>{user?.nombre}</strong>
+        </p>
         <p className="text-sm text-gray-500">
-          Selecciona una de tus clases para generar el código QR. Tus alumnos podrán escanear este código para marcar su asistencia.
+          Selecciona una clase para generar el código QR. Los alumnos podrán escanear este código para marcar su asistencia.
         </p>
       </div>
 
@@ -84,7 +88,7 @@ export default function GenerarQRProfesor() {
                 <span className="label-text">Clase *</span>
               </label>
               <select 
-                className="select select-bordered w-full"
+                className="select select-bordered w-full text-ellipsis overflow-hidden"
                 value={claseSeleccionada}
                 onChange={(e) => {
                   setClaseSeleccionada(e.target.value);
@@ -95,7 +99,7 @@ export default function GenerarQRProfesor() {
                 <option value="">Seleccione una clase...</option>
                 {clases.map(c => (
                   <option key={c.id_clase} value={c.id_clase}>
-                    {c.tipo} - {c.fecha_clase} ({c.hora_inicio} a {c.hora_fin})
+                    {c.tipo.toUpperCase()} | {c.fecha_clase} | {c.hora_inicio} - {c.hora_fin} {user?.rol?.toLowerCase() === 'secretario' && c.profesores ? ` | Prof: ${c.profesores.nombre.split(' ')[0]}` : ''}
                   </option>
                 ))}
               </select>

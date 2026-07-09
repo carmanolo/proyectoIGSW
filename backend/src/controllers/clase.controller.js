@@ -82,15 +82,16 @@ export async function getClases(req, res) {
     const userId = req.user.id || req.user.sub;
     const userRole = req.user.rol;
 
-    const claseData = await getClasesSer(userId, userRole)
-    //// console.log(horarioData);
-    if(!claseData){
+    const [clases, error] = await getClasesSer(userId, userRole);
+    
+    if(error){
+        return handleErrorClient(res, 400, error);
+    }
+    if(!clases){
         return handleErrorClient(res, 400, "Clases no encontrados");
     }
 
-    // console.log("CLASEDATA: ", JSON.stringify(claseData));
-    //enviar informacion de horarios de hoarios encontrados
-    return handleSuccess(res, 200, "clases obtenidas exitosamente", claseData);
+    return handleSuccess(res, 200, "clases obtenidas exitosamente", clases);
 }
 
 export async function patchClase(req, res) {

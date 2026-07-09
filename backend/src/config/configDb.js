@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   username: `${DB_USERNAME}`,
   password: `${DB_PASSWORD}`,
   database: `${DATABASE}`,
-  entities: [User, Clase, Plan, Boleta, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo, Asistencia],
+  entities: [User, Clase, Plan, Inscripcion, Evaluacion, Venta, Reserva, Vehiculo, Asistencia, Boleta],
   synchronize: true,
   logging: false,
 });

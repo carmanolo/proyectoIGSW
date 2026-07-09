@@ -19,10 +19,10 @@ export async function registrarVenta(req, res) {
             return res.status(400).json({ message: "El comprobante es obligatorio" });
         }
         
-        const comprobante_url = `/uploads/${req.file.filename}`;
-        req.body.comprobante_url = comprobante_url; // para que pase la validacion
+        const comprobante = `/uploads/${req.file.filename}`;
+        req.body.comprobante = comprobante; // para que pase la validacion
 
-        // console.log(userId, cantidad, comprobante_url); 
+        // console.log(userId, cantidad, comprobante); 
 
         const { error } = integrityValidation.validate(req.body);
         if (error) {
@@ -43,7 +43,7 @@ export async function registrarVenta(req, res) {
             return handleErrorClient(res, 403, "Solo los usuarios con rol 'estudiante' pueden recibir packs");
         }
 
-        const [resultVenta, errorServicio] = await venderPackSer(userId, cantidad, comprobante_url);
+        const [resultVenta, errorServicio] = await venderPackSer(userId, cantidad, comprobante);
 
         if (errorServicio) {
             return handleErrorClient(res, 400, errorServicio);

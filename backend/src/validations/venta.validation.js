@@ -22,7 +22,7 @@ export const integrityValidation = Joi.object({
         "any.only": `La cantidad de clases debe ser una de las siguientes: ${PACKS_VALIDOS.join(", ")}`
     }),
     
-    comprobante_url: Joi.string().messages({
+    comprobante: Joi.string().messages({
         "string.base": "El comprobante debe ser un texto"
     })
 });
@@ -37,7 +37,7 @@ export const assignationValidation = Joi.object({
         "any.required": CANTIDAD_OBLIGATORIA,
     }),
     
-    comprobante_url: Joi.any().required().messages({
+    comprobante: Joi.any().required().messages({
         "any.required": "La URL del comprobante es obligatoria"
     })
 })

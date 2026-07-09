@@ -38,7 +38,7 @@ columns: {
     nullable: false,
     default: 0,
     },
-    comprobante_url: {
+    comprobante: {
     type: "varchar",
     length: 255,
     nullable: true,

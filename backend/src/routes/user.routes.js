@@ -8,10 +8,10 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/",getUsers);
+router.get("/frontend/getTeacherList", getTeacherList);
+router.get("/frontend/getStudentList", getStudentList);
 router.get("/:id", getUserById);
 router.post("/crear" ,createUser);
 router.patch("/:id", authorizeRoles("secretario"), updateUser);
 router.delete("/:id", authorizeRoles("secretario"), deleteUser);
-router.get("/frontend/getTeacherList", getTeacherList);
-router.get("/frontend/getStudentList", getStudentList);
 export default router;
