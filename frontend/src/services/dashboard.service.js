@@ -29,6 +29,20 @@ export async function getProximaClaseService() {
   }
 }
 
+export async function getMisClasesService() {
+  try {
+    const response = await axios.get('/dashboard/mis-clases');
+    return response.data;
+  } catch (error) {
+    console.error('Error en getMisClasesService:', error);
+    return { 
+      success: false, 
+      message: error.message || 'Error al obtener clases del profesor',
+      data: null 
+    };
+  }
+}
+
 export async function getListaEsperaService() {
   try {
     const response = await axios.get('/registro-espera/lista-espera');
@@ -38,6 +52,20 @@ export async function getListaEsperaService() {
     return { 
       success: false, 
       message: error.message || 'Error al obtener lista de espera',
+      data: [] 
+    };
+  }
+}
+
+export async function getAlumnosAsignadosService() {
+  try {
+    const response = await axios.get('/dashboard/mis-alumnos');
+    return response.data;
+  } catch (error) {
+    console.error('Error en getAlumnosAsignadosService:', error);
+    return { 
+      success: false, 
+      message: error.message || 'Error al obtener alumnos asignados',
       data: [] 
     };
   }

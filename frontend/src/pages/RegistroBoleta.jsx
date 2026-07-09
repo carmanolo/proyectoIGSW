@@ -164,6 +164,7 @@ export const RegistroBoleta = () => {
     e.preventDefault();
 
     if (!validateForm()) {
+       console.log(' Errores de validación:', errors);
       Swal.fire({
         title: 'Error',
         text: 'Por favor, completa todos los campos requeridos',
@@ -176,10 +177,37 @@ export const RegistroBoleta = () => {
     setLoading(true);
 
     try {
-      // Crear FormData para enviar archivo
       const formDataToSend = new FormData();
       
-      const rutLimpio = formatearRutBackend(formData.rut);
+     const rutLimpio = formData.rut
+      .replace(/\./g, '')      
+      .replace(/-/g, '-');     
+    
+    if (!/^[0-9]{1,8}-[0-9kK]{1}$/.test(rutLimpio)) {
+      console.error(' RUT inválido:', rutLimpio);
+      Swal.fire({
+        title: 'Error',
+        text: 'El RUT debe tener formato válido (ej: 12345678-9)',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      setLoading(false);
+      return;
+    }
+    
+   
+    const telefonoLimpio = formData.telefono.replace(/\s/g, '');
+    if (!/^[0-9]{9,15}$/.test(telefonoLimpio)) {
+      console.error(' Teléfono inválido:', telefonoLimpio);
+      Swal.fire({
+        title: 'Error',
+        text: 'El teléfono debe tener entre 9 y 15 dígitos',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      setLoading(false);
+      return;
+    }
       
       formDataToSend.append('nombre', formData.nombre);
       formDataToSend.append('rut', rutLimpio);
@@ -219,7 +247,7 @@ export const RegistroBoleta = () => {
         confirmButtonText: 'Ir al Login'
       });
 
-      navigate('/login');
+      navigate('/auth');
 
     } catch (error) {
       console.error('Error al registrar:', error);
@@ -251,7 +279,7 @@ export const RegistroBoleta = () => {
         {/* Título */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-gradient">
-            📝 Inscripción de Plan
+             Inscripción de Plan
           </h1>
           <p className="text-gray-600 mt-2">
             Completa el formulario para inscribirte en un plan de conducción
@@ -577,7 +605,7 @@ export const RegistroBoleta = () => {
                 </p>
                 {boletaFile && (
                   <p className="text-sm text-green-600 mt-2">
-                    ✅ Archivo seleccionado: {boletaFile.name}
+                     Archivo seleccionado: {boletaFile.name}
                   </p>
                 )}
               </label>
@@ -639,7 +667,7 @@ export const RegistroBoleta = () => {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-4">
-            ⏳ Al enviar esta solicitud, aceptas quedar en lista de espera para verificación de secretaría
+             Al enviar esta solicitud, aceptas quedar en lista de espera para verificación de secretaría
           </p>
         </form>
 

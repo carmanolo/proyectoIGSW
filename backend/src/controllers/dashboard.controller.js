@@ -159,3 +159,125 @@ export async function getProximaClase(req, res) {
     return handleErrorServer(res, 500, "Error al obtener la próxima clase", error.message);
   }
 }
+
+export async function getMisAlumnos(req, res) {
+  try {
+    const profesorId = req.user?.id;
+    
+    if (!profesorId) {
+      return handleErrorClient(res, 401, "Usuario no autenticado");
+    }
+
+    if (req.user?.rol !== 'profesor') {
+      return handleErrorClient(res, 403, "Solo los profesores pueden ver sus alumnos");
+    }
+
+    const clases = await claseRepository.find({
+      where: { id_profesor: profesorId },
+      relations: { users: true }
+    });
+
+    console.log(' Clases del profesor:', clases.length);
+
+    const alumnosSet = new Set();
+    const alumnosList = [];
+
+    for (const clase of clases) {
+      if (clase.users && Array.isArray(clase.users)) {
+        for (const user of clase.users) {
+          if (!alumnosSet.has(user.id)) {
+            alumnosSet.add(user.id);
+            alumnosList.push({
+              id: user.id,
+              nombre: user.nombre || 'Sin nombre',
+              rut: user.rut || 'N/A',
+              email: user.email,
+              telefono: user.telefono || 'N/A',
+              estado: user.estado || 'activo',
+              clases_tomadas: user.clases_tomadas || 0,
+              progreso: user.progreso || 0
+            });
+          }
+        }
+      }
+    }
+
+    console.log(' Alumnos encontrados:', alumnosList.length);
+
+    return handleSuccess(res, 200, "Alumnos asignados obtenidos", alumnosList);
+  } catch (error) {
+    console.error("Error en getMisAlumnos:", error);
+    return handleErrorServer(res, 500, "Error al obtener alumnos", error.message);
+  }
+}
+
+export async function getMisClases(req, res) {
+  try {
+    const profesorId = req.user?.id;
+    
+    if (!profesorId) {
+      return handleErrorClient(res, 401, "Usuario no autenticado");
+    }
+
+    // Verificar que el usuario es profesor
+    if (req.user?.rol !== 'profesor') {
+      return handleErrorClient(res, 403, "Solo los profesores pueden ver sus clases");
+    }
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    // Obtener clases del día
+    const clasesHoy = await claseRepository.find({
+      where: { 
+        id_profesor: profesorId,
+        fecha_clase: hoy
+      },
+      relations: { 
+        users: true,
+        vehiculos: true 
+      },
+      order: { hora_inicio: "ASC" }
+    });
+
+    // Obtener todas las clases del profesor 
+    const todasLasClases = await claseRepository.find({
+      where: { id_profesor: profesorId },
+      relations: { users: true }
+    });
+
+    // Contar alumnos únicos
+    const alumnosSet = new Set();
+    for (const clase of todasLasClases) {
+      if (clase.users && Array.isArray(clase.users)) {
+        for (const user of clase.users) {
+          alumnosSet.add(user.id);
+        }
+      }
+    }
+
+    const clasesFormateadas = clasesHoy.map(clase => ({
+      id: clase.id_clase,
+      nombre: clase.descripcion || `Clase ${clase.tipo}`,
+      fecha: clase.fecha_clase,
+      hora_inicio: clase.hora_inicio,
+      hora_fin: clase.hora_fin,
+      ubicacion: 'Sala Principal',
+      estado: clase.estado_clase || 'pendiente',
+      alumnos: clase.users?.length || 0,
+      vehiculo: clase.vehiculos?.patente || 'Sin asignar'
+    }));
+
+    return handleSuccess(res, 200, "Clases del profesor obtenidas", {
+      clasesHoy: clasesFormateadas,
+      estadisticas: {
+        totalClases: todasLasClases.length,
+        totalAlumnos: alumnosSet.size,
+        clasesHoy: clasesHoy.length
+      }
+    });
+  } catch (error) {
+    console.error("Error en getMisClases:", error);
+    return handleErrorServer(res, 500, "Error al obtener clases", error.message);
+  }
+}

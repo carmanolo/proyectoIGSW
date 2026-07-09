@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Colores personalizados (compatibles con DaisyUI)
+        
         primary: {
           50: '#EFF6FF',
           100: '#DBEAFE',
@@ -53,7 +53,7 @@ export default {
   daisyui: {
     themes: [
       {
-        // Tema personalizado "azul-amarillo-gris"
+       
         'azul-amarillo-gris': {
           "primary": "#2563EB",        // Azul principal
           "primary-focus": "#1D4ED8",  // Azul oscuro

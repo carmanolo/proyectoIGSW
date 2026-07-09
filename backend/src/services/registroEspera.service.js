@@ -83,13 +83,19 @@ export async function obtenerListaEsperaService() {
   try {
     const usuarios = await userRepository.find({
       where: { estado_registro: REGISTRO_ESTADOS.EN_ESPERA },
-      relations: ["plan_contratado", "boletas"],
-      order: { fecha_registro_espera: "ASC" }
+      relations: {
+        plan_contratado: true,
+        boletas: true
+      },
+      order: {
+        fecha_registro_espera: "ASC"
+      }
     });
 
     usuarios.forEach(user => delete user.password);
     return getServiceResult(false, usuarios, "Lista obtenida", usuarios.length);
   } catch (error) {
+    console.error("Error en obtenerListaEsperaService:", error);
     return getServiceResult(true, null, error.message, 0);
   }
 }
@@ -97,17 +103,33 @@ export async function obtenerListaEsperaService() {
 export async function verificarRegistroService(id, datosVerificacion) {
   try {
     const usuario = await userRepository.findOne({
-      where: { id, estado_registro: REGISTRO_ESTADOS.EN_ESPERA },
-      relations: ["boletas"]
+      where: { 
+        id: id, 
+        estado_registro: REGISTRO_ESTADOS.EN_ESPERA 
+      },
+      relations: {
+        boletas: true,
+        plan_contratado: true
+      }
     });
 
     if (!usuario) {
-      return getServiceResult(false, null, "Usuario no encontrado", 0);
+      return getServiceResult(false, null, "Usuario no encontrado o no está en lista de espera", 0);
     }
 
-    usuario.estado_registro = datosVerificacion.estado === "verificada" 
-      ? REGISTRO_ESTADOS.VERIFICADO 
-      : REGISTRO_ESTADOS.RECHAZADO;
+    if (datosVerificacion.estado === 'verificado') {
+      usuario.estado_registro = REGISTRO_ESTADOS.VERIFICADO;
+      if (usuario.boletas && usuario.boletas.length > 0) {
+        const boleta = usuario.boletas[0];
+        boleta.estado = "verificada";
+        boleta.fecha_verificacion = new Date();
+        boleta.observaciones_verificacion = datosVerificacion.observaciones || null;
+        await boletaRepository.save(boleta);
+      }
+    } else {
+      usuario.estado_registro = REGISTRO_ESTADOS.RECHAZADO;
+    }
+    
     usuario.fecha_verificacion = new Date();
     usuario.observaciones_verificacion = datosVerificacion.observaciones || null;
     usuario.verificador_id = datosVerificacion.verificador_id || null;
@@ -118,12 +140,54 @@ export async function verificarRegistroService(id, datosVerificacion) {
     return getServiceResult(
       false,
       usuarioActualizado,
-      datosVerificacion.estado === "verificada" 
-        ? "Usuario verificado exitosamente" 
-        : "Solicitud rechazada",
+      datosVerificacion.estado === "verificado" 
+        ? "Usuario verificado exitosamente. Ya puede acceder al sistema."
+        : "Solicitud de registro rechazada.",
       1
     );
   } catch (error) {
-    return getServiceResult(true, null, error.message, 0);
+    console.error("Error al verificar registro:", error);
+    return getServiceResult(true, null, error.message || "Error al verificar", 0);
+  }
+}
+
+export async function obtenerDetalleSolicitudService(id) {
+  try {
+    const usuario = await userRepository.findOne({
+      where: { id: id },
+      relations: {
+        plan_contratado: true,
+        boletas: true
+      }
+    });
+
+    if (!usuario) {
+      return getServiceResult(false, null, "Solicitud no encontrada", 0);
+    }
+
+    delete usuario.password;
+
+    return getServiceResult(
+      false,
+      usuario,
+      "Detalle de solicitud obtenido exitosamente",
+      1
+    );
+  } catch (error) {
+    console.error("Error al obtener detalle de solicitud:", error);
+    return getServiceResult(true, null, error.message || "Error al obtener detalle", 0);
+  }
+}
+
+export async function contarSolicitudesPendientesService() {
+  try {
+    const count = await userRepository.count({
+      where: { estado_registro: REGISTRO_ESTADOS.EN_ESPERA }
+    });
+
+    return getServiceResult(false, count, "Conteo de solicitudes pendientes", count);
+  } catch (error) {
+    console.error("Error al contar solicitudes:", error);
+    return getServiceResult(true, null, error.message || "Error al contar", 0);
   }
 }

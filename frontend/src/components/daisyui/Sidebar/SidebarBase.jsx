@@ -112,9 +112,9 @@ export const SidebarBase = ({ pageContent }) => {
                         {/* Secretario */}
                         {role === 'secretario' && (
                             <>
-                                <SidebarItem label="Gestión de Clases Alumnos" destination="/gestion-clases-alumnos" icon={MdAdminPanelSettings} />
                                 <SidebarItem label="Gestión de Vehículos" destination="/gestion-vehiculos" icon={MdDirectionsCar} />
                                 <SidebarItem label="Gestionar Ventas" destination="/gestionar-ventas" icon={MdAttachMoney} />
+                                <SidebarItem label="Lista de Espera" destination="/lista-espera" icon={MdAdminPanelSettings} />
                             </>
                         )}
                         

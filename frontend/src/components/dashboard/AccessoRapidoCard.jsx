@@ -11,13 +11,13 @@ export const AccesoRapidoCard = ({ rol }) => {
   const getAccesos = () => {
     const accesosComunes = [
       { icono: <Calendar className="w-6 h-6 mx-auto mb-1" />, label: 'Horario', color: 'blue', path: '/clase' },
-      { icono: <BookOpen className="w-6 h-6 mx-auto mb-1" />, label: 'Material', color: 'yellow', path: '/planes' },
+      { icono: <BookOpen className="w-6 h-6 mx-auto mb-1" />, label: 'Material', color: 'yellow', path: '/mis-clases' },
     ];
 
     const accesosPorRol = {
       estudiante: [
         ...accesosComunes,
-        { icono: <TrendingUp className="w-6 h-6 mx-auto mb-1" />, label: 'Progreso', color: 'blue', path: '/mis-clases' },
+        { icono: <TrendingUp className="w-6 h-6 mx-auto mb-1" />, label: 'Progreso', color: 'blue', path: '/' },
         { icono: <DollarSign className="w-6 h-6 mx-auto mb-1" />, label: 'Pagos', color: 'yellow', path: '/comprar-clases' },
       ],
       profesor: [

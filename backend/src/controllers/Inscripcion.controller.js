@@ -2,13 +2,13 @@ import * as inscripcionService from "../services/Inscripcion.service.js";
 
 export const contratarPlan = async (req, res) => {
   try {
-
-    const { alumno_id, plan_id, fecha_inicio } = req.body;
+    const alumno_id = req.user.id;
+    const { plan_id, fecha_inicio } = req.body;
     
-    if (!alumno_id) {
-      return res.status(400).json({
+    if (req.user.rol !== 'estudiante') {
+      return res.status(403).json({
         success: false,
-        error: "El ID del alumno es obligatorio",
+        error: "Solo los estudiantes pueden contratar planes",
       });
     }
     

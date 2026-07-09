@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import useDashboard from '@hooks/Dashboard/useDashboard';
 import useProximaClase from '@hooks/Dashboard/useProximaClase';
 import { ProximaClaseCard } from '@components/dashboard/ProximaClaseCard';
@@ -14,6 +15,9 @@ import { AlumnosConDeudasCard } from '@components/dashboard/AlumnosConDeudasCard
 import { ListaEsperaCard } from '@components/dashboard/ListaEsperaCard';
 import { useContratarPlan } from '@hooks/Planes/useContratarPlan';
 import { usePagarDeuda } from '@hooks/Inscripciones/usePagarDeuda';
+import { getListaEsperaService } from '@services/registro.service.js';
+import { getAlumnosAsignadosService, getMisClasesService } from '@services/dashboard.service.js';
+import Swal from 'sweetalert2';
 import { 
   Clock, Calendar, ChevronRight, Sparkles, 
   GraduationCap, DollarSign, Users, UserCheck 
@@ -21,11 +25,21 @@ import {
 
 export default function Home() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const { dashboardData, loading, fetchDashboard } = useDashboard();
   const { proximaClase, loading: loadingClase } = useProximaClase();
   const { handleContratarPlan } = useContratarPlan(user?.id, fetchDashboard);
   const { handlePagarDeuda } = usePagarDeuda(fetchDashboard);
+
+  // Estado para solicitudes en espera (secretaría)
+  const [solicitudesEspera, setSolicitudesEspera] = useState([]);
+  const [loadingEspera, setLoadingEspera] = useState(false);
+
+  // Estado para profesor
+  const [clasesProfesorData, setClasesProfesorData] = useState([]);
+  const [alumnosAsignadosData, setAlumnosAsignadosData] = useState([]);
+  const [loadingProfesor, setLoadingProfesor] = useState(false);
 
   const rol = user?.rol?.toLowerCase() || 'estudiante';
   const esEstudiante = rol === 'estudiante';
@@ -39,6 +53,138 @@ export default function Home() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Cargar solicitudes en espera (solo para secretaría)
+  useEffect(() => {
+    if (esSecretaria) {
+      cargarSolicitudesEspera();
+    }
+  }, [esSecretaria]);
+
+  // Cargar datos del profesor
+  useEffect(() => {
+    if (esProfesor) {
+      cargarDatosProfesor();
+    }
+  }, [esProfesor]);
+
+  // Cargar solicitudes en espera
+  const cargarSolicitudesEspera = async () => {
+    setLoadingEspera(true);
+    try {
+      const response = await getListaEsperaService();
+      console.log(' Solicitudes en espera:', response);
+      if (response && response.status === 'Success') {
+        setSolicitudesEspera(response.data || []);
+      } else {
+        setSolicitudesEspera([]);
+      }
+    } catch (error) {
+      console.error('Error al cargar solicitudes:', error);
+      setSolicitudesEspera([]);
+    } finally {
+      setLoadingEspera(false);
+    }
+  };
+
+  // Cargar datos del profesor
+  const cargarDatosProfesor = async () => {
+    setLoadingProfesor(true);
+    try {
+      // Obtener clases del profesor
+      const clasesResponse = await getMisClasesService();
+      console.log('📚 Clases del profesor:', clasesResponse);
+      
+      // Obtener alumnos asignados al profesor
+      const alumnosResponse = await getAlumnosAsignadosService();
+      console.log(' Alumnos asignados:', alumnosResponse);
+      
+      // Procesar clases
+      if (clasesResponse && clasesResponse.status === 'Success') {
+        const clasesData = clasesResponse.data;
+        // Si tiene clasesHoy, usarlas; si no, usar todas las clases
+        const clasesList = clasesData.clasesHoy || clasesData || [];
+        setClasesProfesorData(clasesList);
+      } else {
+        setClasesProfesorData([]);
+      }
+      
+      // Procesar alumnos
+      if (alumnosResponse && alumnosResponse.status === 'Success') {
+        setAlumnosAsignadosData(alumnosResponse.data || []);
+      } else {
+        setAlumnosAsignadosData([]);
+      }
+      
+    } catch (error) {
+      console.error('Error al cargar datos del profesor:', error);
+      setClasesProfesorData([]);
+      setAlumnosAsignadosData([]);
+    } finally {
+      setLoadingProfesor(false);
+    }
+  };
+
+  // Verificar solicitud (aprobar/rechazar)
+  const handleVerificarSolicitud = async (id, estado) => {
+    try {
+      const { verificarRegistroService } = await import('@services/registro.service.js');
+      
+      const actionText = estado === 'verificado' ? 'aprobar' : 'rechazar';
+      
+      const result = await Swal.fire({
+        title: `¿${estado === 'verificado' ? 'Aprobar' : 'Rechazar'} solicitud?`,
+        text: `¿Estás seguro de ${actionText} esta solicitud?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: `Sí, ${actionText}`,
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: estado === 'verificado' ? '#10B981' : '#EF4444',
+      });
+
+      if (!result.isConfirmed) return;
+
+      const { value: observaciones } = await Swal.fire({
+        title: 'Observaciones (opcional)',
+        input: 'textarea',
+        inputPlaceholder: 'Escribe alguna observación...',
+        showCancelButton: true,
+        confirmButtonText: 'Guardar',
+        cancelButtonText: 'Saltar',
+        inputValidator: (value) => {
+          if (value && value.length > 500) {
+            return 'Las observaciones no pueden tener más de 500 caracteres';
+          }
+        }
+      });
+
+      const response = await verificarRegistroService(id, {
+        estado,
+        observaciones: observaciones || null
+      });
+
+      if (response && response.status === 'Success') {
+        await Swal.fire({
+          title: '¡Éxito!',
+          text: response.message || 'Solicitud procesada correctamente',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        });
+        cargarSolicitudesEspera();
+        fetchDashboard();
+      } else {
+        throw new Error(response?.message || 'Error al procesar la solicitud');
+      }
+    } catch (error) {
+      console.error('Error al verificar:', error);
+      await Swal.fire({
+        title: 'Error',
+        text: error.message || 'Ocurrió un error al procesar la solicitud',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+  };
 
   const getGreeting = () => {
     const hour = currentTime.getHours();
@@ -56,27 +202,40 @@ export default function Home() {
     });
   };
 
-  // Datos de ejemplo (después conectar con backend)
-  const clasesProfesor = [
-    { nombre: 'Clase Práctica Avanzada', hora_inicio: '10:00', hora_fin: '11:30', ubicacion: 'Sala 101', estado: 'Pendiente' },
-    { nombre: 'Clase Teórica', hora_inicio: '14:00', hora_fin: '15:30', ubicacion: 'Sala 203', estado: 'Pendiente' },
-  ];
-
-  const alumnosAsignados = [
-    { id: 1, nombre: 'Carlos López', rut: '11.111.111-1', estado: 'activo' },
-    { id: 2, nombre: 'Ana Martínez', rut: '22.222.222-2', estado: 'pendiente' },
-    { id: 3, nombre: 'Pedro Sánchez', rut: '33.333.333-3', estado: 'activo' },
-  ];
-
+  // Datos de ejemplo para secretaría (fallback)
   const alumnosConDeudas = [
     { id: 1, nombre: 'Juan Pérez', rut: '12.345.678-9', deuda: 45000, estado_pago: 'Pendiente' },
     { id: 2, nombre: 'María González', rut: '98.765.432-1', deuda: 32000, estado_pago: 'Pendiente' },
   ];
 
-  const alumnosEspera = [
-    { id: 1, nombre: 'Juan Pérez', rut: '12.345.678-9', telefono: '+56912345678', sede: 'Concepción', plan_contratado: { nombre: 'Básico' }, fecha_registro_espera: '2024-01-15' },
-    { id: 2, nombre: 'María González', rut: '98.765.432-1', telefono: '+56987654321', sede: 'Chillán', plan_contratado: { nombre: 'Avanzado' }, fecha_registro_espera: '2024-01-14' },
-  ];
+  // Formatear clases para el componente ProfesorResumen
+  const formatearClasesProfesor = () => {
+    if (!clasesProfesorData || clasesProfesorData.length === 0) {
+      return [];
+    }
+    
+    return clasesProfesorData.map(clase => ({
+      nombre: clase.nombre || clase.descripcion || `Clase ${clase.tipo || 'General'}`,
+      hora_inicio: clase.hora_inicio,
+      hora_fin: clase.hora_fin,
+      ubicacion: clase.ubicacion || 'Sala Principal',
+      estado: clase.estado || 'Pendiente'
+    }));
+  };
+
+  // Formatear alumnos para el componente MisAlumnosCard
+  const formatearAlumnos = () => {
+    if (!alumnosAsignadosData || alumnosAsignadosData.length === 0) {
+      return [];
+    }
+    
+    return alumnosAsignadosData.map(alumno => ({
+      id: alumno.id,
+      nombre: alumno.nombre,
+      rut: alumno.rut || 'N/A',
+      estado: alumno.estado || 'activo'
+    }));
+  };
 
   // Renderizar contenido según el rol
   const renderContenidoIzquierda = () => {
@@ -125,12 +284,16 @@ export default function Home() {
     }
 
     if (esProfesor) {
+      const clasesFormateadas = formatearClasesProfesor();
+      
       return (
         <>
           {/* SIGUIENTE CLASE */}
           <ProfesorResumen 
-            clases={clasesProfesor}
-            loading={loading}
+            clases={clasesFormateadas.length > 0 ? clasesFormateadas : [
+              { nombre: 'No hay clases programadas', hora_inicio: '--:--', hora_fin: '--:--', ubicacion: '---', estado: 'Sin clases' }
+            ]}
+            loading={loadingProfesor}
           />
 
           {/* CURSOS A CARGO */}
@@ -142,8 +305,18 @@ export default function Home() {
               </div>
             </div>
             <MisCursosCard 
-              cursos={dashboardData.cursos} 
-              loading={loading}
+              cursos={clasesProfesorData.map(clase => ({
+                id_inscripcion: clase.id || clase.id_clase || Math.random(),
+                plan: { 
+                  nombre: `${clase.tipo?.toUpperCase() || 'Curso'} - ${clase.descripcion || clase.nombre || 'Sin descripción'}`,
+                  tipo: clase.tipo || 'General'
+                },
+                fecha_inicio: clase.fecha_clase || new Date().toISOString().split('T')[0],
+                estado_pago: 'pagado',
+                estado_inscripcion: clase.estado || 'activa',
+                clases_restantes: 0
+              }))}
+              loading={loadingProfesor}
               rol={rol}
             />
           </div>
@@ -161,16 +334,17 @@ export default function Home() {
                 <Users className="w-5 h-5 text-yellow-500" />
                 <h2>Últimas Solicitudes</h2>
               </div>
-              <button className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+              <button 
+                onClick={() => navigate('/lista-espera')}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+              >
                 Ver todas <ChevronRight className="w-4 h-4" />
               </button>
             </div>
             <ListaEsperaCard 
-              usuarios={alumnosEspera}
-              loading={loading}
-              onVerificar={(id, estado) => {
-                console.log(`Verificar usuario ${id} como ${estado}`);
-              }}
+              usuarios={solicitudesEspera}
+              loading={loadingEspera}
+              onVerificar={handleVerificarSolicitud}
             />
           </div>
 
@@ -228,6 +402,8 @@ export default function Home() {
     }
 
     if (esProfesor) {
+      const alumnosFormateados = formatearAlumnos();
+      
       return (
         <>
           {/* MIS ALUMNOS */}
@@ -237,8 +413,10 @@ export default function Home() {
               <h2>Mis Alumnos</h2>
             </div>
             <MisAlumnosCard 
-              alumnos={alumnosAsignados}
-              loading={loading}
+              alumnos={alumnosFormateados.length > 0 ? alumnosFormateados : [
+                { id: 1, nombre: 'No hay alumnos asignados', rut: '---', estado: 'inactivo' }
+              ]}
+              loading={loadingProfesor}
             />
           </div>
 
@@ -248,15 +426,24 @@ export default function Home() {
             <div className="space-y-3">
               <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg border border-green-200">
                 <span className="text-sm text-gray-600">Alumnos Activos</span>
-                <span className="font-bold text-green-700">{alumnosAsignados.filter(a => a.estado === 'activo').length}</span>
+                <span className="font-bold text-green-700">
+                  {alumnosFormateados.filter(a => a.estado === 'activo').length || 0}
+                </span>
               </div>
               <div className="flex items-center justify-between bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                 <span className="text-sm text-gray-600">Pendientes</span>
-                <span className="font-bold text-yellow-700">{alumnosAsignados.filter(a => a.estado === 'pendiente').length}</span>
+                <span className="font-bold text-yellow-700">
+                  {alumnosFormateados.filter(a => a.estado === 'pendiente').length || 0}
+                </span>
               </div>
               <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-200">
                 <span className="text-sm text-gray-600">Clases Hoy</span>
-                <span className="font-bold text-blue-700">{clasesProfesor.length}</span>
+                <span className="font-bold text-blue-700">
+                  {clasesProfesorData.filter(c => {
+                    const hoy = new Date().toISOString().split('T')[0];
+                    return c.fecha_clase === hoy;
+                  }).length || 0}
+                </span>
               </div>
             </div>
           </div>
@@ -285,7 +472,7 @@ export default function Home() {
             <div className="space-y-3">
               <div className="flex items-center justify-between bg-yellow-50 p-3 rounded-lg border border-yellow-200">
                 <span className="text-sm text-gray-600">En Espera</span>
-                <span className="font-bold text-yellow-700">{alumnosEspera.length}</span>
+                <span className="font-bold text-yellow-700">{solicitudesEspera.length}</span>
               </div>
               <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg border border-green-200">
                 <span className="text-sm text-gray-600">Verificados Hoy</span>
@@ -337,8 +524,6 @@ export default function Home() {
                   {formatearFecha(currentTime)}
                 </p>
               </div>
-              <div className="relative">
-              </div>
             </div>
           </div>
         </div>
@@ -348,17 +533,17 @@ export default function Home() {
           <EstadisticasCard 
             estadisticas={{
               totalCursos: esEstudiante ? dashboardData.estadisticas?.totalCursos : 
-                           esProfesor ? 3 : 
-                           esSecretaria ? alumnosEspera.length : 5,
+                           esProfesor ? clasesProfesorData.length : 
+                           esSecretaria ? solicitudesEspera.length : 5,
               clasesCompletadas: esEstudiante ? dashboardData.estadisticas?.clasesCompletadas :
                                esProfesor ? 12 : 
                                esSecretaria ? 3 : 0,
               deudasPendientes: esEstudiante ? dashboardData.estadisticas?.deudasPendientes :
-                              esProfesor ? alumnosAsignados.length :
+                              esProfesor ? alumnosAsignadosData.length :
                               esSecretaria ? alumnosConDeudas.length : 0,
               proximaClase: esEstudiante ? dashboardData.estadisticas?.proximaClase :
                           esProfesor ? '10:00 AM' :
-                          esSecretaria ? `${alumnosEspera.length} pendientes` : 'Sin datos'
+                          esSecretaria ? `${solicitudesEspera.length} pendientes` : 'Sin datos'
             }} 
             loading={loading}
             rol={rol}

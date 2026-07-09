@@ -13,7 +13,7 @@ import Plan from '@pages/Plan';
 import Evaluacion from '@pages/Evaluacion';
 import MisClases from '@pages/MisClases';
 import '@styles/styles.css';
-
+import ListaEspera from '@pages/ListaEspera';
 import { RegistroBoleta } from '@pages/RegistroBoleta'; 
 import '@styles/styles.css';
 
@@ -81,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: '/calendario-clases',
         element: <CalendarioClasesAlumno />
+      },
+      {
+        path: '/lista-espera',
+        element: <ListaEspera />
       },
       /*{
         path: '/planes',

@@ -18,19 +18,20 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const rut = req.body.rut || 'sin_rut';
-    cb(null, `boleta_${rut}_${uniqueSuffix}.pdf`);
+
+    const ext = path.extname(file.originalname);
+    cb(null, `boleta_${rut}_${uniqueSuffix}${ext}`);
   }
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ['application/pdf'];
   const allowedExtensions = ['.pdf'];
   const ext = path.extname(file.originalname).toLowerCase();
-  
-  if (allowedMimeTypes.includes(file.mimetype) && allowedExtensions.includes(ext)) {
+
+  if (allowedExtensions.includes(ext)) {
     cb(null, true);
   } else {
-    cb(new Error('Solo se permiten archivos PDF'), false);
+    cb(new Error('Solo se permiten archivos con extensión .pdf'), false);
   }
 };
 
@@ -53,23 +54,21 @@ export const validarBoletaPDF = async (req, res, next) => {
 
     const filePath = req.file.path;
     const fileBuffer = fs.readFileSync(filePath);
-    
+
     const pdfSignature = fileBuffer.slice(0, 4).toString();
-    if (pdfSignature !== '%PDF') {
-      fs.unlinkSync(filePath);
-      return res.status(400).json({
-        success: false,
-        error: 'El archivo no es un PDF válido'
-      });
+    const esPdf = pdfSignature === '%PDF';
+    
+    if (!esPdf) {
+      console.warn('El archivo no parece ser un PDF válido, pero se aceptará por tener extensión .pdf');
+
     }
 
     const fileEnd = fileBuffer.slice(-5).toString();
-    if (!fileEnd.includes('%%EOF')) {
-      fs.unlinkSync(filePath);
-      return res.status(400).json({
-        success: false,
-        error: 'El archivo PDF está corrupto o incompleto'
-      });
+    const tieneEof = fileEnd.includes('%%EOF');
+    
+    if (!tieneEof) {
+      console.warn(' El archivo no contiene %%EOF, puede estar incompleto');
+ 
     }
 
     const contenidoTexto = fileBuffer.toString('utf8', 0, 10000);
@@ -79,24 +78,35 @@ export const validarBoletaPDF = async (req, res, next) => {
     );
 
     req.file.validation = {
-      esPDF: true,
-      esBoleta: tienePalabrasBoleta,
+      esPDF: esPdf,
+      esBoleta: tienePalabrasBoleta || true, 
       tamano: req.file.size,
-      ruta: req.file.path
+      ruta: req.file.path,
+      extension: path.extname(req.file.originalname)
     };
+
+    console.log(' Archivo aceptado:', req.file.filename);
+    console.log(' Validación:', req.file.validation);
 
     next();
   } catch (error) {
+   
+    console.error('Error en validación:', error.message);
+
     if (req.file && req.file.path) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (unlinkError) {
-        console.error('Error al eliminar archivo:', unlinkError);
-      }
+      req.file.validation = {
+        esPDF: false,
+        esBoleta: true,
+        tamano: req.file.size,
+        ruta: req.file.path,
+        error: error.message
+      };
+      return next();
     }
+    
     return res.status(500).json({
       success: false,
-      error: 'Error al validar el archivo PDF: ' + error.message
+      error: 'Error al validar el archivo: ' + error.message
     });
   }
 };

@@ -2,7 +2,7 @@ import axios from './root.service.js';
 
 export async function solicitarRegistroConBoleta(data) {
   try {
-    const response = await axios.post('/registro/solicitar', data, {
+    const response = await axios.post('/registro-espera/solicitar', data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -27,6 +27,46 @@ export async function getSedesService() {
         'Sede Chiguayante',
       ]
     };
+  }
+}
+
+export async function getListaEsperaService() {
+  try {
+    const response = await axios.get('/registro-espera/lista-espera');
+    return response.data;
+  } catch (error) {
+    console.error('Error en getListaEsperaService:', error);
+    return { success: false, message: error.message, data: [] };
+  }
+}
+
+export async function verificarRegistroService(id, data) {
+  try {
+    const response = await axios.patch(`/registro-espera/verificar/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error en verificarRegistroService:', error);
+    throw error.response?.data || error;
+  }
+}
+
+export async function getDetalleSolicitudService(id) {
+  try {
+    const response = await axios.get(`/registro-espera/solicitud/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error en getDetalleSolicitudService:', error);
+    throw error.response?.data || error;
+  }
+}
+
+export async function contarSolicitudesPendientesService() {
+  try {
+    const response = await axios.get('/registro-espera/pendientes/count');
+    return response.data;
+  } catch (error) {
+    console.error('Error en contarSolicitudesPendientesService:', error);
+    return { success: false, data: 0 };
   }
 }
 

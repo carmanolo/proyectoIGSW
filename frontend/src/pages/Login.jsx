@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { login } from '@services/auth.service.js';
 import useLogin from '@hooks/useLogin.jsx';
 import { Eye, EyeOff } from 'lucide-react';
-// ✅ Importar el logo
 import logoConduce from '@assets/logoConduce.png';
 
 const Login = () => {

@@ -9,7 +9,7 @@ export default function EscanearQRAlumno() {
   const [asistenciaMarcada, setAsistenciaMarcada] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [scanMode, setScanMode] = useState('camera'); // 'camera' o 'file'
+  const [scanMode, setScanMode] = useState('camera'); 
   const qrScannerRef = useRef(null);
   const hasInitialized = useRef(false);
   const fileInputRef = useRef(null);
