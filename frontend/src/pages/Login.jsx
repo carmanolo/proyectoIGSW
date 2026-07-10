@@ -137,10 +137,8 @@ const Login = () => {
                         Formando<br/>conductores con<br/><span className="text-blue-300">responsabilidad</span>
                     </h1>
                     <p className="text-gray-300 text-sm leading-relaxed mb-8">
-                        Escuela de conducción profesional Surcentral. Aprende con
-                        instructores calificados y vehículos modernos para obtener
-                        tu licencia con total confianza y seguridad.
-
+                        Somos la escuela de conductores líder en la zona. Te preparamos paso a paso 
+                        con clases prácticas y material de estudio para que saques tu licencia a la primera.
                     </p>
                 </div>
             </div>
@@ -238,7 +236,7 @@ const Login = () => {
                                 to="/registro" 
                                 className="text-blue-600 hover:text-blue-800 font-bold transition-colors"
                             >
-                                Preinscríbete aquí
+                                Inscríbete aquí
                             </Link>
                         </p>
                     </div>
