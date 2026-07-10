@@ -1,6 +1,8 @@
 import { AppDataSource } from "../config/configDb.js";
 import { Clase } from "../entities/clase.entity.js";
 import { User } from "../entities/user.entity.js";
+import { Venta } from "../entities/venta.entity.js";
+import { LessThan } from "typeorm";
 import { obtenerIdVehiculoNulo } from "./vehiculo.service.js";
 
 export async function getClaseSer(id_clase) {
@@ -109,9 +111,32 @@ export async function asignacionIndividualService(id_clase, id_usuario) {
       return {data : null, message: "El estudiante ya esta asignado a esa clase", error: true}
     }
 
+    //verificar si el estudiante tiene clases disponibles
+    if ((estudiante.clases_disponibles || 0) <= 0) {
+      return { data: null, message: "El estudiante no tiene clases disponibles", error: true };
+    }
+
+    // Verificar si el estudiante tiene deudas vencidas
+    const ventaRepository = AppDataSource.getRepository(Venta);
+    const packsVencidos = await ventaRepository.find({
+      where: {
+        user: { id: estudiante.id },
+        estado: "aprobada",
+        fecha_vencimiento: LessThan(new Date())
+      }
+    });
+
+    if (packsVencidos.length > 0) {
+      return { data: null, message: "No puedes agendarle clases a este alumno porque tiene cuotas vencidas.", error: true };
+    }
+
     //guardar usuario asignado a clase practica
     clase.users = [...clase.users, estudiante];
     const guardar = await claseRepository.save(clase);
+
+    // descontar clase disponible
+    estudiante.clases_disponibles -= 1;
+    await userRepository.save(estudiante);
 
     return {
       data: {
@@ -174,11 +199,11 @@ export async function getClasesSer(userId, userRole) {
         if(userRole === "estudiante" || userRole === "estudiante"){
           clases = await claseRepository.find({
             where: { users:{id: userId}},
-            relations: { profesores: true }
+            relations: { profesores: true, vehiculos: true }
           });
         }else{
           clases = await claseRepository.find({
-            relations: { users: true, profesores: true }
+            relations: { users: true, profesores: true, vehiculos: true }
           });
         }
 
@@ -303,10 +328,24 @@ export async function editarAsignacionLoteSer(id_clase, idsEliminar = []){
 
     const idsExistentes = new Set(clase.users.map((u) => u.id));
     const nuevos = estudiantes.filter((u) => !idsExistentes.has(u.id));
-    clase.users = [...clase.users, ...nuevos];
+    
+    // Filtrar a los que tienen clases y descontar
+    const nuevosValidos = nuevos.filter(u => (u.clases_disponibles || 0) > 0);
+    for (const u of nuevosValidos) {
+      u.clases_disponibles -= 1;
+      await userRepository.save(u);
+    }
+    
+    clase.users = [...clase.users, ...nuevosValidos];
 
     if(Array.isArray(idsEliminar) && idsEliminar.length > 0){
       clase.users = clase.users.filter((u) => !idsEliminar.includes(u.id));
+      
+      const eliminados = estudiantes.filter(u => idsEliminar.includes(u.id));
+      for (const u of eliminados) {
+        u.clases_disponibles = (u.clases_disponibles || 0) + 1;
+        await userRepository.save(u);
+      }
     }
 
     //guardar y retornar
@@ -370,6 +409,10 @@ export async function desasignacionIndividualService(id_clase, id_usuario) {
     //quitar al estudiante de la clase práctica
     clase.users = clase.users.filter((u) => u.id !== estudiante.id);
     const guardar = await claseRepository.save(clase);
+
+    // devolver clase disponible al estudiante
+    estudiante.clases_disponibles = (estudiante.clases_disponibles || 0) + 1;
+    await userRepository.save(estudiante);
  
     return {
       data: {
