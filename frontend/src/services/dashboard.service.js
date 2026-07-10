@@ -70,3 +70,45 @@ export async function getAlumnosAsignadosService() {
     };
   }
 }
+
+export async function getDeudoresService() {
+  try {
+    const response = await axios.get('/dashboard/deudas');
+    return response.data;
+  } catch (error) {
+    console.error('Error en getDeudoresService:', error);
+    return {
+      success: false,
+      message: error.message || 'Error al obtener deudores',
+      data: []
+    };
+  }
+}
+
+export async function getMisClasesEstudianteService() {
+  try {
+    const response = await axios.get('/dashboard/mis-clases-estudiante');
+    return response.data;
+  } catch (error) {
+    console.error('Error en getMisClasesEstudianteService:', error);
+    return {
+      success: false,
+      message: error.message || 'Error al obtener historial de clases',
+      data: []
+    };
+  }
+}
+
+export async function getEstadisticasSecretariaService() {
+  try {
+    const response = await axios.get('/dashboard/estadisticas-secretaria');
+    return response.data;
+  } catch (error) {
+    console.error('Error en getEstadisticasSecretariaService:', error);
+    return {
+      success: false,
+      message: error.message || 'Error al obtener estadísticas',
+      data: null
+    };
+  }
+}

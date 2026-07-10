@@ -6,9 +6,8 @@ import { Clase } from "../entities/clase.entity.js";
 import { Venta } from "../entities/venta.entity.js";
 import { LessThan } from "typeorm";
 
-async function limpiarPacksVencidos(user) {
+async function verificarDeudasVencidas(user) {
   const ventaRepository = AppDataSource.getRepository(Venta);
-  const userRepository = AppDataSource.getRepository(User);
   const now = new Date();
 
   const packsVencidos = await ventaRepository.find({
@@ -19,20 +18,11 @@ async function limpiarPacksVencidos(user) {
     }
   });
 
-  let needsSave = false;
-  for (const pack of packsVencidos) {
-    if (pack.clases_restantes > 0) {
-      user.clases_disponibles = Math.max(0, user.clases_disponibles - pack.clases_restantes);
-      pack.clases_restantes = 0;
-      pack.estado = "vencida";
-      await ventaRepository.save(pack);
-      needsSave = true;
-    }
+  if (packsVencidos.length > 0) {
+    return true; // Tiene deudas vencidas
   }
-  if (needsSave) {
-    await userRepository.save(user);
-  }
-  return user;
+  
+  return false;
 }
 
 async function consumirClase(user) {
@@ -86,7 +76,10 @@ export async function createReservaSer(data) {
     if (!user) return [null, "Usuario no encontrado"];
 
     if (tipo !== "pre_evaluacion") {
-        user = await limpiarPacksVencidos(user);
+        const tieneDeuda = await verificarDeudasVencidas(user);
+        if (tieneDeuda) {
+            return [null, "No puedes agendar clases porque tienes cuotas vencidas. Por favor, regulariza tu deuda."];
+        }
     }
 
     const vehiculo = await vehiculoRepository.findOneBy({ id: Number(vehiculoId) });
@@ -185,7 +178,7 @@ export async function getReservasUsuarioSer(userId) {
 
 export async function updateReservaEstadoSer(id, estado) {
   try {
-    const validEstados = ["pendiente", "completada", "no_realizada", "cancelada"];
+    const validEstados = ["pendiente", "completada", "no_realizada", "cancelada", "inasistente"];
     if (!validEstados.includes(estado)) {
       return [null, "Estado no válido"];
     }

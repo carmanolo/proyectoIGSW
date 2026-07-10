@@ -83,4 +83,13 @@ export async function asignarUsuarioClasePracticaService(id_clase, id_usuario) {
     }
 }
 
+export async function desasignarUsuarioClasePracticaService(id_clase, id_usuario) {
+    try {
+        const response = await axios.patch(`/clases/desasignar/${id_clase}`, {id_usuario});
+        return Object.assign(response.data, {status: response.status});
+    } catch (error) {
+        throw error.response || error;
+    }
+}
+
 

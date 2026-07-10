@@ -11,8 +11,8 @@ const useCreateEvaluacion = (fetchEvaluacion) => {
                 return { success: true, data: response.data };
             }
         } catch (error) {
-            const errorMessage = error.message || "Error al crear la evaluación";
-            alertError(errorMessage);
+            const errorMessage = error.details || error.message || "Error al crear la evaluación";
+            alertError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
             return { success: false, error: errorMessage };
         }
     };
