@@ -105,7 +105,6 @@ export const SidebarBase = ({ pageContent }) => {
                         {role === 'estudiante' && (
                             <>
                                 <SidebarItem label="Mi Historial de Clases" destination="/historial-clases" icon={MdSchool} isCollapsed={isCollapsed} />
-                                <SidebarItem label="Agendar Clase" destination="/agendar-clase" icon={MdSchool} isCollapsed={isCollapsed} />
                                 <SidebarItem label="Registrar Asistencia (QR)" destination="/escanear-asistencia" icon={MdSchool} isCollapsed={isCollapsed} />
                                 <SidebarItem label="Próximas Clases" destination="/calendario-clases" icon={MdSchool} isCollapsed={isCollapsed} />
                             </>
