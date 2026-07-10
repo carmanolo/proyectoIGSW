@@ -24,10 +24,29 @@ columns: {
     nullable: false,
     default: 0,
     },
+    monto_pagado: {
+    type: "int",
+    nullable: false,
+    default: 0,
+    },
+    fecha_vencimiento: {
+    type: "date",
+    nullable: true,
+    },
     estado: {
     type: "varchar",
     length: 50,
     default: "pendiente",
+    },
+    tipo_pago: {
+    type: "enum",
+    enum: ["contado", "plazo"],
+    default: "contado",
+    },
+    cuotas: {
+    type: "int",
+    nullable: true,
+    default: null,
     },
     fecha_vencimiento: {
     type: "timestamp",

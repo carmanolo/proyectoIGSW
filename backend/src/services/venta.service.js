@@ -2,12 +2,13 @@ import { AppDataSource } from "../config/configDb.js";
 import { User } from "../entities/user.entity.js";
 import { Venta } from "../entities/venta.entity.js";
 import { Reserva } from "../entities/reserva.entity.js";
+import { Clase } from "../entities/clase.entity.js";
 import { sendEmail } from "./email.service.js";
 
 // SER=service
 const PRECIO_CLASE_EXTRA = 15000;
 
-export async function venderPackSer(userId, cantidad, comprobante) {
+export async function venderPackSer(userId, cantidad, tipo_pago = 'contado', comprobante = null, cuotas = null) {
   try {
     const userRepository = AppDataSource.getRepository(User);
 
@@ -28,17 +29,16 @@ export async function venderPackSer(userId, cantidad, comprobante) {
       return [null, "Solo los usuarios con rol 'estudiante' pueden recibir packs"];
     }
 
-    const reservaRepository = AppDataSource.getRepository(Reserva);
-    const clasesPracticasCompletadas = await reservaRepository.count({
+    const claseRepository = AppDataSource.getRepository(Clase);
+    const clasesPracticasCompletadas = await claseRepository.count({
       where: {
-        user: { id: userId },
-        estado: "completada",
-        clase: { tipo: "practica" }
+        users: { id: userId },
+        estado_clase: "completada"
       }
     });
 
-    if (clasesPracticasCompletadas < 0) { // TEMPORALMENTE CAMBIADO A 0 PARA PRUEBAS (originalmente era 6)
-      return [null, `El alumno debe tener al menos 6 clases prácticas completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
+    if (clasesPracticasCompletadas < 6) { 
+      return [null, `El alumno debe tener al menos 6 clases completadas para comprar clases extra (actualmente tiene ${clasesPracticasCompletadas}).`];
     }
     
     const cantidadNum = Number(cantidad);
@@ -57,7 +57,9 @@ export async function venderPackSer(userId, cantidad, comprobante) {
         user: user,
         comprobante: comprobante || null,
         estado: "pendiente",
-        monto_total: monto_total
+        monto_total: monto_total,
+        tipo_pago: tipo_pago,
+        cuotas: tipo_pago === 'plazo' ? cuotas : null
       });
       nuevaVenta = await ventaRepository.save(nuevaVenta);
     } catch (err) {
@@ -165,5 +167,36 @@ export async function rechazarVentaSer(ventaId) {
   } catch (error) {
     console.error("Error al rechazar la venta:", error);
     return [null, "Error interno del servidor al rechazar venta"];
+  }
+}
+
+export async function pagarVentaSer(ventaId) {
+  try {
+    const ventaRepository = AppDataSource.getRepository(Venta);
+
+    const venta = await ventaRepository.findOne({
+      where: { id: Number(ventaId) },
+      relations: { user: true }
+    });
+
+    if (!venta) {
+      return [null, "La venta no existe"];
+    }
+
+    if (venta.estado !== "aprobada") {
+      return [null, "Solo se pueden pagar ventas que están aprobadas"];
+    }
+
+    if (venta.tipo_pago !== "plazo") {
+      return [null, "Esta venta no es a plazo"];
+    }
+
+    venta.estado = "completado";
+    await ventaRepository.save(venta);
+
+    return [venta, null];
+  } catch (error) {
+    console.error("Error al pagar la venta:", error);
+    return [null, "Error interno del servidor al pagar venta"];
   }
 }

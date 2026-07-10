@@ -22,9 +22,11 @@ export const integrityValidation = Joi.object({
         "any.only": `La cantidad de clases debe ser una de las siguientes: ${PACKS_VALIDOS.join(", ")}`
     }),
     
-    comprobante: Joi.string().messages({
+    comprobante: Joi.string().allow(null, '').messages({
         "string.base": "El comprobante debe ser un texto"
-    })
+    }),
+    tipo_pago: Joi.string().valid('contado', 'plazo').optional(),
+    cuotas: Joi.number().integer().min(2).max(12).allow(null, '').optional()
 });
 
 
@@ -37,9 +39,10 @@ export const assignationValidation = Joi.object({
         "any.required": CANTIDAD_OBLIGATORIA,
     }),
     
-    comprobante: Joi.any().required().messages({
-        "any.required": "La URL del comprobante es obligatoria"
-    })
+    comprobante: Joi.any().optional(),
+    
+    tipo_pago: Joi.any().optional(),
+    cuotas: Joi.any().optional()
 })
     .unknown(false)
     .messages({

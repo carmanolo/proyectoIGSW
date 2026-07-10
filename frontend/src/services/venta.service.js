@@ -66,3 +66,20 @@ export async function listarVentasService() {
         throw error.response?.data || error;
     }
 }
+
+export async function pagarVentaService(ventaId) {
+    try {
+        const response = await axios.post(`/ventas/${ventaId}/pagar`);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error;
+    }
+}
+export async function simularVencimientoService(ventaId) {
+    try {
+        const response = await axios.patch(`/ventas/${ventaId}/simular-vencimiento`);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || error;
+    }
+}
